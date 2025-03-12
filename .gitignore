@@ -1,0 +1,27 @@
+###> symfony/framework-bundle ###
+/.env
+/public/bundles/
+/var/
+/vendor/
+
+###> symfony/webpack-encore-pack ###
+/node_modules/
+/public/uploads/
+npm-debug.log
+yarn-error.log
+
+###> symfony/phpunit-bridge ###
+.phpunit
+/phpunit.xml
+
+###> symfony/web-server-bundle ###
+/.web-server-pid
+
+###> symfony/webpack-encore-bundle ###
+/node_modules/
+npm-debug.log
+yarn-error.log
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+###< phpunit/phpunit ###

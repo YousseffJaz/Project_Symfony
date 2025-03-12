@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Impression</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,600,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ app.request.getBaseURL() }}/css/bootstrap-admin.min.css">
+    <link rel="stylesheet" href="{{ app.request.getBaseURL() }}/css/style-admin.css">
+    <link rel="stylesheet" href="{{ app.request.getBaseURL() }}/css/style-admin2.css">
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"/>
+    <link rel="stylesheet" href="{{ app.request.getBaseURL() }}/css/fontawesome.css">
+    <link rel="stylesheet" href="{{ app.request.getBaseURL() }}/css/light.css">
+    <link rel="stylesheet" href="{{ app.request.getBaseURL() }}/css/solid.css">
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css"/>
+  </head>
+  <body>
+
+    <div class="pcoded-content">
+      <div class="pcoded-inner-content">
+        <div class="main-body">
+          <div class="page-wrapper">
+            <div class="page-body">
+              <div class="">
+                <div class="card-block">
+                  {% if priceLists|length %}
+                    <div class="table-responsive">
+                      <table class="table table-striped table-bordered datatable display">
+                        <tbody style="border: 1px solid rgba(0,0,0,.05);">
+                        <tr>
+                          <tr>
+                            <th>Produit</th>
+                            {% for priceTitle in priceLists %}
+                              <th>{{priceTitle}}</th>
+                            {% endfor %}
+                          </tr>
+                        </tr>
+                          {% for variant in variants %}
+                            <tr>
+                              <td>{{ variant.title }}</td>
+                              {% for priceTitle in priceLists %}
+                                {% if variant.priceLists.toArray %}
+                                  <td> 
+                                    {% for priceLists in variant.priceLists.toArray %}
+                                      {% if priceTitle == priceLists.title %}
+                                        {{ priceLists.price|number_format(2, ',', ' ') }}€
+                                      {% endif %}
+                                    {% endfor %}
+                                  </td>
+                                {% else %}
+                                  <td></td>
+                                {% endif %}
+                              {% else %}
+                                <td></td>
+                              {% endfor %}
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  {% else %}
+                    Aucune grille tarifaire
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="styleSelector">
+        </div>
+      </div>
+    </div>
+    
+    <style>
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        padding: .3rem .8rem;
+        background-color: rgba(228, 229, 231, 1);
+        border: 0;
+        border-radius: 2rem;
+        line-height: 1.2rem;
+      }
+
+      .result_icon {
+        width: 32px;
+        height: 32px;
+        background-size: cover;
+        background-position: center;
+      }
+
+      th, td {
+        padding: 5px 10px;
+      }
+
+      .table td, .table th {
+          padding: 0.3rem !important;
+          font-size: 12px;
+      }
+
+    </style>
+
+
+    <script>
+      window.print();
+    </script>
+  </body>
+</html>
+
+      
+

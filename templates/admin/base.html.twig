@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,600,700&display=swap">
+    <link rel="stylesheet" href="{{ app.request.getBaseURL() }}/css/bootstrap-admin.min.css">
+    <link rel="stylesheet" href="{{ app.request.getBaseURL() }}/css/style-admin.css">
+    <link rel="stylesheet" href="{{ app.request.getBaseURL() }}/css/style-admin2.css">
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"/>
+    <link rel="stylesheet" href="{{ app.request.getBaseURL() }}/css/fontawesome.css">
+    <link rel="stylesheet" href="{{ app.request.getBaseURL() }}/css/light.css">
+    <link rel="stylesheet" href="{{ app.request.getBaseURL() }}/css/solid.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@7.33.1/dist/sweetalert2.min.css"/>
+    
+    {% block stylesheets %}{% endblock %}
+  </head>
+  <body>
+    
+    {% include 'admin/partials/header.html.twig' %}
+
+    {% block body %}{% endblock %}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="{{ app.request.getBaseURL() }}/js/popper.min.js"></script>
+    <script src="{{ app.request.getBaseURL() }}/js/bootstrap-admin.min.js"></script>
+    <script src="{{ app.request.getBaseURL() }}/js/pcoded.min.js"></script>
+    <script src="{{ app.request.getBaseURL() }}/js/vertical-layout.min.js"></script>
+    <script src="{{ app.request.getBaseURL() }}/js/script.min.js"></script>
+    <script src="{{ app.request.getBaseURL() }}/js/rocket-loader.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.33.1/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+
+    {% block javascripts %}{% endblock %}
+  </body>
+</html>

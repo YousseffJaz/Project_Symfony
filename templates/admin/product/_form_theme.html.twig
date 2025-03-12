@@ -1,0 +1,29 @@
+{% block _admin_product_stockLists_widget %}
+  {{ form_widget(form) }}
+  <input type="hidden" id="widgets-counter" value="0">
+  <div class="form-group">
+    <button type="button" id="addStockList" class="btn btn-primary"> <i class="fa fa-plus"></i>&nbsp; Ajouter un stock &nbsp;</i></button>
+  </div>
+{% endblock %}
+
+{% block _admin_product_stockLists_entry_row %}
+    {{ form_widget(form) }}
+{% endblock %}
+
+{% block _admin_product_stockLists_entry_widget %}
+  <div class="form-group" id="block_{{ id }}">
+    <div class="row">
+      <div class="col-4">
+        {{ form_widget(form.name) }}
+        {{ form_errors(form.name) }}
+      </div>
+      <div class="col-2">
+        {{ form_widget(form.quantity) }}
+        {{ form_errors(form.quantity) }}
+      </div>
+      <div class="col-2">
+        <button type="button" data-action="delete" data-target="#block_{{ id }}" class="btn btn-danger" style="padding: 7px 12px;"> X </button>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,6 @@
+bugsnag:
+    api_key: 6d37f7b04c255ca234b33afb6da4c68e
+    release_stage: production
+    notify_release_stages:
+      - production
+    app_version: 1.0.1

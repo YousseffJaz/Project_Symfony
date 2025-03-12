@@ -1,0 +1,184 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Administration des produits{% endblock %}
+
+
+{% block body %}
+
+<div class="pcoded-content">
+  <div class="pcoded-inner-content">
+    <div class="main-body">
+      <div class="page-wrapper">
+        <div class="page-body">
+          {% for label, messages in app.flashes %}
+            <div class="alert alert-{{ label }} background-{{ label }}">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <i class="icofont icofont-close-line-circled text-white"></i>
+              </button>
+              {% for message in messages %}
+                <p style="margin-bottom: 0px !important;">{{ message | raw }}</p>
+              {% endfor %}
+            </div>
+          {% endfor %}
+          <form method="post">
+            <div class="card">
+              <div class="card-header">
+                <h5>Liste des produits</h5>
+                <a href="{{ path('admin_product_new') }}" class="btn btn-out-dashed waves-effect waves-light btn-primary btn-square text-right" style="float: right; padding: 5px 10px; margin: 0px 5px;">Ajouter un produit</a>
+                <button type="submit" class="btn btn-out-dashed waves-effect waves-light btn-success btn-square text-right" style="float: right; padding: 5px 10px; margin: 0px 5px;">Á commander</a>
+              </div>
+              <div class="card-block table-border-style">
+                {% set length = [] %}
+                {% if products %}
+                  {% for product in products %}
+                    {% if product.stockLists.toArray %}
+                      {% for stockLists in product.stockLists.toArray %}
+                        {% if stockLists.name not in length %}
+                          {% set length = length|merge([stockLists.name]) %}
+                        {% endif %}
+                      {% endfor %}
+                    {% endif %}
+                  {% endfor %}
+                  <div class="table-responsive">
+                    <table class="table table-striped table-bordered datatable display">
+                      <thead>
+                        <tr>
+                          <th>Titre</th>
+                          <th>Catégorie</th>
+                          <th>Variants</th>
+                          <th>Prix de revient</th>
+                          <th>Digital</th>
+                          <th>Á commander</th>
+                          {% for stockName in length %}
+                            <th>{{stockName}}</th>
+                          {% endfor %}
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for product in products %}
+                          <tr>
+                            <td>{{ product.title }}</td>
+                            <td>
+                              {% if product.category %}
+                                <a href="{{ path('admin_category_edit', { id: product.category.id }) }}" style="color: #007bff;" target="_blank">
+                                  {{ product.category.name }}
+                                </a>
+                              {% endif %}
+                            </td>
+                            <td>
+                              {% if product.variants.toArray %}
+                                {% for variant in product.variants.toArray %}
+                                  {% if not variant.archive %}
+                                    <div class="flex justify-center items-center m-2 font-medium py-1 px-2 bg-white rounded bg-gray-100 border" style="max-width: fit-content; display: flex;">
+                                      <div class="text-xs font-normal leading-none max-w-full flex-initial">
+                                        <a href="{{ path('admin_variant_edit', { id: variant.id }) }}" style="color: #007bff;" target="_blank">
+                                          {{ variant.title }}
+                                        </a>
+                                      </div>
+                                    </div>
+                                  {% endif %}
+                                {% endfor %}
+                              {% endif %}
+                            </td>
+                            <td>
+                              {% if product.purchasePrice %}
+                                <i class="fal fa-check" style="color: #2ecc71; font-size: 20px; padding: 3px;"></i>
+                              {% endif %}
+                            </td>
+                            <td>
+                              {% if product.digital %}
+                                <i class="fal fa-check" style="color: #2ecc71; font-size: 20px; padding: 3px;"></i>
+                              {% endif %}
+                            </td>
+                            <td>
+                              <input type="number" name="quantity[]">
+                              <input type="hidden" name="productId[]" value="{{product.id}}">
+                            </td>
+                            {% for stockName in length %}
+                              {% if product.stockLists.toArray %}
+                                <td> 
+                                  {% for stockLists in product.stockLists.toArray %}
+                                    {% if stockName == stockLists.name %}
+                                      {% if product.digital %}
+                                        Illimité
+                                      {% else %}
+                                      {{ stockLists.quantity }}
+                                      {% endif %}
+                                    {% endif %}
+                                  {% endfor %}
+                                </td>
+                              {% else %}
+                                <td></td>
+                              {% endif %}
+                            {% else %}
+                              <td></td>
+                            {% endfor %}
+                            <td>
+                              {% if app.user.role == "ROLE_SUPER_ADMIN" %}
+                                <a href="{{ path('admin_product_edit', { id: product.id }) }}">
+                                  <i class="fal fa-edit" style="color: #4099ff; font-size: 20px; padding: 3px;"></i>
+                                </a>
+                                <a href="{{ path('admin_product_delete', { id : product.id }) }}" class="js-delete-element">
+                                  <i class="fal fa-trash" style="color: #ff5370; font-size: 20px; padding: 3px;"></i>
+                                </a>
+                              {% endif %}
+                            </td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                {% else %}
+                  Aucun produit actuellement.
+                {% endif %}
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div id="styleSelector">
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+
+{% endblock %}
+
+
+{% block javascripts %}
+{% include 'admin/partials/datatable.html.twig' %}
+  <script>
+
+  $('.js-delete-element').click( function () {
+
+    event.preventDefault();
+    var url = this.href;
+
+    const swalWithBootstrapButtons = Swal.mixin({
+      confirmButtonClass: 'btn btn-success',
+      cancelButtonClass: 'btn btn-danger',
+      buttonsStyling: false,
+      reverseButtons: true
+    })
+
+    swalWithBootstrapButtons.fire({
+      title: 'Êtes vous sur ?',
+      html: 'Attention ! Vous aller supprimer un produit.',
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Non, c\'est une erreur',
+    }).then((result) => {
+      if (result.value) {
+        location.href = url;
+      }
+    });
+  });
+
+</script>
+{% endblock %}
+

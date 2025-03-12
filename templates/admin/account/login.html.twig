@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <title>Connexion</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,600,700&display=swap">
+  <link rel="stylesheet" href="{{ app.request.getBaseUrl() }}/css/bootstrap-admin.min.css">
+  <link rel="stylesheet" href="{{ app.request.getBaseUrl() }}/css/style-admin.css">
+</head>
+
+<body themebg-pattern="theme1">
+  <section class="login-block">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-12">
+          <form class="md-float-material form-material" method="post">
+            <div class="auth-box card">
+              <div class="card-block">
+                <div class="row m-b-20">
+                  <div class="col-md-12">
+                    <h3 class="text-center txt-primary">Connexion</h3>
+                  </div>
+                </div>
+                {% if hasError %}
+                  <div class="alert alert-danger">
+                    <p style="margin: 0px;">Les identifiants de connexion renseignés sont incorrects</p>
+                  </div>
+                {% endif %}
+                {% for label, messages in app.flashes %}
+                  <div class="container">
+                    <div class="alert alert-{{ label }}">
+                      {% for message in messages %}
+                        <p style="margin: 0px;">{{ message | raw }}</p>
+                      {% endfor %}
+                    </div>
+                  </div>
+                {% endfor %}
+                <div class="form-group form-primary">
+                  <input type="text" name="_username" class="form-control" required placeholder="Adresse email" value="{{ username }}">
+                  <span class="form-bar"></span>
+                </div>
+                <div class="form-group form-primary">
+                  <input type="password" name="_password" class="form-control" placeholder="Mot de passe" required>
+                  <input type="hidden" name="_target_path" value="{{ path('admin_dashboard') }}" />
+                  <span class="form-bar"></span>
+                </div>
+                <div class="row m-t-20">
+                  <div class="col-md-12">
+                    <button type="submit" class="btn btn-md btn-block waves-effect text-center m-b-10" style="color: white; background: black;">Connexion</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<style>
+  .login-block {
+      margin: 30px auto;
+  }
+
+  .login-block .auth-box {
+    margin: 50px auto 0 auto;
+    box-shadow: 0px 0px 9px -2px rgb(0 0 0 / 50%);
+    max-width: 500PX;
+  }
+
+  .login-block .auth-box .confirm h3 {
+      font-size: 34px;
+      color: #4099ff;
+  }
+
+  .login-block .auth-box i.icofont-check-circled {
+      font-size: 42px;
+  }
+
+  .login-block.offline-404 .auth-box {
+      max-width: 650px;
+  }
+
+  .login-block.offline-404 .auth-box h1 {
+      text-shadow: 3px -2px 4px rgba(128,128,128,0.57);
+      font-size: 160px;
+      font-weight: 500;
+      letter-spacing: 5px;
+      color: #2c3e50;
+  }
+
+  @media only screen and (max-width:992px) {
+      .login-block.offline-404 .auth-box {
+          margin-top: 45px;
+      }
+  }
+
+  @media only screen and (max-width:575px) {
+      .login-block.offline-404 .auth-box h1 {
+          font-size: 60px;
+      }
+
+      .login-block.offline-404 .auth-box h2 {
+          font-size: 0.8rem;
+      }
+  }
+</style>
+
+  <script src="{{ app.request.getBaseUrl() }}/js/jquery-admin.min.js"></script>
+  <script src="{{ app.request.getBaseUrl() }}/js/popper.min.js"></script>
+  <script src="{{ app.request.getBaseUrl() }}/js/bootstrap-admin.min.js"></script>
+</body>
+</html>

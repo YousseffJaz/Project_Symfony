@@ -1,0 +1,268 @@
+<div class="loader-bg">
+    <div class="loader-bar"></div>
+</div>
+<div id="pcoded" class="pcoded">
+    <div class="pcoded-overlay-box"></div>
+    <nav class="navbar header-navbar pcoded-header">
+        <div class="navbar-wrapper">
+            <div class="navbar-logo">
+                <a class="mobile-menu" id="mobile-collapse" href="#!">
+                    <i class="fal fa-toggle-off"></i>
+                </a>
+                <a class="mobile-options waves-effect waves-light">
+                    <i class="fal fa-bars"></i>
+                </a>
+            </div>
+            <div class="navbar-container container-fluid">
+                {% if app.user.role == "ROLE_SUPER_ADMIN" or app.user.role == "ROLE_EMPLOYÉ" %}
+                    <ul class="nav-left">
+                        <li class="header-search">
+                            <div class="main-search morphsearch-search open">
+                                <div class="input-group">
+                                    <form action="{{ path('admin_search_global') }}" method="post" style="display: flex;">
+                                        <input type="text" class="form-control" name="search" placeholder="Rechercher" style="width: 200px; border: 1px solid #ccc; border-radius: 8px;">
+                                    </form>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                {% endif %}
+                <ul class="nav-right">
+                    <li class="user-profile header-notification">
+                        <a href="{{ path('admin_account_profile') }}">
+                            <span style="font-weight: bold; font-size: 16px;">{{ app.user.firstname|upper }}</span>
+                            <i class="fal fa-chevron-down"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+<div class="pcoded-main-container">
+    <div class="pcoded-wrapper">
+        <nav class="pcoded-navbar">
+            <div class="nav-list">
+                <div class="pcoded-inner-navbar main-menu" style="overflow-y: scroll">
+                    <ul class="pcoded-item pcoded-left-item">
+                        {% if app.user.role == "ROLE_SUPER_ADMIN" %}
+                            <li class="{{ app.request.get('_route') == 'admin_dashboard' ? 'active' }}">
+                                <a href="{{ path('admin_dashboard') }}">
+                                    <span class="pcoded-micon">
+                                        <i class="fal fa-chart-line"></i>
+                                    </span>
+                                    <span class="pcoded-mtext">Tableau de bord</span>
+                                </a>
+                            </li>
+                            <hr style="border-top: 1px solid rgba(0,0,0,0.1);margin: 0px;">
+                            <li class="{{ app.request.get('_route') == 'admin_statistiques' ? 'active' }}">
+                                <a href="{{ path('admin_statistiques') }}">
+                                    <span class="pcoded-micon">
+                                        <i class="fal fa-chart-pie"></i>
+                                    </span>
+                                    <span class="pcoded-mtext">Statistiques</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                        <hr style="border-top: 1px solid rgba(0,0,0,0.1);margin: 0px;">
+                        <li class="{{ app.request.get('_route') == 'admin_order_index' ? 'active' }}">
+                            <a href="{{ path('admin_order_index') }}">
+                                <span class="pcoded-micon">
+                                    <i class="fal fa-file-invoice"></i>
+                                </span>
+                                <span class="pcoded-mtext">Commandes</span>
+                            </a>
+                        </li>
+                        {% if app.user.role == "ROLE_SUPER_ADMIN" %}
+                            <hr style="border-top: 1px solid rgba(0,0,0,0.1);margin: 0px;">
+                            <li class="{{ app.request.get('_route') == 'admin_order_customers' ? 'active' }}">
+                                <a href="{{ path('admin_order_customers') }}">
+                                    <span class="pcoded-micon">
+                                        <i class="fal fa-users"></i>
+                                    </span>
+                                    <span class="pcoded-mtext">Clients</span>
+                                </a>
+                            </li>
+                            <hr style="border-top: 1px solid rgba(0,0,0,0.1);margin: 0px;">
+                            <li class="{{ app.request.get('_route') == 'admin_order_histories' ? 'active' }}">
+                                <a href="{{ path('admin_order_histories') }}">
+                                    <span class="pcoded-micon">
+                                        <i class="fal fa-flag"></i>
+                                    </span>
+                                    <span class="pcoded-mtext">Historique</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if app.user.role == "ROLE_SUPER_ADMIN" or app.user.role == "ROLE_EMPLOYÉ" %}
+                            <hr style="border-top: 1px solid rgba(0,0,0,0.1);margin: 0px;">
+                            <li class="pcoded-hasmenu {{ app.request.get('_route') == 'admin_folder_search' ? 'pcoded-trigger' }} {{ app.request.get('_route') == 'admin_folder_collections' ? 'pcoded-trigger' }}">
+                                <a href="javascript:void(0)">
+                                    <span class="pcoded-micon">
+                                        <i class="fal fa-images"></i>
+                                    </span>
+                                    <span class="pcoded-mtext">Fichiers</span>
+                                </a>
+                                <ul class="pcoded-submenu" style="{{ app.request.get('_route') == 'admin_folder_search' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_folder_collections' ? 'display: block;' }}">
+                                    <li class="">
+                                        <a href="{{ path('admin_folder_index') }}">
+                                            <i class="fal fa-chevron-right"></i> 
+                                            <span class="pcoded-mtext">Clients</span>
+                                        </a>
+                                    </li>
+                                    <li class="">
+                                        <a href="{{ path('admin_folder_collections') }}">
+                                            <i class="fal fa-chevron-right"></i> 
+                                            <span class="pcoded-mtext">Collections</span>
+                                        </a>
+                                    </li>
+                                    <li class="">
+                                        <a href="{{ path('admin_folder_search') }}">
+                                            <i class="fal fa-chevron-right"></i> 
+                                            <span class="pcoded-mtext">Recherche</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        {% endif %}
+                        {% if app.user.role == "ROLE_SUPER_ADMIN" %}
+                            <hr style="border-top: 1px solid rgba(0,0,0,0.1);margin: 0px;">
+                            <li class="pcoded-hasmenu {{ app.request.get('_route') == 'admin_variant_index' ? 'pcoded-trigger' }} {{ app.request.get('_route') == 'admin_product_index' ? 'pcoded-trigger' }} {{ app.request.get('_route') == 'admin_category_index' ? 'pcoded-trigger' }}">
+                                <a href="javascript:void(0)">
+                                    <span class="pcoded-micon">
+                                        <i class="fal fa-cube"></i>
+                                    </span>
+                                    <span class="pcoded-mtext">Produits</span>
+                                </a>
+                                <ul class="pcoded-submenu" style="{{ app.request.get('_route') == 'admin_product_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_category_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_variant_index' ? 'display: block;' }}">
+                                    {% if app.user.role == "ROLE_SUPER_ADMIN" %}
+                                        <li class="">
+                                            <a href="{{ path('admin_variant_index') }}">
+                                                <i class="fal fa-chevron-right"></i> 
+                                                <span class="pcoded-mtext">Grille tarifaire</span>
+                                            </a>
+                                        </li>
+                                        <li class="">
+                                            <a href="{{ path('admin_product_index') }}">
+                                                <i class="fal fa-chevron-right"></i> 
+                                                <span class="pcoded-mtext">Stocks</span>
+                                            </a>
+                                        </li>
+                                        <li class="">
+                                            <a href="{{ path('admin_category_index') }}">
+                                                <i class="fal fa-chevron-right"></i> 
+                                                <span class="pcoded-mtext">Catégories</span>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                    <li class="">
+                                        <a href="{{ path('admin_preorder_index') }}">
+                                            <i class="fal fa-chevron-right"></i> 
+                                            <span class="pcoded-mtext">Á commander</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        {% endif %}
+                        {% if app.user.role == "ROLE_SUPER_ADMIN" %}
+                            <hr style="border-top: 1px solid rgba(0,0,0,0.1);margin: 0px;">
+                            <li class="pcoded-hasmenu {{ app.request.get('_route') == 'admin_note_index' ? 'pcoded-trigger' }} {{ app.request.get('_route') == 'admin_cashflow_index' ? 'pcoded-trigger' }} {{ app.request.get('_route') == 'admin_expense_index' ? 'pcoded-trigger' }}">
+                                <a href="javascript:void(0)">
+                                    <span class="pcoded-micon">
+                                        <i class="fal fa-euro-sign"></i>
+                                    </span>
+                                    <span class="pcoded-mtext">Comptabilité</span>
+                                </a>
+                                <ul class="pcoded-submenu" style="{{ app.request.get('_route') == 'admin_note_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_cashflow_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_expense_index' ? 'display: block;' }}">
+                                    <li class="">
+                                        <a href="{{ path('admin_note_index') }}">
+                                            <i class="fal fa-chevron-right"></i> 
+                                            <span class="pcoded-mtext">Notes</span>
+                                        </a>
+                                    </li>
+                                    <li class="">
+                                        <a href="{{ path('admin_cashflow_index') }}">
+                                            <i class="fal fa-chevron-right"></i> 
+                                            <span class="pcoded-mtext">Trésorerie</span>
+                                        </a>
+                                    </li>
+                                    <li class="">
+                                        <a href="{{ path('admin_expense_index') }}">
+                                            <i class="fal fa-chevron-right"></i> 
+                                            <span class="pcoded-mtext">Dépenses</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        {% endif %}
+                        {% if app.user.role != "ROLE_LIVREUR" %}
+                            <hr style="border-top: 1px solid rgba(0,0,0,0.1);margin: 0px;">
+                            <li class="{{ app.request.get('_route') == 'admin_task_index' ? 'active' }}">
+                                <a href="{{ path('admin_task_index') }}">
+                                    <span class="pcoded-micon">
+                                        <i class="fal fa-envelope"></i>
+                                    </span>
+                                    <span class="pcoded-mtext">Messages</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if app.user.role == "ROLE_SUPER_ADMIN" %}
+                            <hr style="border-top: 1px solid rgba(0,0,0,0.1);margin: 0px;">
+                            <li class="{{ app.request.get('_route') == 'admin_admin_index' ? 'active' }}">
+                                <a href="{{ path('admin_admin_index') }}">
+                                    <span class="pcoded-micon">
+                                        <i class="fal fa-user-check"></i>
+                                    </span>
+                                    <span class="pcoded-mtext">Administrateurs</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                        <hr style="border-top: 1px solid rgba(0,0,0,0.1);margin: 0px;">
+                         <li class="">
+                            <a href="{{ path('admin_account_logout') }}">
+                                <span class="pcoded-micon">
+                                    <i class="fal fa-power-off"></i>
+                                </span>
+                                <span class="pcoded-mtext">Déconnexion</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+<style>
+  .ui-menu.ui-widget.ui-widget-content.ui-autocomplete.ui-front {
+    z-index: 2000;
+  }
+</style>
+
+
+<div style="display:none;">
+  <p><audio src="{{ app.request.baseUrl }}/sounds/custom.mp3" controls id="player"></audio></p>
+</div>
+
+<script src="{{ app.request.getBaseURL() }}/js/jquery-admin.min.js"></script>
+<script src="{{ app.request.getBaseURL() }}/js/jquery.slimscroll.js"></script>
+<script src="{{ app.request.getBaseURL() }}/js/waves.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
+
+<script>
+// cacher la notification
+setTimeout(removeToast, 60000);
+function removeToast() {
+  $('.alert').fadeOut( "slow", function() {});
+};
+function initNotif(){
+  loopNotif();
+}
+initNotif();
+function loopNotif(){
+  setTimeout('loopNotif();', 60000);
+  axios.get('{{ path("admin_notif_all") }}').then(function (response) {
+    if (response.data == true) {
+      $("#player")[0].play();
+    }
+  });
+}
+  
+</script>

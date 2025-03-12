@@ -1,0 +1,513 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Ajouter une commande{% endblock %}
+
+{% form_theme form 'bootstrap_4_layout.html.twig' %}
+
+{% block body %}
+
+<div class="pcoded-content">
+  <div class="pcoded-inner-content">
+    <div class="main-body">
+      <div class="page-wrapper">
+        <div class="page-body">
+          {% for label, messages in app.flashes %}
+            <div class="alert alert-{{ label }} background-{{ label }}">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <i class="icofont icofont-close-line-circled text-white"></i>
+              </button>
+              {% for message in messages %}
+                  <p style="margin-bottom: 0px !important;">{{ message | raw }}</p>
+              {% endfor %}
+            </div>
+          {% endfor %}
+          <div class="card">
+            <div class="card-header">
+              <h5>Ajouter une commande</h5>
+            </div>
+            <div class="card-block">
+              {{ form_start(form) }}
+              
+              <div class="row">
+                <div class="col-md-4">
+                  {{ form_row(form.firstname, { 'label': 'Prénom/Pseudo' }) }}
+                </div>
+                <div class="col-md-4">
+                  {{ form_row(form.lastname, { 'label': 'Nom' }) }}
+                </div>
+                <div class="col-md-4">
+                  {{ form_row(form.phone, { 'label': 'Téléphone' }) }}
+                </div>
+              </div>
+
+              {{ form_row(form.address, { 'label': 'Adresse', 'attr': { 'rows' : '4'} }) }}
+
+              <div class="row">
+                <div class="col-md-6"><br>
+                  {{ form_row(form.note2, { 'label': 'Note' }) }}
+                  <div class="form-group">
+                    <label for="admin_order_stockList">Stock</label>
+                    <select id="admin_order_stockList" name="stockList" class="form-control" required>
+                      {# <option value="">Choisir un stock</option> #}
+                      {% set length = [] %}
+                      {% if products %}
+                        {% for product in products %}
+                          {% if product.stockLists.toArray %}
+                            {% for stockLists in product.stockLists.toArray %}
+                              {% if stockLists.name not in length %}
+                                {% set length = length|merge([stockLists.name]) %}
+                              {% endif %}
+                            {% endfor %}
+                          {% endif %}
+                        {% endfor %}
+                      {% endif %}
+                      {% for stockName in length %}
+                        <option value="{{stockName}}" {% if loop.first %} selected {% endif %}>{{stockName}}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  {% if app.user.role != "ROLE_SUPER_ADMIN" %}
+                    <br>
+                  {% endif %}
+                  {{ form_row(form.createdAt, { 'label': 'Date de création' }) }}
+                </div>
+              </div>
+
+              <br><label>Produits</label>
+              <div class="search_content" style="max-width: 500px; margin-bottom: 15px;">
+                <div class="search_bar">
+                  <div class="search_icon">
+                    <svg fill="#8395B3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px">
+                      <path d="M 9 2 C 5.1458514 2 2 5.1458514 2 9 C 2 12.854149 5.1458514 16 9 16 C 10.747998 16 12.345009 15.348024 13.574219 14.28125 L 14 14.707031 L 14 16 L 19.585938 21.585938 C 20.137937 22.137937 21.033938 22.137938 21.585938 21.585938 C 22.137938 21.033938 22.137938 20.137938 21.585938 19.585938 L 16 14 L 14.707031 14 L 14.28125 13.574219 C 15.348024 12.345009 16 10.747998 16 9 C 16 5.1458514 12.854149 2 9 2 z M 9 4 C 11.773268 4 14 6.2267316 14 9 C 14 11.773268 11.773268 14 9 14 C 6.2267316 14 4 11.773268 4 9 C 4 6.2267316 6.2267316 4 9 4 z" />
+                    </svg>
+                  </div>
+                  <input id="search" type="text" placeholder="Rechercher un produit">
+                </div>
+                <ul class="search_results"></ul>
+              </div>
+              <div class="show_lines" style="margin-top: 10px;">
+              </div><br>
+
+              <div class="row">
+                <div class="col-md-6">
+                  {{ form_row(form.shippingCost, { 'label': "Frais d'expédition" }) }}
+                  {{ form_row(form.total, { 'label': 'Montant total (€)' }) }}
+                  {{ form_row(form.paymentType, { 'label': 'Type de vente' }) }}
+                  {{ form_row(form.orderStatus, { 'label': 'Statut de la commande' }) }}
+                </div>
+                <div class="col-md-6">
+                  {{ form_row(form.discount, { 'label': "Réduction" }) }}
+                  {{ form_row(form.paid, { 'label': 'Montant payé (€)' }) }}
+                  {{ form_row(form.paymentMethod, { 'label': 'Moyen de paiement' }) }}
+                  <div id="delivery-admin-wrapper" style="display: none;">
+                    {{ form_row(form.delivery, { 'label': 'Livraison' }) }}
+                  </div>
+                </div>
+              </div>
+
+              {{ form_row(form.note, { 'label': 'Commentaire', 'attr': { 'rows' : '5'}, 'value': '' }) }}
+
+              <div class="form-group row mt-2" style="float: right; margin-right: 20px;">
+                <button type="submit" class="btn btn-primary m-b-0">Enregistrer</button>
+              </div>
+              {{ form_end(form) }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="styleSelector">
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+{% if app.user.role != "ROLE_SUPER_ADMIN" %}
+  <script>
+    $('#admin_order_createdAt').parent().hide();
+    $('#admin_order_note2').parent().hide();
+  </script>
+{% endif %}
+
+  <script>
+    $('#admin_order_trackingId').parent().hide();
+  </script>
+
+<style type="text/css">
+
+.search_logo {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.search_logo svg {
+  height: 88px;
+}
+
+.search_bar {
+  height: 40px;
+  border: 1px solid #ccc;
+  border-radius: 16px;
+  display: flex;
+  padding-left: 24px;
+  padding-right: 4px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+.search_icon {
+  width: 20px;
+  display: flex;
+  align-items: center;
+}
+
+#admin_order_createdAt .form-control {
+  border:none;
+  width: initial;
+}
+
+#search {
+  border-radius: 16px;
+  height: 35px;
+  padding: 0;
+  padding-left: 8px;
+  border: 0;
+  width: calc(100% - 30px);
+  line-height: 30px;
+  letter-spacing: 0.5px;
+  background-color: #fff;
+  font-family: inherit;
+}
+
+
+.search_results {
+  display: none;
+  height: 0%;
+  border: 1px solid #ccc;
+  padding: 0;
+  background-color: #fff;
+  margin: 0;
+}
+
+.search_results li {
+  display: flex;
+  align-items: center;
+  height: 56px;
+  padding: 0 24px;
+  position: relative;
+  cursor: pointer;
+  background-color: #fff;
+  transition: 0.2s background-color;
+}
+
+li:hover {
+  background-color: #e8f0fe !important;
+}
+
+li.result::before {
+  content: "";
+  position: absolute;
+  height: 1px;
+  width: calc(100% - 48px);
+  background-color: #ccc;
+  opacity: 0.1;
+  bottom: 0;
+}
+
+.search_results li p {
+  margin: 0;
+  padding: 0 16px;
+  line-height: 18px;
+}
+
+.search_results li p:last-child {
+  margin: 0;
+  padding: 0 16px;
+  font-size: 14px;
+  line-height: 18px;
+}
+
+
+.search_results.open {
+  display: block;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  border-top: none;
+  overflow: hidden;
+}
+
+.result_icon {
+  width: 32px;
+  height: 32px;
+  background-size: cover;
+  background-position: center;
+}
+
+.search_bar.available {
+  border-bottom: none !important;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
+.lineitem-infos {
+  max-width: fit-content;
+  display: flex;
+}
+
+
+</style>
+
+<script>
+$(function () {
+
+  toggleDeliveryAdmin($('#admin_order_orderStatus').val());
+
+  $('#admin_order_orderStatus').change(function() {
+    toggleDeliveryAdmin($(this).val());
+  });
+
+  function toggleDeliveryAdmin(value) {
+    if (value == '4') {
+      $('#delivery-admin-wrapper').show();
+    } else {
+      $('#delivery-admin-wrapper').hide();
+    }
+  }
+
+
+  $( document ).ready(function() {
+    $('#admin_order_firstname').autocomplete({
+      minLength: 0,
+      source : function(request, response){ 
+        $.ajax({
+          url : '{{ path("admin_order_customer") }}',
+          dataType : 'json', 
+          data : {
+            keyword : request.term, 
+            maxRows : 5
+          },
+          success : function(donnee){
+            response(donnee); 
+          }
+        });
+      },
+      select: function(event, ui) {
+        $('#admin_order_firstname').val('');
+      },
+      create: function () {
+      }
+    });
+  });
+
+
+  $("body").on("focusout", "#admin_order_shippingCost", function (e) {
+    var total = $('#admin_order_total').val();
+    var price = $(this).val();
+
+    if (total && price) {
+      var total = parseFloat(total) + parseFloat(price);
+      total = total.toFixed(2);
+    } else if (total) {
+      var total = total;
+      $(this).val();
+    } else if (price) {
+      var total = price;
+    } else {
+      var total = "";
+    }
+    
+    $('#admin_order_total').val(total);
+  });
+
+  $("body").on("focusin", "#admin_order_shippingCost", function (e) {
+    var total = $('#admin_order_total').val();
+    var price = $(this).val();
+
+    if (total && price) {
+      var total = parseFloat(total) - parseFloat(price);
+      total = total.toFixed(2);
+    } else if (total) {
+      var total = total;
+      $(this).val();
+    } else if (price) {
+      var total = price;
+    } else {
+      var total = "";
+    }
+    
+    $('#admin_order_total').val(total);
+    $(this).val();
+  });
+
+
+  $("body").on("focusout", "#admin_order_discount", function (e) {
+    var total = $('#admin_order_total').val();
+    var price = $(this).val();
+
+    if (total && price) {
+      var total = parseFloat(total) - parseFloat(price);
+      total = total.toFixed(2);
+    } else if (total) {
+      var total = total;
+      $(this).val();
+    } else if (price) {
+      var total = price;
+    } else {
+      var total = "";
+    }
+    
+    $('#admin_order_total').val(total);
+  });
+
+  $("body").on("focusin", "#admin_order_discount", function (e) {
+    var total = $('#admin_order_total').val();
+    var price = $(this).val();
+
+    if (total && price) {
+      var total = parseFloat(total) + parseFloat(price);
+      total = total.toFixed(2);
+    } else if (total) {
+      var total = total;
+      $(this).val();
+    } else if (price) {
+      var total = price;
+    } else {
+      var total = "";
+    }
+    
+    $('#admin_order_total').val(total);
+    $(this).val();
+  });
+
+
+
+  $("body").on("click", ".js-delete-product", function (e) {
+    var total = $('#admin_order_total').val();
+    var price = $(this).data('price');
+
+    if (total && price) {
+      var total = parseFloat(total) - parseFloat(price);
+      total = total.toFixed(2);
+    } else if (total) {
+      var total = total;
+    } else if (price) {
+      var total = price;
+    } else {
+      var total = "";
+    }
+    
+    $('#admin_order_total').val(total);
+    $(this).parent().parent().remove();
+  });
+
+
+
+  $("body").on("click", "#lineItemButton", function (e) {
+    var stock = $("#lineItemButton").data('quantity');
+    // if (stock < $('#lineItemQuantity').val()) {
+      // alert("Le produit est disponible qu'en "+stock+" exemplaires.");
+    // } else {
+      $('.show_lines').append(`<div class="lineitem flex justify-center items-center m-2 font-medium py-1 px-2 bg-white rounded bg-gray-100 border" style="max-width: fit-content;display: flex;"><input type="hidden" name="variantId[]" value="`+ $("#lineItemButton").data('id') +`"><input type="hidden" name="stockListId[]" value="`+  $('#admin_order_stockList').val() + `"><input type="hidden" name="title[]" value="`+ $("#lineItemTitle").val() +`"><input type="hidden" name="price[]" value="`+ $("#lineItemPrice").val() +`"><input type="hidden" name="priceList[]" value="`+ $('#admin_order_priceList').val() +`"><input type="hidden" name="quantity[]" value="`+ $("#lineItemQuantity").val() +`"><div class="text-xs font-normal leading-none max-w-full flex-initial" style="padding: 7px 5px 7px 15px;">`+ $("#lineItemQuantity").val() +` x (` + $("#lineItemTitle").val() +`) - `+ $("#lineItemPrice").val() +`€ <i class="fal fa-times js-delete-product" data-price="`+ $("#lineItemPrice").val() +`" style=" color: #aaa; margin-left: 7px; margin-right: 3px; cursor: pointer;"></i></div>`);
+
+      var total = $('#admin_order_total').val();
+      var price = $("#lineItemPrice").val();
+
+      if (total && price) {
+        var total = parseFloat(total) + parseFloat(price);
+        total = total.toFixed(2);
+      } else if (total) {
+        var total = total;
+      } else if (price) {
+        var total = price;
+      } else {
+        var total = "";
+      }
+      
+      $('#admin_order_total').val(total);
+      $(this).parent().remove();
+    // }
+  });
+
+
+  $("body").on("click", ".add-product", function (e) {
+    window.open("{{ path('admin_product_new') }}");
+  });
+
+
+  $("body").on("keyup", "#lineItemQuantity", function (e) {
+    var quantity = $(this).val();
+    var price = $("#lineItemButton").data('price');
+    var total = parseFloat(quantity) * parseFloat(price);
+    $('#lineItemPrice').val(total);
+  });
+
+  $("body").on("click", ".search_results > li", function (e) {
+    if ($(".addLineItem").length) {
+      $(".addLineItem").remove();
+    }
+    $('.search_content').after('<div class="addLineItem" style="display: flex; max-width: 900px;"><input type="text" id="lineItemTitle" name="lineItem[title]" required="required" class="form-control" autocomplete="off" value="'+ $(this).data('title') +'" style="margin: 0px 5px;"><input type="number" id="lineItemQuantity" name="lineItem[quantity]" required="required" class="form-control" autocomplete="off"  value="1" style="margin: 0px 5px; max-width: 150px;"><input type="text" id="lineItemPrice" name="lineItem[price]" required="required" class="form-control" autocomplete="off" value="'+ $(this).data('price') +'" style="margin: 0px 5px; max-width: 150px;"><div class="euro" style="font-size: 17px; margin-top: 8px; margin-right: 5px; color: #7f8c8d; font-weight: 400;">€</div><button id="lineItemButton" data-price="'+ $(this).data('price') +'" data-quantity="'+ $(this).data('quantity') +'" data-id="'+ $(this).data('id') +'" type="button" class="btn btn-success m-b-0" style="margin: 0px 5px;">Ajouter</button></div>');
+    $("#search").val('');
+    $(".search_bar").removeClass("available");
+  });
+
+  $("#search").on("input", function () {
+    if ($(this).val().length) {
+      $.ajax({
+        url : '{{ path("admin_variant_autocomplete") }}',
+        data : {
+          'keyword' : $(this).val().toLowerCase(),
+          'stockList' : $('#admin_order_stockList').val() ? $('#admin_order_stockList').val() : "Lyon"
+        },
+        success: function(result) {
+          console.log(result);
+          $(".search_results").empty();
+          if (result.length > 0) {
+            $(".search_results").addClass("open");
+            $(".search_bar").addClass("available");
+            result.forEach(element => {
+              console.log(element);
+              if (element.quantity > 0) {
+                $(".search_results").append(`<li class="result" data-title="` + element.title + `" data-price="` + element.price + `" data-id="` + element.id + `" data-quantity=` + element.quantity + `><div class="result_text"><p class="name">` + element.title + ` - `+ element.price+`€ - (`+ element.quantity+` disponibles)</p></div></li>`);
+              }
+            });
+            $(".search_results").append(`<li class="result add-product"><div class="result_text"><p class="name" style="color: #1a73e8;"><i class="fal fa-plus" style="padding-right: 5px;"></i> Ajouter un nouveau produit</p></div></li>`);
+          } else {
+            $(".search_results").empty();
+            $(".search_results").removeClass("open");
+            $(".search_bar").removeClass("available");
+          }
+        },
+        error: function(error) {
+          console.log(error);
+          $(".search_results").empty();
+          $(".search_results").removeClass("open");
+          $(".search_bar").removeClass("available");
+        }
+      });
+    } else {
+      $(".search_results").empty();
+      $(".search_results").removeClass("open");
+      $(".search_bar").removeClass("available");
+    }
+  });
+
+  $("body").click(function (e) {
+      $(".search_results").removeClass("open");
+      $(".search_bar").removeClass("available");
+  });
+});
+
+
+
+
+
+</script>
+
+{% endblock %}
+
+
+

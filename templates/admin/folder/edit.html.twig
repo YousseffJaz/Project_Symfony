@@ -1,0 +1,304 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Edition d'un dossier{% endblock %}
+
+{% form_theme form 'bootstrap_4_layout.html.twig' %}
+
+{% block body %}
+
+<div class="pcoded-content">
+  <div class="pcoded-inner-content">
+    <div class="main-body">
+      <div class="page-wrapper">
+        <div class="page-body">
+          {% for label, messages in app.flashes %}
+            <div class="alert alert-{{ label }} background-{{ label }}">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <i class="icofont icofont-close-line-circled text-white"></i>
+              </button>
+              {% for message in messages %}
+                  <p style="margin-bottom: 0px !important;">{{ message | raw }}</p>
+              {% endfor %}
+            </div>
+          {% endfor %}
+          <div class="card" data-folder="{{ folder.id }}">
+            <div class="card-header">
+              <h5>Edition du dossier "{{ folder.name }}"</h5>
+              {% if app.user.role == "ROLE_SUPER_ADMIN" %}
+                  <a href="{{ path('admin_folder_delete', {id: folder.id}) }}" class="btn btn-out-dashed waves-effect waves-light btn-danger btn-square text-right" style="float: right; padding: 5px 10px; margin: 0px 5px;">Supprimer le dossier</a>
+              {% endif %}
+            </div>
+            <div class="card-block" style="min-height: 500px;">
+              <section class="row p-6 md:p-8 md:flex md:flex-row md:rounded-xl">
+                {% if app.user.role == "ROLE_SUPER_ADMIN" %}
+                <div class="col-md-5 w-full md:px-0 md:mr-8 md:w-1/2">
+                    <send-upload-area class="flex flex-col items-center justify-center border-2 border-dashed border-grey-transparent rounded px-6 py-16 h-full w-full dark:border-grey-60" style="max-height: 200px; margin-top: 30px;">
+                        <input id="file-upload" type="file" multiple="multiple" class="opacity-0 w-0 h-0 appearance-none absolute overflow-hidden" />
+                        <label role="button" for="file-upload" class="btn rounded-lg flex items-center mt-4" style="background-color: rgba(0, 96, 223, 1); color :white; padding: 12px 30px;">Ajouter un fichier</label>
+                    </send-upload-area>
+                    <br><br>
+                    {{ form_start(form) }}
+                    {{ form_row(form.name, { 'label': 'Nom du dossier' }) }}
+                    <div class="form-group row mt-2" style="margin: 0 auto; text-align: center;">
+                      <button type="submit" class="btn btn-primary m-b-0" style="margin: 0 auto;">Modifier</button>
+                    </div>
+                    {{ form_end(form) }}
+                </div>
+                {% endif %}
+                <div class="col-md-7 mt-6 w-full md:w-1/2 md:-m-2">
+                  <send-intro class="flex flex-col items-center justify-center bg-white px-6 md:py-0 py-6 mb-0 h-full w-full dark:bg-grey-90">
+                    <div class="mt-2 flex flex-col h-full" style="width: 100%">
+                      <br> 
+                      <div id="show-files">
+                        {% if folder.upload %}
+                          {% for upload in folder.upload %}
+                            <li class="bg-white mt-2 mb-4 shadow-light rounded dark:bg-grey-90 dark:border dark:border-grey-80" style="list-style: none;">
+                              <div class="flex flex-row items-center p3 w-full" style="justify-content: space-between">
+                                <div>
+                                  <h1 data-id="{{ upload.id }}" class="editable text-base font-medium word-break-all" style="margin-bottom: 5px;" contentEditable="true">{{ upload.name }}{% if upload.invoice %} - (Commande N°{{ upload.invoice.id }}){% endif %}</h1>
+                                  <a href="{{ app.request.getBaseUrl() }}/uploads/{{ upload.filename }}" target="_blank" data-filename="{{ upload.filename }}" style="font-size: 13px; cursor: pointer; text-decoration: underline; color: #007bff;" download="{{ upload.filename }}">Télécharger</a>
+                                </div>
+                                {% if "pdf" in upload.filename %}
+                                    <object type="application/pdf" data="{{ app.request.getBaseUrl() }}/uploads/{{ upload.filename }}" height="200"></object>
+                                {% else %}
+                                  <img src="{{ app.request.getBaseUrl() }}/uploads/{{ upload.filename }}" style="width: 300px; max-height: 200px;object-fit: cover;">
+                                {% endif %}
+                                {# {% if app.user.role == "ROLE_SUPER_ADMIN" %} #}
+                                  <a href="{{ app.request.getBaseUrl() }}/uploads/{{ upload.filename }}" class=" flex items-center js-delete-file" data-filename="{{ upload.filename }}" style=""><i class="fal fa-times" style="padding-right: 7px; color: red; font-size: 17px;"></i></a>
+                                {# {% endif %} #}
+                              </div>
+                            </li>
+                          {% endfor %}
+                        {% endif %}
+                      </div>
+                    </div>
+                  </send-intro>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="styleSelector">
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<style>
+  
+  .w-full {
+    width: 100%;
+}
+.py-16 {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+.px-6 {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+.h-full {
+    height: 100%;
+}
+.justify-center {
+    justify-content: center;
+}
+.items-center {
+    align-items: center;
+}
+.flex-col {
+    flex-direction: column;
+}
+.flex {
+    display: flex;
+}
+.border-2 {
+    border-width: 2px;
+}
+.border-dashed {
+    border-style: dashed;
+}
+.rounded {
+    border-radius: .25rem;
+}
+.border-grey-transparent {
+    border-color: hsla(250, 13%, 9%, .2);
+}
+.w-0 {
+    width: 0;
+}
+
+.absolute {
+    position: absolute;
+}
+.overflow-hidden {
+    overflow: hidden;
+}
+.opacity-0 {
+    opacity: 0;
+}
+.h-0 {
+    height: 0;
+}
+.appearance-none {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+.mt-4 {
+    margin-top: 1rem;
+}
+
+.items-center {
+    align-items: center;
+}
+.flex {
+    display: flex;
+}
+.rounded-lg {
+    border-radius: .5rem;
+}
+
+.text-base {
+    font-size: 0.9rem;
+}
+
+.word-break-all {
+    word-break: break-all;
+    line-break: anywhere;
+}
+.font-medium {
+    font-weight: 500;
+}
+.w-full {
+    width: 100%;
+}
+
+.p3 {
+    padding: 0.75rem;
+}
+.items-center {
+    align-items: center;
+}
+.flex-row {
+    flex-direction: row;
+}
+.flex {
+    display: flex;
+}
+
+.shadow-light {
+    box-shadow: 0 0 8px 0 rgb(12 12 13 / 10%);
+}
+.px-2 {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+.mb-4 {
+    margin-bottom: 1rem;
+}
+.mt-2 {
+    margin-top: 0.5rem;
+}
+.rounded {
+    border-radius: .25rem;
+}
+
+
+</style>
+
+
+{% endblock %}
+
+{% block javascripts %}
+
+<script>
+  
+
+  $("#file-upload").change(function() {
+    if (this.files && this.files[0]) {
+      saveFile(this);
+    }
+  });
+  function saveFile(input) {
+    var url = '{{ path("admin_folder_upload") }}';
+    var folder = $('.card').data('folder');
+    var length = input.files.length;
+    $.each(input.files, function(index, value) {
+      let formData = new FormData();           
+      formData.append("file", value);
+      formData.append("folder", folder);
+      fetch(url, {method: "POST", body: formData})
+      .then(function(response) {
+        if (response.status == "200") {
+          response.json().then(function(upload) {
+            if (upload.filename.includes("pdf")) {
+              $('#show-files').append(`<li class="bg-white mt-2 mb-4 shadow-light rounded dark:bg-grey-90 dark:border dark:border-grey-80" style="list-style: none;"><div class="flex flex-row items-center p3 w-full" style="justify-content: space-between"><div><h1 data-id="`+upload.id+`" class="editable text-base font-medium word-break-all" style="margin-bottom: 5px;" contentEditable="true">`+upload.filename+`</h1><a href="{{ app.request.getBaseUrl() }}/uploads/`+upload.filename+`" target="_blank" data-filename="`+upload.filename+`" style="font-size: 13px; cursor: pointer; text-decoration: underline; color: #007bff;" download="`+upload.filename+`">Télécharger</a></div><object type="application/pdf" data="{{ app.request.getBaseUrl() }}/uploads/`+upload.filename+`" height="200"></object><a href="{{ app.request.getBaseUrl() }}/uploads/`+upload.filename+`" class="flex items-center js-delete-file" data-filename="`+upload.filename+`"><i class="fal fa-times" style="padding-right: 7px; color: red; font-size: 17px;"></i></a></div></li>`);
+            } else {
+              $('#show-files').append(`<li class="bg-white mt-2 mb-4 shadow-light rounded dark:bg-grey-90 dark:border dark:border-grey-80" style="list-style: none;"><div class="flex flex-row items-center p3 w-full" style="justify-content: space-between"><div><h1 data-id="`+upload.id+`" class="editable text-base font-medium word-break-all" style="margin-bottom: 5px;" contentEditable="true">`+upload.filename+`</h1><a href="{{ app.request.getBaseUrl() }}/uploads/`+upload.filename+`" target="_blank" data-filename="`+upload.filename+`" style="font-size: 13px; cursor: pointer; text-decoration: underline; color: #007bff;"
+   download="`+upload.filename+`">Télécharger</a></div><img src="{{ app.request.getBaseUrl() }}/uploads/`+upload.filename+`" style="width: 300px; max-height: 200px;object-fit: cover;"><a href="{{ app.request.getBaseUrl() }}/uploads/`+upload.filename+`" class="flex items-center js-delete-file" data-filename="`+upload.filename+`"><i class="fal fa-times" style="padding-right: 7px; color: red; font-size: 17px;"></i></a></div></li>`);
+            }
+          });
+        } else {
+          response.json().then(function(error) { 
+            alert(error);
+          });
+        }
+      }).catch(function(error) {
+        alert(error);
+      });  
+    });  
+  }
+
+  $('body').on('click', '.js-delete-file', function (e) {
+    e.preventDefault();
+    var url = '{{ path("admin_folder_upload_delete") }}';
+    var filename = $(this).data('filename');
+    $(this).parent().parent().remove();
+
+    $.ajax({
+     url : url,
+     type : 'GET',
+     data: { 
+      filename: filename, 
+    },
+     success : function(result){
+      console.log(result);
+     },
+     error : function(error){
+        console.log(error)
+     }
+   });
+  });
+
+
+  $('body').on('keyup', '.editable', function (event) {
+    console.log($(this).data('id'));
+    console.log($(this).text());
+
+    var url = '{{ path("admin_folder_rename", {'id': 'id'}) }}';
+    url = url.replace("id", $(this).data('id'));
+
+    $.ajax({
+     url : url,
+     type : 'GET',
+     data: { 
+      text: $(this).text(), 
+    },
+     success : function(result){
+      console.log(result);
+     },
+     error : function(error){
+        console.log(error)
+     }
+    });
+  });
+
+</script>
+
+{% endblock %}
+
+

@@ -1,0 +1,661 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Statistiques{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ app.request.getBaseURL() }}/css/chartist.css">
+<link rel="stylesheet" href="{{ app.request.getBaseURL() }}/css/widget.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="pcoded-content">
+  <div class="pcoded-inner-content">
+    <div class="main-body">
+      <div class="page-wrapper">
+        <div class="page-body">
+          {% for label, messages in app.flashes %}
+            <div class="alert alert-{{ label }} background-{{ label }}">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <i class="icofont icofont-close-line-circled text-white"></i>
+              </button>
+              {% for message in messages %}
+                <p style="margin-bottom: 0px !important;">{{ message | raw }}</p>
+              {% endfor %}
+            </div>
+          {% endfor %}
+          <div class="row">
+            <div class="col-12">
+              <div style="margin-bottom: 25px;">
+                <input type="date" id="start" name="start" {% if start %} value="{{ start }}" {% endif %} style="padding: 5px 10px; margin: 0px 5px;">
+                <input type="date" id="end" name="end" {% if end %} value="{{ end }}" {% endif %} style="padding: 5px 10px; margin: 0px 5px;">
+                <a id="search" href="#" class="btn btn-out-dashed waves-effect waves-light btn-danger btn-square text-right" style="padding: 5px 10px; margin: 0px 5px; background: #7f8c8d; border: 1px solid #7f8c8d;">Rechercher</a>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-3 col-md-6"> 
+              <div class="card prod-p-card" style="background: #fff">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col">
+                      <h6 class="m-b-5 text-white" style="font-weight: 700; color: #333 !important;">
+                        CA Total
+                        <i class="fal fa-eye add-blur" style="color: #333; font-size: 15px; padding: 0px 0px 0px 10px; width: initial; height: initial; cursor: pointer"></i>
+                      </h6>
+                      <h3 class="m-b-0 f-w-700 text-white" style="padding: 10px 0px; color: #333 !important;">
+                        {{ total[0].total|number_format(2, ',', ' ') }}€</h3>
+                    </div>
+                    <div class="col-auto">
+                      <i class="fal fa-euro-sign text-c-red f-18" style=" color: #333"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-md-6"> 
+              <div class="card prod-p-card" style="background: #fff">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col">
+                      <h6 class="m-b-5 text-white" style="font-weight: 700; color: #333 !important;">
+                        CA {{ 'now'|date_fr('Y')|title }}
+                      </h6>
+                      <h3 class="m-b-0 f-w-700 text-white" style="padding: 10px 0px; color: #333 !important;">
+                        {{ annual|number_format(2, ',', ' ') }}€</h3>
+                    </div>
+                    <div class="col-auto">
+                      <i class="fal fa-euro-sign text-c-red f-18" style=" color: #333"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-md-6"> 
+              <div class="card prod-p-card" style="background: #fff">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col">
+                      <h6 class="m-b-5 text-white" style="font-weight: 700; color: #333 !important;">
+                        CA {{ 'now'|date_fr('MMMM')|title }}
+                      </h6>
+                      <h3 class="m-b-0 f-w-700 text-white" style="padding: 10px 0px; color: #333 !important;">
+                        {{ month[0].total|number_format(2, ',', ' ') }}€</h3>
+                    </div>
+                    <div class="col-auto">
+                      <i class="fal fa-euro-sign text-c-red f-18" style=" color: #333"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-md-6"> 
+              <div class="card prod-p-card" style="background: #fff">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col">
+                      <h6 class="m-b-5 text-white" style="font-weight: 700; color: #333 !important;">
+                        Bénéfices Brut
+                      </h6>
+                      <h3 class="m-b-0 f-w-700 text-white" style="padding: 10px 0px; {% if profit > 0 %}color: #2ed8b6 !important; {% else %} color: #ff5370 !important; {% endif %}">
+                        {{ profit|number_format(2, ',', ' ') }}€
+                      </h3>
+                    </div>
+                    <div class="col-auto">
+                      <i class="fal fa-coins text-c-red f-18" style=" color: #333"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-md-6"> 
+              <a href="{{ path('admin_statistiques_stocks') }}">
+                <div class="card prod-p-card" style="background: #fff">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col">
+                        <h6 class="m-b-5 text-white" style="font-weight: 700; color: #333 !important;">
+                          Stocks
+                        </h6>
+                        <h3 class="m-b-0 f-w-700 text-white" style="padding: 10px 0px; color: #333 !important;">
+                          {{ stock|number_format(2, ',', ' ') }}€</h3>
+                      </div>
+                      <div class="col-auto">
+                        <i class="fal fa-cube text-c-red f-18" style=" color: #333"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-xl-3 col-md-6"> 
+              <a href="{{ path('admin_order_index') }}">
+                <div class="card prod-p-card" style="background: #fff">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col">
+                        <h6 class="m-b-5 text-white" style="font-weight: 700; color: #333 !important;">Commandes</h6>
+                        <h3 class="m-b-0 f-w-700 text-white" style="padding: 10px 0px; color: #333 !important;">
+                          {{ orders }}</h3>
+                      </div>
+                      <div class="col-auto">
+                        <i class="fal fa-file-invoice text-c-red f-18" style=" color: #333"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-xl-3 col-md-6"> 
+              <a href="{{ path('admin_cashflow_index') }}">
+                <div class="card prod-p-card" style="background: #fff">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col">
+                        <h6 class="m-b-5 text-white" style="font-weight: 700; color: #333 !important;">Trésorerie</h6>
+                        <h3 class="m-b-0 f-w-700 text-white" style="padding: 10px 0px; color: #2ed8b6 !important;">
+                          {{ notPaid|number_format(2, ',', ' ') }}€</h3>
+                      </div>
+                      <div class="col-auto">
+                        <i class="fal fa-wallet text-c-red f-18" style=" color: #333"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-xl-3 col-md-6"> 
+              <a href="{{ path('admin_expense_index') }}">
+                <div class="card prod-p-card" style="background: #fff">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col">
+                        <h6 class="m-b-5 text-white" style="font-weight: 700; color: #333 !important;">Dépenses</h6>
+                        <h3 class="m-b-0 f-w-700 text-white" style="padding: 10px 0px; color: #ff5370 !important;">
+                          {{ expenses[0].amount|number_format(2, ',', ' ') }}€</h3>
+                      </div>
+                      <div class="col-auto">
+                        <i class="fal fa-undo text-c-red f-18" style=" color: #333"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-6 col-md-12">
+              <div class="card new-cust-card">
+                <div class="card-header">
+                  <h5>CA Mensuel (€)
+                  </h5>
+                </div>
+                <div id="stats6" style="height: 500px; width: 90%;"></div>
+              </div>
+            </div>
+            <div class="col-xl-6 col-md-12">
+              <div class="card new-cust-card">
+                <div class="card-header">
+                  <h5>CA Journalier (€)
+                  </h5>
+                </div>
+                <div id="stats" style="height: 500px; width: 90%;"></div>
+              </div>
+            </div>
+            <div class="col-xl-6 col-md-12">
+              <div class="card new-cust-card">
+                <div class="card-header">
+                  <h5>Meilleurs produits</h5>
+                </div>
+                <div class="card-block table-border-style" style="height: 500px;  overflow-y: scroll;">
+                  {% if bestProducts %}
+                    <div class="table-responsive">
+                      <table class="table table-striped table-bordered datatable display">
+                        <thead>
+                          <tr>
+                            <th>Produit</th>
+                            <th>Quantité</th>
+                            <th>Montant</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for product in bestProducts %}
+                            {% if product.total > 0 %}
+                              <tr>
+                                <td>{{ product.title|capitalize }}</td>
+                                <td>{{ product.quantity }}</td>
+                                <td>
+                                  <span style="color:  #2ed8b6;">{{ product.total|number_format(0, ',', '') }}€</span>
+                                </td>
+                              </tr>
+                            {% endif%}
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-6 col-md-12">
+              <div class="card new-cust-card">
+                <div class="card-header">
+                  <h5>Meilleures categories</h5>
+                </div>
+                <div class="card-block table-border-style" style="height: 500px; overflow-y: scroll;">
+                  {% if bestCategories %}
+                    <div class="table-responsive">
+                      <table class="table table-striped table-bordered datatable display">
+                        <thead>
+                          <tr>
+                            <th>Catégorie</th>
+                            <th>Quantité</th>
+                            <th>Montant</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for category in bestCategories %}
+                            {% if category.total > 0 %}
+                              <tr>
+                                <td>{{ category.title|capitalize }}</td>
+                                <td>{{ category.quantity }}</td>
+                                <td>
+                                  <span style="color:  #2ed8b6;">{{ category.total|number_format(0, ',', '') }}€</span>
+                                </td>
+                              </tr>
+                            {% endif%}
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-6 col-md-12">
+              <div class="card new-cust-card">
+                <div class="card-header">
+                  <h5>Meilleurs clients</h5>
+                </div>
+                <div class="card-block table-border-style" style="height: 500px;  overflow-y: scroll;">
+                  {% if bestCustomers %}
+                    <div class="table-responsive">
+                      <table class="table table-striped table-bordered datatable display">
+                        <thead>
+                          <tr>
+                            <th>Client</th>
+                            {# <th>Quantité</th> #}
+                            <th>Montant</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for customer in bestCustomers %}
+                            {% if customer.total > 0 %}
+                              <tr>
+                                <td>{{ customer.name|capitalize }}</td>
+                                {# <td>{{ customer.quantity }}</td> #}
+                                <td>
+                                  <span style="color:  #2ed8b6;">{{ customer.total|number_format(0, ',', '') }}€</span>
+                                </td>
+                              </tr>
+                            {% endif%}
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-6 col-md-12">
+              <div class="card new-cust-card">
+                <div class="card-header">
+                  <h5>Méthode de paiement</h5>
+                </div>
+                <div id="stats2" style="height: 500px; width: 90%;"></div>
+              </div>
+            </div>
+            <div class="col-xl-6 col-md-12">
+              <div class="card new-cust-card">
+                <div class="card-header">
+                  <h5>Type de paiement</h5>
+                </div>
+                <div id="stats3" style="height: 500px; width: 90%;"></div>
+              </div>
+            </div>
+            <div class="col-xl-6 col-md-12">
+              <div class="card new-cust-card">
+                <div class="card-header">
+                  <h5>Statut des paiements</h5>
+                </div>
+                <div id="stats4" style="height: 500px; width: 90%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="styleSelector">
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+
+<style>
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  padding: .3rem .8rem;
+  background-color: rgba(228, 229, 231, 1);
+  border: 0;
+  border-radius: 2rem;
+  line-height: 1.6rem;
+}
+
+
+.result_icon {
+  width: 32px;
+  height: 32px;
+  background-size: cover;
+  background-position: center;
+}
+
+
+</style>
+
+{% endblock %}
+
+
+{% block javascripts %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.0.2/echarts.min.js"></script>
+
+  <script>
+  $('body').on('click', '.add-blur', function (e) {
+    $(this).addClass('remove-blur');
+    $(this).removeClass('fal fa-eye');
+    $(this).addClass('fal fa-eye-slash');
+    $(this).removeClass('add-blur');
+    $('h3').css('filter','blur(5px)');
+    $('canvas').css('display','none');
+    $('table').css('display','none');
+  }); 
+
+  $('body').on('click', '.remove-blur', function (e) {
+    $(this).removeClass('remove-blur');
+    $(this).removeClass('fal fa-eye-slash');
+    $(this).addClass('fal fa-eye');
+    $(this).addClass('add-blur');
+    $('h3').css('filter','none');
+    $('canvas').css('display','initial');
+    $('table').css('display','table');
+  }); 
+
+  $('#start').click(function() {
+    $('#end').val('');
+  });
+  
+  $('#end').click(function() {
+    start = $('#start').val();
+    if (start) {
+      document.getElementById("end").setAttribute("min", start);
+    }
+  });
+  
+
+  $('#search').click(function(e) {
+    e.preventDefault();
+    var start = $('#start').val();
+    var end = $('#end').val();
+
+    if (start && end) {
+      var url = "{{ path('admin_statistiques') }}?start=" + start + "&end=" + end;
+      window.location = url;
+    }
+  });
+
+
+  // based on prepared DOM, initialize echarts instance
+  var stats = echarts.init(document.getElementById('stats'));
+  var stats2 = echarts.init(document.getElementById('stats2'));
+  var stats3 = echarts.init(document.getElementById('stats3'));
+  var stats4 = echarts.init(document.getElementById('stats4'));
+  var stats6 = echarts.init(document.getElementById('stats6'));
+
+  // specify chart configuration item and data
+
+  option = {
+    xAxis: {
+        type: 'category',
+        data: [{% for item in array["labels"] %}"{{  item }}",{% endfor %}]
+    },
+    yAxis: {
+        type: 'value'
+    },
+    series: [{
+        data: [
+            {% for item in array["amounts"] %}{value: "{{  item.total }}", url: "{{ item.url }}"},{% endfor %}
+          ],
+        type: 'bar',
+        itemStyle: {
+          normal: {
+              label: {
+                  show: true,
+                  position: 'top',
+                  formatter: function(d) {
+                    var value = d.value;
+                    console.log(value);
+                    if (value != "0.00") {
+                      value = value.replace('.', ',');
+                      return value + '€';
+                    } else {
+                      return "";
+                    }
+                  }
+              }
+          }
+        }
+    }]
+  };
+
+  var option2 = {
+    tooltip: {
+        trigger: 'item'
+    },
+    legend: {
+        top: '5%',
+        left: 'center'
+    },
+    series: [
+      {
+        type: 'pie',
+        radius: ['40%', '70%'],
+        avoidLabelOverlap: false,
+        itemStyle: {
+            borderRadius: 10,
+            borderColor: '#fff',
+            borderWidth: 2
+        },
+        label: {
+            show: false,
+            position: 'center'
+        },
+        emphasis: {
+            label: {
+                show: true,
+                fontSize: '18',
+            }
+        },
+        labelLine: {
+            show: false
+        },
+        data: [
+            {value: {{cash}}, name: 'Espèce', url: "/admin/orders/paymentMethod?paymentMethod=0"},
+            {value: {{transcash}}, name: 'Transcash', url: "/admin/orders/paymentMethod?paymentMethod=1"},
+            {value: {{card}}, name: 'Carte bancaire', url: "/admin/orders/paymentMethod?paymentMethod=2"},
+            {value: {{paypal}}, name: 'Paypal', url: "/admin/orders/paymentMethod?paymentMethod=3"},
+            {value: {{pcs}}, name: 'PCS', url: "/admin/orders/paymentMethod?paymentMethod=4"},
+            {value: {{check}}, name: 'Chèque', url: "/admin/orders/paymentMethod?paymentMethod=5"},
+            {value: {{paysafecard}}, name: 'Paysafecard', url: "/admin/orders/paymentMethod?paymentMethod=6"},
+            {value: {{bank}}, name: 'Virement bancaire', url: "/admin/orders/paymentMethod?paymentMethod=7"},
+        ]
+      }
+    ]
+  };
+
+  // specify chart configuration item and data
+  var option3 = {
+    tooltip: {
+      trigger: 'item'
+    },
+    legend: {
+      top: '5%',
+      left: 'center'
+    },
+    series: [
+    {
+      type: 'pie',
+      radius: ['40%', '70%'],
+      avoidLabelOverlap: false,
+      itemStyle: {
+        borderRadius: 10,
+        borderColor: '#fff',
+        borderWidth: 2
+      },
+      label: {
+        show: false,
+        position: 'center'
+      },
+      emphasis: {
+        label: {
+          show: true,
+          fontSize: '18',
+        }
+      },
+      labelLine: {
+        show: false
+      },
+      data: [
+        {value: {{online}}, name: 'Internet', url: "/admin/orders/paymentType?paymentType=0"},
+        {value: {{local}}, name: 'Physique', url: "/admin/orders/paymentType?paymentType=1"},
+        {value: {{delivery}}, name: 'Livraison', url: "/admin/orders/paymentType?paymentType=2"},
+        ]
+    }
+    ]
+  };
+
+  // specify chart configuration item and data
+  var option4 = {
+    tooltip: {
+        trigger: 'item'
+    },
+    legend: {
+        top: '5%',
+        left: 'center'
+    },
+    series: [
+      {
+        type: 'pie',
+        radius: ['40%', '70%'],
+        avoidLabelOverlap: false,
+        itemStyle: {
+            borderRadius: 10,
+            borderColor: '#fff',
+            borderWidth: 2
+        },
+        label: {
+            show: false,
+            position: 'center'
+        },
+        emphasis: {
+            label: {
+                show: true,
+                fontSize: '18',
+            }
+        },
+        labelLine: {
+            show: false
+        },
+        data: [
+          {value: {{waiting}}, name: 'En attente de paiement', url: "/admin/orders/status?status=0"},
+          {value: {{partial}}, name: 'Paiement partiel', url: "/admin/orders/status?status=1"},
+          {value: {{paid}}, name: 'Payé', url: "/admin/orders/status?status=2"},
+          {value: {{refund}}, name: 'Trop-perçu', url: "/admin/orders/status?status=3"},
+        ]
+      }
+    ]
+  };
+
+  // specify chart configuration item and data
+
+  option6 = {
+    xAxis: {
+        type: 'category',
+        data: [{% for item in array2["labels"] %}"{{  item }}",{% endfor %}]
+    },
+    yAxis: {
+        type: 'value'
+    },
+    series: [{
+        data: [
+            {% for item in array2["amounts"] %}{value: "{{  item.total }}", url: "{{ item.url }}"},{% endfor %}
+          ],
+        type: 'bar',
+        itemStyle: {
+          normal: {
+              label: {
+                  show: true,
+                  position: 'top',
+                  formatter: function(d) {
+                    var value = d.value;
+                    console.log(value);
+                    if (value != "0.00") {
+                      value = value.replace('.', ',');
+                      return value + '€';
+                    } else {
+                      return "";
+                    }
+                  }
+              }
+          }
+        }
+    }]
+  };
+
+
+  // use configuration item and data specified to show chart
+  stats.setOption(option);
+  stats2.setOption(option2);
+  stats3.setOption(option3);
+  stats4.setOption(option4);
+  stats6.setOption(option6);
+
+  stats.on('click', function (param) {
+    var url = param.data.url;
+    url = url.replace('amp;', '');
+    window.location = window.location.origin + url, '_blank';
+  });
+
+  stats2.on('click', function (param) {
+      window.open(window.location.origin + param.data.url, '_blank');
+  });
+
+  stats3.on('click', function (param) {
+      window.open(window.location.origin + param.data.url, '_blank');
+  });
+
+  stats4.on('click', function (param) {
+      window.open(window.location.origin + param.data.url, '_blank');
+  });
+
+  stats6.on('click', function (param) {
+    var url = param.data.url;
+    url = url.replace('amp;', '');
+    window.location = window.location.origin + url, '_blank';
+  });
+
+  </script>
+{% endblock %}
+

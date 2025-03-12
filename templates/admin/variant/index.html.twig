@@ -1,0 +1,157 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Administration des variants{% endblock %}
+
+
+{% block body %}
+
+<div class="pcoded-content">
+  <div class="pcoded-inner-content">
+    <div class="main-body">
+      <div class="page-wrapper">
+        <div class="page-body">
+          {% for label, messages in app.flashes %}
+            <div class="alert alert-{{ label }} background-{{ label }}">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <i class="icofont icofont-close-line-circled text-white"></i>
+              </button>
+              {% for message in messages %}
+                <p style="margin-bottom: 0px !important;">{{ message | raw }}</p>
+              {% endfor %}
+            </div>
+          {% endfor %}
+          <form action="{{ path('admin_variant_print')}}" method="post" style="display: initial;">
+            <div class="card">
+              <div class="card-header">
+                <h5>Liste des variants</h5>
+              </div>
+              <div class="card-block table-border-style">
+                {% set length = [] %}
+                {% if variants %}
+                  {% for variant in variants %}
+                    {% if variant.priceLists.toArray %}
+                      {% for priceLists in variant.priceLists.toArray %}
+                        {% if priceLists.title not in length %}
+                          {% set length = length|merge([priceLists.title]) %}
+                        {% endif %}
+                      {% endfor %}
+                    {% endif %}
+                  {% endfor %}
+                  <div class="table-responsive">
+                    <table class="table table-striped table-bordered datatable display">
+                      <thead>
+                        <tr>
+                          <th>Titre</th>
+                          <th>Produit</th>
+                          {% for priceTitle in length %}
+                            <th>{{priceTitle}}</th>
+                          {% endfor %}
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td></td>
+                          <td></td>
+                          {% for priceTitle in length %}
+                            <td>
+                              <input type="checkbox" name="priceTitle[]" value="{{priceTitle}}">
+                            </td>
+                          {% endfor %}
+                          <td>
+                            <button type="submit" class="btn btn-out-dashed waves-effect waves-light btn-danger btn-square text-right" style="padding: 5px 10px; margin: 0px 5px;">Imprimer</button>
+                          </td>
+                        </tr>
+                        {% for variant in variants %}
+                          <tr>
+                            <td>{{ variant.title }}</td>
+                            <td>
+                              {% if variant.product %}
+                                <a href="{{ path('admin_product_edit', { id: variant.product.id }) }}" style="color: #007bff;" target="_blank">
+                                  {{ variant.product.title }}
+                                </a>
+                              {% endif %}
+                            </td>
+                            {% for priceTitle in length %}
+                              {% if variant.priceLists.toArray %}
+                                <td> 
+                                  {% for priceLists in variant.priceLists.toArray %}
+                                    {% if priceTitle == priceLists.title %}
+                                      {{ priceLists.price|number_format(2, ',', ' ') }}€
+                                    {% endif %}
+                                  {% endfor %}
+                                </td>
+                              {% else %}
+                                <td></td>
+                              {% endif %}
+                            {% else %}
+                              <td></td>
+                            {% endfor %}
+                            <td>
+                              {% if app.user.role == "ROLE_SUPER_ADMIN" %}
+                                <a href="{{ path('admin_variant_edit', { id: variant.id }) }}">
+                                  <i class="fal fa-edit" style="color: #4099ff; font-size: 20px; padding: 3px;"></i>
+                                </a>
+                                <a href="{{ path('admin_variant_delete', { id : variant.id }) }}" class="js-delete-element">
+                                  <i class="fal fa-trash" style="color: #ff5370; font-size: 20px; padding: 3px;"></i>
+                                </a>
+                              {% endif %}
+                            </td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                {% else %}
+                  Aucun variant actuellement.
+                {% endif %}
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div id="styleSelector">
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+
+{% endblock %}
+
+
+{% block javascripts %}
+{% include 'admin/partials/datatable.html.twig' %}
+  <script>
+
+  $('.js-delete-element').click( function () {
+
+    event.preventDefault();
+    var url = this.href;
+
+    const swalWithBootstrapButtons = Swal.mixin({
+      confirmButtonClass: 'btn btn-success',
+      cancelButtonClass: 'btn btn-danger',
+      buttonsStyling: false,
+      reverseButtons: true
+    })
+
+    swalWithBootstrapButtons.fire({
+      title: 'Êtes vous sur ?',
+      html: 'Attention ! Vous aller supprimer un variant.',
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Non, c\'est une erreur',
+    }).then((result) => {
+      if (result.value) {
+        location.href = url;
+      }
+    });
+  });
+
+</script>
+{% endblock %}
+

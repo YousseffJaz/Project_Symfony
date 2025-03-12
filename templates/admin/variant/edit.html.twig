@@ -1,0 +1,96 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Edition du variant "{{ variant.title }}"{% endblock %}
+
+{% form_theme form 'admin/variant/_form_theme.html.twig' %}
+
+{% block body %}
+
+<div class="pcoded-content">
+  <div class="pcoded-inner-content">
+    <div class="main-body">
+      <div class="page-wrapper">
+        <div class="page-body">
+          {% for label, messages in app.flashes %}
+            <div class="alert alert-{{ label }} background-{{ label }}">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <i class="icofont icofont-close-line-circled text-white"></i>
+              </button>
+              {% for message in messages %}
+                  <p style="margin-bottom: 0px !important;">{{ message | raw }}</p>
+              {% endfor %}
+            </div>
+          {% endfor %}
+          <div class="page-header-breadcrumb">
+            <ul class=" breadcrumb breadcrumb-title" style="background: #f2f7fb; padding: 0px 5px;">
+              <li class="breadcrumb-item">
+                <a href="{{ path('admin_product_edit', {id: variant.product.id})}}" style="text-decoration: underline;">Produit N°{{variant.product.id}}</a>
+              </li>
+              <li class="breadcrumb-item">
+                N°{{variant.id}}
+              </li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h5>Edition du variant "{{ variant.title }}"</h5>
+            </div>
+            <div class="card-block">
+              {{ form_start(form) }}
+              {{ form_row(form.title, { 'label': 'Titre' }) }}
+              <hr>
+              {{ form_row(form.priceLists, { 'label': 'Ajouter une ou plusieurs grilles' }) }}
+              <div class="form-group row mt-2" style="float: right; margin-right: 20px;">
+                <button type="submit" class="btn btn-primary m-b-0">Enregistrer</button>
+              </div>
+              {{ form_end(form) }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="styleSelector">
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+{% endblock %}
+
+
+
+{% block javascripts %}
+
+<script>
+// Ad Form Config Array Collection
+$('#addPriceList').click(function(){
+    const prices = $('#admin_variant_priceLists');
+    const widgetsCounter = $('#widgets-counter');
+    const index = +widgetsCounter.val();
+    const template = prices.data('prototype').replace(/__name__/g, index);
+    widgetsCounter.val(index + 1);
+    prices.append(template);
+    handleDeleteButtons();
+});
+
+function handleDeleteButtons() {
+    $('button[data-action="delete"]').click(function(){
+        const target = this.dataset.target;
+        $(target).remove();
+    });
+}
+
+function updateCounter() {
+    const widgetsCounter = $('#widgets-counter');
+    const count = +$('#admin_variant_priceLists div.form-group').length;
+    widgetsCounter.val(count);
+}
+
+updateCounter();
+handleDeleteButtons();
+</script>
+
+
+{% endblock %}
+

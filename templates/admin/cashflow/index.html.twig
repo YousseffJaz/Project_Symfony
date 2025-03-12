@@ -1,0 +1,174 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Administration des comptes{% endblock %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{ app.request.getBaseURL() }}/css/chartist.css">
+	<link rel="stylesheet" href="{{ app.request.getBaseURL() }}/css/widget.css">
+{% endblock %}
+
+
+{% block body %}
+
+<div class="pcoded-content">
+	<div class="pcoded-inner-content">
+		<div class="main-body">
+			<div class="page-wrapper">
+				<div class="page-body">
+					{% for label, messages in app.flashes %}
+						<div class="alert alert-{{ label }} background-{{ label }}">
+							<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								<i class="icofont icofont-close-line-circled text-white"></i>
+							</button>
+							{% for message in messages %}
+								<p style="margin-bottom: 0px !important;">{{ message | raw }}</p>
+							{% endfor %}
+						</div>
+					{% endfor %}
+						<div class="row mb-4">
+							<div class="col-6">
+								<h5>Trésorerie</h5>
+							</div>    
+							<div class="col-6">
+								<a href="{{ path('admin_cashflow_new') }}" class="btn btn-out-dashed waves-effect waves-light btn-primary btn-square" style="float: right; padding: 5px 10px; margin: 0px 5px;">Ajouter un compte</a>
+							</div>
+						</div>
+						{% if cashflows %}
+							<div class="row">
+								{% set total = 0 %}
+								{% for cashflow in cashflows %}
+									{% set total = total + cashflow.amount %}
+								{% endfor %}
+								<div class="col-xl-4 col-md-6">
+								</div>
+								<div class="col-xl-4 col-md-6">
+									<div class="card prod-p-card" style="background: #fff">
+										<div class="card-body">
+											<div class="row align-items-center">
+												<div class="col">
+												<h6 class="m-b-5 text-white" style="font-weight: 700; color: #333 !important;">Total</h6>
+													{% set total = total + notPaid %}
+													<h3 class="m-b-0 f-w-700 text-white" style="padding: 10px 0px; color: #2ed8b6 !important;">{{ total|number_format(2, ',', ' ') }}€</h3>
+												</div>
+												<div class="col-auto">
+													<i class="fal fa-coins text-c-red f-18" style=" color: #333"></i>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-xl-4 col-md-6">
+								</div>
+								{% for cashflow in cashflows %}
+									<div class="col-xl-4 col-md-6">
+										<div class="card prod-p-card" style="background: #fff">
+											<div class="card-body">
+												<div class="row align-items-center">
+													<div class="col">
+													<h6 class="m-b-5 text-white" style="color: #333 !important;">{{ cashflow.name|capitalize }} 
+														<a href="{{ path('admin_cashflow_edit', { id: cashflow.id }) }}">
+															<i class="fal fa-edit" style="color: #4099ff; font-size: 16px; padding: 0px 0px 0px 7px; width: initial; height: initial; cursor: pointer"></i>
+														</a>
+														<a href="{{ path('admin_cashflow_delete', { id : cashflow.id }) }}" class="js-delete-element">
+															<i class="fal fa-trash" style="color: #ff5370; font-size: 16px; padding: 0px 0px 0px 5px; width: initial; height: initial; cursor: pointer"></i>
+														</a>
+													</h6>
+														<h3 class="m-b-0 f-w-700 text-white" style="padding: 10px 0px; {% if cashflow.amount > 0 %} color: #2ed8b6 !important; {% else %} color: #ff5370 !important; {% endif %}">{{ cashflow.amount|number_format(2, ',', ' ') }}€</h3>
+													</div>
+													<div class="col-auto">
+														<i class="fal fa-wallet text-c-red f-18" style=" color: #333"></i>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								{% endfor %}
+								<div class="col-xl-4 col-md-6">
+									<a href="{{ path('admin_order_impayee') }}">
+										<div class="card prod-p-card" style="background: #fff">
+											<div class="card-body">
+												<div class="row align-items-center">
+													<div class="col">
+													<h6 class="m-b-5 text-white" style="color: #333 !important;">Impayées</h6>
+														<h3 class="m-b-0 f-w-700 text-white" style="padding: 10px 0px; {% if notPaid > 0 %} color: #2ed8b6 !important; {% else %} color: #ff5370 !important; {% endif %}">{{ notPaid|number_format(2, ',', ' ') }}€</h3>
+													</div>
+													<div class="col-auto">
+														<i class="fal fa-wallet text-c-red f-18" style=" color: #333"></i>
+													</div>
+												</div>
+											</div>
+										</div>
+									</a>
+								</div>
+							</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+			<div id="styleSelector">
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+
+<style>
+
+.status {
+	display: inline-flex;
+	align-items: center;
+	padding: .3rem .8rem;
+	background-color: rgba(228, 229, 231, 1);
+	border: 0;
+	border-radius: 2rem;
+	line-height: 1.6rem;
+}
+
+.result_icon {
+	width: 32px;
+	height: 32px;
+	background-size: cover;
+	background-position: center;
+}
+
+</style>
+
+{% endblock %}
+
+
+{% block javascripts %}
+	
+<script>
+	
+
+$('.js-delete-element').click( function () {
+
+	event.preventDefault();
+	var url = this.href;
+
+	const swalWithBootstrapButtons = Swal.mixin({
+		confirmButtonClass: 'btn btn-success',
+		cancelButtonClass: 'btn btn-danger',
+		buttonsStyling: false,
+		reverseButtons: true
+	})
+
+	swalWithBootstrapButtons.fire({
+		title: 'Êtes vous sur ?',
+		html: 'Attention ! Vous aller supprimer un compte.',
+		type: 'warning',
+		showCancelButton: true,
+		confirmButtonText: 'Oui, supprimer',
+		cancelButtonText: 'Non, c\'est une erreur',
+	}).then((result) => {
+		if (result.value) {
+			location.href = url;
+		}
+	});
+});
+
+
+
+</script>
+{% endblock %}
+
