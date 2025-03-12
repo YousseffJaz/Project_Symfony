@@ -25,8 +25,8 @@ class SessionIdleHandler
     $this->session = $session;
     $this->tokenStorage = $tokenStorage;
     $this->router = $router;
-    $this->maxIdleTime = $maxIdleTime;
     $this->manager = $manager;
+    $this->maxIdleTime = $maxIdleTime;
   }
   public function onKernelRequest(RequestEvent $event) {
     if (HttpKernelInterface::MASTER_REQUEST != $event->getRequestType()) {

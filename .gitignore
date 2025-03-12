@@ -21,7 +21,12 @@ yarn-error.log
 /node_modules/
 npm-debug.log
 yarn-error.log
+
 ###> phpunit/phpunit ###
 /phpunit.xml
 .phpunit.result.cache
 ###< phpunit/phpunit ###
+
+### Exclure les fichiers et dossiers spécifiques à l'environnement de développement ###
+.idea/      # Dossier de configuration PhpStorm/WebStorm
+.DS_Store   # Fichier système macOS
