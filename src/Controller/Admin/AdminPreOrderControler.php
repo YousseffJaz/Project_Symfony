@@ -8,16 +8,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class AdminPreOrderControler extends AbstractController
 {
   /**
    * Permet d'afficher les pré-commandes
-   *
-   * @Route("/admin/preorder", name="admin_preorder_index")
-   * @Security("is_granted('ROLE_ADMIN')")
    */
+  #[Route('/admin/preorder', name: 'admin_preorder_index')]
+  #[IsGranted('ROLE_ADMIN')]
   public function index(Request $request, PreorderRepository $preorderRepo) {
     $preorders = $preorderRepo->findAll();
 
@@ -26,13 +25,11 @@ class AdminPreOrderControler extends AbstractController
     ]);
   }
 
-
   /**
    * Permet de supprimer une pré-commande
-   *
-   * @Route("/admin/preorder/delete/{id}", name="admin_preorder_delete")
-   * @Security("is_granted('ROLE_ADMIN')")
    */
+  #[Route('/admin/preorder/delete/{id}', name: 'admin_preorder_delete')]
+  #[IsGranted('ROLE_ADMIN')]
   public function deletePreorder(Preorder $preorder, PreorderRepository $repo, ObjectManager $manager) {
     $manager->remove($preorder);
     $manager->flush();

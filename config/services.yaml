@@ -44,9 +44,3 @@ services:
     App\Twig\FormatDateInFrench:
         tags:
             - { name: twig.extension }
-
-
-    App\Listener\SessionIdleHandler:
-        arguments: ["@session", "@security.token_storage", "@router", "%session_max_idle_time%"]
-        tags:
-            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }

@@ -15,17 +15,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class AdminStatistiqueController extends AbstractController
 {
    /**
    * Permet d'afficher les statistiques
-   *
-   * @Route("/admin/statistiques", name="admin_statistiques")
-   * @Security("is_granted('ROLE_ADMIN')")
-   * 
    */
+   #[Route('/admin/statistiques', name: 'admin_statistiques')]
+   #[IsGranted('ROLE_ADMIN')]
    public function statistiques(OrderRepository $orderRepo, LineItemRepository $lineItemRepo, Request $request, ObjectManager $manager, FluxRepository $fluxRepo, ProductRepository $productRepo, PriceListRepository $priceRepo, StockListRepository $stockRepo, CategoryRepository $categoryRepo, TransactionRepository $transactionRepo, NoteRepository $noteRepo) {
    	$start = $request->query->get('start');
    	$end = $request->query->get('end');
@@ -33,6 +31,7 @@ class AdminStatistiqueController extends AbstractController
    	$note = $transactionRepo->totalAmount();
    	$note ? $note = $note[0]['total'] : $note = 0; $notPaid = 0;
    	$amounts = [];
+   	$annual = 0;
 
    	if ($start && $end) {
    		$total = $orderRepo->totalAmountByStartAndEnd($start, $end);
@@ -256,11 +255,9 @@ class AdminStatistiqueController extends AbstractController
 
    /**
    * Permet d'afficher la valeur des stocks
-   *
-   * @Route("/admin/statistiques/stocks", name="admin_statistiques_stocks")
-   * @Security("is_granted('ROLE_ADMIN')")
-   * 
    */
+   #[Route('/admin/statistiques/stocks', name: 'admin_statistiques_stocks')]
+   #[IsGranted('ROLE_ADMIN')]
    public function stocks(OrderRepository $orderRepo, LineItemRepository $lineItemRepo, Request $request, ObjectManager $manager, FluxRepository $fluxRepo, ProductRepository $productRepo, PriceListRepository $priceRepo, StockListRepository $stockRepo, TransactionRepository $transactionRepo) {
    	$products = $productRepo->findBy(['archive' => false, 'digital' => false ]);
    	$stocks = $stockRepo->findStockName();

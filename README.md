@@ -1,116 +1,108 @@
 # Projet Symfony Gestion
 
-A comprehensive management system built with Symfony 5.4, designed to handle orders, products, users, and various business operations.
+Ce projet est une application de gestion développée avec Symfony 6.
 
-## 🚀 Features
+## Prérequis
 
-- User Management (Admin, Reseller, Regular Users)
-- Product Management with Variants and Categories
-- Order Processing and History
-- Stock Management
-- Task Management
-- Price List Management
-- File Upload System
-- Notification System
-- Transaction Tracking
-
-## 🛠 Technical Stack
-
-- **PHP**: ^8.1
-- **Framework**: Symfony 5.4
-- **Database**: Doctrine ORM
-- **Frontend**: Symfony Webpack Encore
-- **Template Engine**: Twig
-- **Testing**: PHPUnit
-- **API Support**: REST with CORS enabled
-
-## 📋 Prerequisites
-
-- PHP 8.1 or higher
+- PHP 8.2 ou supérieur
 - Composer
-- Node.js and npm (for frontend assets)
+- Symfony CLI
 - MySQL/MariaDB
 
-## 🔧 Installation
+## Installation
 
-1. Clone the repository:
+1. Cloner le projet :
 ```bash
-git clone [repository-url]
+git clone [URL_DU_REPO]
+cd projet-symfony-gestion
 ```
 
-2. Install PHP dependencies:
+2. Installer les dépendances :
 ```bash
 composer install
 ```
 
-3. Install frontend dependencies:
-```bash
-npm install
+3. Configurer la base de données :
+- Créer un fichier `.env.local` à la racine du projet
+- Configurer les variables d'environnement :
+```env
+DATABASE_URL="mysql://user:password@127.0.0.1:3306/dbname?serverVersion=8.0.32&charset=utf8mb4"
 ```
 
-4. Configure your environment:
-- Copy `.env` to `.env.local`
-- Update database and other configuration settings
-
-5. Create database and run migrations:
+4. Créer la base de données :
 ```bash
-php bin/console doctrine:database:create
-php bin/console doctrine:migrations:migrate
+symfony console doctrine:database:create
 ```
 
-6. Build frontend assets:
+5. Exécuter les migrations :
 ```bash
-npm run build
+symfony console doctrine:migrations:migrate
 ```
 
-## 🏃‍♂️ Running the Application
+## Configuration
 
-1. Start the Symfony development server:
+Les paramètres principaux sont configurés dans `config/services.yaml` :
+- `session_max_idle_time`: 14400 secondes (4 heures)
+- `cookie_lifetime`: 14400 secondes (4 heures)
+- `uploads_directory`: Dossier pour les fichiers uploadés
+- `sounds_directory`: Dossier pour les fichiers sons
+- `root_directory`: Dossier racine public
+
+## Fonctionnalités
+
+- Gestion des utilisateurs et des rôles
+- Gestion des commandes
+- Gestion des stocks
+- Gestion des produits
+- Gestion des catégories
+- Gestion des statistiques
+- Gestion des précommandes
+- Système de notification
+- Gestion des sessions avec timeout automatique
+
+## Développement
+
+Pour lancer le serveur de développement :
 ```bash
 symfony server:start
 ```
 
-2. Access the application at `http://localhost:8000`
-
-## 🧪 Testing
-
-Run the test suite:
+Pour nettoyer le cache :
 ```bash
-php bin/phpunit
+symfony console cache:clear
 ```
 
-## 📦 Project Structure
+## Sécurité
 
-- `src/Controller/` - Application controllers
-- `src/Entity/` - Doctrine entities (User, Product, Order, etc.)
-- `src/Form/` - Form types
-- `src/Repository/` - Database repositories
-- `templates/` - Twig templates
-- `public/` - Public assets
-- `assets/` - Frontend assets (JS, CSS)
-- `config/` - Application configuration
-- `translations/` - Translation files
+- Authentification requise pour l'accès à l'administration
+- Gestion des rôles (ROLE_ADMIN, ROLE_SUPER_ADMIN)
+- Protection CSRF activée
+- Sessions sécurisées avec timeout automatique
 
-## 🔐 Security
+## Structure du projet
 
-The application implements a robust security system with:
-- User authentication
-- Role-based access control
-- Secure password management
-- CSRF protection
+```
+src/
+├── Controller/         # Contrôleurs de l'application
+│   └── Admin/         # Contrôleurs de l'administration
+├── Entity/            # Entités Doctrine
+├── Repository/        # Repositories Doctrine
+├── Listener/          # Event Listeners
+└── Twig/              # Extensions Twig
+```
 
-## 🤝 Contributing
+## Maintenance
 
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a new Pull Request
+Pour mettre à jour les dépendances :
+```bash
+composer update
+```
 
-## 📄 License
+Pour mettre à jour la base de données :
+```bash
+symfony console doctrine:schema:update --force
+```
 
-This project is proprietary software. All rights reserved.
+## Support
 
-## 🛟 Support
-
-For support and questions, please contact the development team.
+Pour toute question ou problème, veuillez créer une issue dans le dépôt GitHub.

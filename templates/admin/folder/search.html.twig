@@ -212,7 +212,9 @@ $("#searchFiles").keyup(function(event){
 
   $('body').on('click', '.js-delete-file', function (e) {
     e.preventDefault();
-    var url = '{{ path("admin_folder_upload_delete") }}';
+    var id = $(this).data('id');
+    var url = '{{ path("admin_folder_upload_delete", {'id': 'id'}) }}';
+    url = url.replace("id", id);
     var filename = $(this).data('filename');
     $(this).parent().parent().remove();
 
