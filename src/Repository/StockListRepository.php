@@ -73,5 +73,15 @@ class StockListRepository extends ServiceEntityRepository
 
     return $query->getQuery()->getResult();
   }
+
+  public function findOneById(int $id): ?StockList
+  {
+    return $this->findOneBy(['id' => $id]);
+  }
+
+  public function findByProduct(int $productId)
+  {
+    return $this->findBy(['product' => $productId]);
+  }
 }
 

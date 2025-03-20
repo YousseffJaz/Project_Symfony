@@ -46,8 +46,8 @@
                 <div class="pcoded-inner-navbar main-menu" style="overflow-y: scroll">
                     <ul class="pcoded-item pcoded-left-item">
                         {% if app.user.role == "ROLE_SUPER_ADMIN" %}
-                            <li class="{{ app.request.get('_route') == 'admin_dashboard' ? 'active' }}">
-                                <a href="{{ path('admin_dashboard') }}">
+                            <li class="{{ app.request.get('_route') == 'app_admin_dashboard' ? 'active' }}">
+                                <a href="{{ path('app_admin_dashboard') }}">
                                     <span class="pcoded-micon">
                                         <i class="fal fa-chart-line"></i>
                                     </span>
@@ -102,7 +102,7 @@
                                     </span>
                                     <span class="pcoded-mtext">Fichiers</span>
                                 </a>
-                                <ul class="pcoded-submenu" style="{{ app.request.get('_route') == 'admin_folder_search' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_folder_collections' ? 'display: block;' }}">
+                                <ul class="pcoded-submenu" style="{{ app.request.get('_route') == 'admin_folder_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_folder_search' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_folder_collections' ? 'display: block;' }}">
                                     <li class="">
                                         <a href="{{ path('admin_folder_index') }}">
                                             <i class="fal fa-chevron-right"></i> 
@@ -133,7 +133,7 @@
                                     </span>
                                     <span class="pcoded-mtext">Produits</span>
                                 </a>
-                                <ul class="pcoded-submenu" style="{{ app.request.get('_route') == 'admin_product_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_category_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_variant_index' ? 'display: block;' }}">
+                                <ul class="pcoded-submenu" style="{{ app.request.get('_route') == 'admin_preorder_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_product_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_category_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_variant_index' ? 'display: block;' }}">
                                     {% if app.user.role == "ROLE_SUPER_ADMIN" %}
                                         <li class="">
                                             <a href="{{ path('admin_variant_index') }}">

@@ -27,4 +27,14 @@ class UploadRepository extends ServiceEntityRepository
 
     return $query->getQuery()->getResult();
   }
+
+  public function findOneById(int $id): ?Upload
+  {
+    return $this->findOneBy(['id' => $id]);
+  }
+
+  public function findOneByFilename(string $filename): ?Upload
+  {
+    return $this->findOneBy(['name' => $filename]);
+  }
 }

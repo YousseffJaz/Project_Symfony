@@ -20,7 +20,7 @@ class AdminExpenseController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function index(Request $request, FluxRepository $expenseRepo, TransactionRepository $transactionRepo): Response
     {
-        $expenses = $expenseRepo->findBy(['type' => 1], ['createdAt' => "DESC"]);
+        $expenses = $expenseRepo->findBy(['type' => true], ['createdAt' => "DESC"]);
 
         return $this->render('admin/expense/index.html.twig', [
             'expenses' => $expenses,
@@ -36,7 +36,7 @@ class AdminExpenseController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $expense->setType(1);
+            $expense->setType(true);
             $manager->persist($expense);
             $manager->flush();
 

@@ -1,0 +1,55 @@
+<?php
+
+namespace App\DataFixtures;
+
+use App\Entity\Transaction;
+use App\Entity\Note;
+use App\Entity\Order;
+use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+use Doctrine\Persistence\ObjectManager;
+use Faker\Factory;
+
+class TransactionFixtures extends Fixture implements DependentFixtureInterface
+{
+    public function load(ObjectManager $manager): void
+    {
+        $faker = Factory::create('fr_FR');
+        $usedOrders = [];
+
+        // Créer quelques transactions de test
+        for ($i = 0; $i < 15; $i++) {
+            $transaction = new Transaction();
+            $transaction->setAmount($faker->randomFloat(2, -1000, 1000));
+            $transaction->setComment($faker->sentence());
+            $transaction->setUpdatedAt($faker->dateTimeBetween('-1 year', 'now'));
+            
+            // Assigner une note aléatoire
+            $note = $this->getReference('note_' . $faker->numberBetween(0, 14), Note::class);
+            $transaction->setNote($note);
+            
+            // Assigner une commande aléatoire (si disponible)
+            if ($faker->boolean() && count($usedOrders) < 3) {
+                do {
+                    $orderNumber = $faker->numberBetween(1, 3);
+                } while (in_array($orderNumber, $usedOrders));
+                
+                $usedOrders[] = $orderNumber;
+                $order = $this->getReference('order_' . $orderNumber, Order::class);
+                $transaction->setInvoice($order);
+            }
+
+            $manager->persist($transaction);
+        }
+
+        $manager->flush();
+    }
+
+    public function getDependencies(): array
+    {
+        return [
+            NoteFixtures::class,
+            OrderFixtures::class,
+        ];
+    }
+} 

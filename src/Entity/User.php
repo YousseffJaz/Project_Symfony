@@ -3,12 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
-use App\Entity\Role;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use JsonSerializable;
@@ -20,37 +17,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $pseudo;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $pseudo = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $hash;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $hash = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $phone;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $phone = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $pushToken;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $pushToken = null;
 
-    #[ORM\Column(type: 'datetime')]
-    private $createdAt;
-
-    #[ORM\ManyToOne(targetEntity: Reseller::class, inversedBy: 'users')]
-    private $reseller;
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
-    private $note;
+    private ?string $note = null;
 
-    
     public function __construct()
     {
-        $this->createdAt = new \DateTime('now', timezone_open('Europe/Paris'));
+        $this->createdAt = new \DateTimeImmutable();
     }
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -63,7 +56,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPseudo(?string $pseudo): self
     {
         $this->pseudo = $pseudo;
-
         return $this;
     }
 
@@ -75,7 +67,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setHash(?string $hash): self
     {
         $this->hash = $hash;
-
         return $this;
     }
 
@@ -87,29 +78,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPhone(?string $phone): self
     {
         $this->phone = $phone;
-
         return $this;
-    }
-
-    public function getRoles(): array {
-        return ['ROLE_USER'];
-    }
-
-    public function getPassword(): ?string {
-        return $this->hash;
-    }
-
-    public function getSalt() {}
-    
-    public function getUsername() {
-        return $this->pseudo;
-    }
-
-    public function eraseCredentials() {}
-
-    public function getUserIdentifier(): string
-    {
-        return $this->pseudo;
     }
 
     public function getPushToken(): ?string
@@ -120,19 +89,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPushToken(?string $pushToken): self
     {
         $this->pushToken = $pushToken;
-
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeInterface
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    public function setCreatedAt(\DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
-
         return $this;
     }
 
@@ -144,19 +111,40 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setNote(?string $note): self
     {
         $this->note = $note;
-
         return $this;
     }
 
-    public function getReseller(): ?Reseller
+    public function getRoles(): array
     {
-        return $this->reseller;
+        $roles = [];
+        $roles[] = 'ROLE_USER';
+        return array_unique($roles);
     }
 
-    public function setReseller(?Reseller $reseller): self
+    public function eraseCredentials(): void
     {
-        $this->reseller = $reseller;
+        // If you store any temporary, sensitive data on the user, clear it here
+    }
 
-        return $this;
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->pseudo;
+    }
+
+    public function getPassword(): string
+    {
+        return $this->hash;
+    }
+
+    public function getSalt(): ?string
+    {
+        return null;
+    }
+
+    public function getUsername(): string
+    {
+        return (string) $this->pseudo;
     }
 }
+
+

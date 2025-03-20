@@ -26,70 +26,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/admin')]
 class AdminDashboardController extends AbstractController
 {
-    #[Route('/dashboard', name: 'admin_dashboard')]
-    #[IsGranted('ROLE_ADMIN')]
-    public function index(
-        EntityManagerInterface $manager,
-        UserRepository $usersRepo,
-        ResellerRepository $resellerRepo,
-        ProductRepository $productRepo,
-        OrderRepository $orderRepo,
-        TransactionRepository $transactionRepo,
-        TaskRepository $taskRepo,
-        FluxRepository $fluxRepo,
-        NoteRepository $noteRepo
-    ): Response {
-        if (!$this->isGranted('ROLE_SUPER_ADMIN')) {
-            return $this->redirectToRoute('admin_order_index');
-        }
-
-        $now = new \DateTime('now', timezone_open('Europe/Paris'));
-        $users = $usersRepo->findUsersLimit(10);
-        $orders = count($orderRepo->findOrderNotComplete());
-        $totalResellers = count($resellerRepo->findAll());
-        $totalUsers = count($usersRepo->findAll());
-        $tasks = count($taskRepo->findBy(['complete' => false]));
-
-        $orderNotPaid = $orderRepo->findByImpayee();
-        $nbOrders = $orderRepo->findByStartAndEnd($now->format('Y-m-d'), $now->format('Y-m-d'));
-        $todayAmount = $orderRepo->totalAmountByStartAndEnd($now->format('Y-m-d'), $now->format('Y-m-d'));
-        $notPaid = 0;
-        $cashflows = $fluxRepo->totalAmount(0);
-        $notes = $noteRepo->findAll();
-        $ordersNote = $orderRepo->findByNotNote();
-
-        if ($notes) {
-            foreach ($notes as $note) {
-                foreach ($note->getTransactions() as $key => $transaction) {
-                    if ($key === 0) {
-                        $notPaid = $notPaid + $transaction->getAmount();
-                    } elseif ($transaction->getInvoice()) {
-                        $remaining = $transaction->getInvoice()->getTotal() - $transaction->getInvoice()->getPaid();
-                        $notPaid = $notPaid + $remaining;
-                    } elseif ($transaction->getAmount() > 0) {
-                        $notPaid = $notPaid + $transaction->getAmount();
-                    }
-                }
-            }
-        }
-
-        foreach ($ordersNote as $item) {
-            $notPaid = $notPaid + ($item->getTotal() - $item->getPaid());
-        }
-
-        if ($cashflows) {
-            $notPaid = $notPaid + $cashflows[0]['amount'];
-        }
+    #[Route('/', name: 'app_admin_dashboard')]
+    public function index(UserRepository $userRepo): Response
+    {
+        $totalUsers = count($userRepo->findAll());
 
         return $this->render('admin/dashboard/index.html.twig', [
-            'users' => $users,
-            'orders' => $orders,
-            'tasks' => $tasks,
-            'nbOrders' => $nbOrders,
-            'notPaid' => $notPaid,
-            'todayAmount' => $todayAmount,
             'totalUsers' => $totalUsers,
-            'totalResellers' => $totalResellers,
         ]);
     }
 

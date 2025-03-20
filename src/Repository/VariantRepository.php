@@ -50,5 +50,10 @@ class VariantRepository extends ServiceEntityRepository
 
     return $query->getQuery()->getResult();
   }
+
+  public function findOneById(int $id): ?Variant
+  {
+    return $this->findOneBy(['id' => $id]);
+  }
 }
 

@@ -63,7 +63,7 @@ class AdminCashFlowController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $cashflow->setType(0);
+            $cashflow->setType(false);
             $manager->persist($cashflow);
             $manager->flush();
 

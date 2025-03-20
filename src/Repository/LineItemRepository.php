@@ -52,4 +52,9 @@ class LineItemRepository extends ServiceEntityRepository
     return $query->getQuery()
     ->getResult();
   }
+
+  public function findByStock(string $stock)
+  {
+    return $this->findBy(['stock' => $stock]);
+  }
 }

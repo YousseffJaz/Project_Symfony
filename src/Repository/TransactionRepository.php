@@ -28,5 +28,10 @@ class TransactionRepository extends ServiceEntityRepository
     return $query->getQuery()
     ->getResult();
   }
+
+  public function findOneByInvoice(string $invoice): ?Transaction
+  {
+    return $this->findOneBy(['invoice' => $invoice]);
+  }
 }
 
