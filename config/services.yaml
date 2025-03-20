@@ -44,3 +44,16 @@ services:
     App\Twig\FormatDateInFrench:
         tags:
             - { name: twig.extension }
+
+    App\Service\Order\OrderService:
+        arguments:
+            $orderRepository: '@App\Repository\OrderRepository'
+            $lineItemRepository: '@App\Repository\LineItemRepository'
+            $entityManager: '@doctrine.orm.entity_manager'
+
+    App\Service\Order\OrderExportService: ~
+
+    App\Service\Order\OrderUploadService:
+        arguments:
+            $entityManager: '@doctrine.orm.entity_manager'
+            $uploadDir: '%kernel.project_dir%/public/uploads/orders'

@@ -10,6 +10,9 @@ use App\Entity\LineItem;
 use App\Entity\Order;
 use App\Entity\Admin;
 use App\Form\AdminOrderType;
+use App\Service\Order\OrderService;
+use App\Service\Order\OrderExportService;
+use App\Service\Order\OrderUploadService;
 use App\Repository\AdminRepository;
 use App\Repository\VariantRepository;
 use App\Repository\NoteRepository;
@@ -31,8 +34,12 @@ use Symfony\Bundle\SecurityBundle\Security;
 
 class AdminOrderController extends AbstractController
 {
-    public function __construct(private Security $security)
-    {
+    public function __construct(
+        private Security $security,
+        private OrderService $orderService,
+        private OrderExportService $orderExportService,
+        private OrderUploadService $orderUploadService
+    ) {
     }
 
     private function getAdmin(): Admin
@@ -43,15 +50,13 @@ class AdminOrderController extends AbstractController
 
     #[Route('/admin/orders', name: 'admin_order_index')]
     #[IsGranted('ROLE_ADMIN')]
-    public function index(Request $request, OrderRepository $orderRepo, LineItemRepository $lineItemRepo): Response
+    public function index(Request $request): Response
     {
         $start = $request->query->get('start');
         $end = $request->query->get('end');
-        $alreadyPaid = 0;
 
         if ($this->security->isGranted('ROLE_LIVREUR')) {
-            $orders = $orderRepo->findByDeliveryAndUser($this->getAdmin());
-
+            $orders = $this->orderService->getOrdersByDeliveryAndUser($this->getAdmin());
             return $this->render('admin/order/index.html.twig', [
                 'search' => '',
                 'orders' => $orders,
@@ -62,99 +67,56 @@ class AdminOrderController extends AbstractController
             ]);
         }
 
-        if ($start && $end) {
-            $total = $lineItemRepo->totalAmountByStartAndEnd($start, $end);
-            $orders = $orderRepo->findByStartAndEnd($start, $end);
+        if (!$start || !$end) {
+            $start = new \DateTime('now', new \DateTimeZone('Europe/Paris'));
+            $end = new \DateTime('now', new \DateTimeZone('Europe/Paris'));
         } else {
-            $start = new \DateTime('now', timezone_open('Europe/Paris'));
-            $end = new \DateTime('now', timezone_open('Europe/Paris'));
-            $start = $start->format('Y-m-d');
-            $end = $end->format('Y-m-d');
-            $total = $lineItemRepo->totalAmountByStartAndEnd($start, $end);
-            $orders = $orderRepo->findByStartAndEnd($start, $end);
+            $start = new \DateTime($start);
+            $end = new \DateTime($end);
         }
 
-        if ($total) {
-            $total = $total[0]['total'];
-        } else {
-            $total = 0;
-        }
-
-        if ($orders) {
-            foreach ($orders as $order) {
-                $total = $total + $order->getTotal();
-                $alreadyPaid = $alreadyPaid + $order->getPaid();
-            }   
-        }
+        $result = $this->orderService->getTotalsByDateRange($start, $end);
 
         return $this->render('admin/order/index.html.twig', [
             'search' => '',
-            'orders' => $orders,
-            'alreadyPaid' => $alreadyPaid,
-            'total' => $total ?: "",
-            'start' => $start ?: "",
-            'end' => $end ?: "",
+            'orders' => $result['orders'],
+            'alreadyPaid' => $result['alreadyPaid'],
+            'total' => $result['total'],
+            'start' => $start->format('Y-m-d'),
+            'end' => $end->format('Y-m-d'),
         ]);
     }
 
     #[Route('/admin/orders/status', name: 'admin_order_status')]
     #[IsGranted('ROLE_ADMIN')]
-    public function status(Request $request, OrderRepository $orderRepo): Response
+    public function status(Request $request): Response
     {
         $status = $request->query->get('status');
-        $orders = $orderRepo->findByStatus($status);
-        $total = 0;
-        $alreadyPaid = 0;
-
-        if ($orders) {
-            foreach ($orders as $order) {
-                $total = $total + $order->getTotal();
-                $alreadyPaid = $alreadyPaid + $order->getPaid();
-            }   
-        }
-
-        $start = new \DateTime('now', timezone_open('Europe/Paris'));
-        $end = new \DateTime('now', timezone_open('Europe/Paris'));
-        $start = $start->format('Y-m-d');
-        $end = $end->format('Y-m-d');
-
+        $result = $this->orderService->getOrdersByStatus($status);
+        
         return $this->render('admin/order/index.html.twig', [
             'search' => '',
-            'orders' => $orders,
-            'total' => $total,
-            'alreadyPaid' => $alreadyPaid,
-            'start' => $start,
-            'end' => $end,
+            'orders' => $result['orders'],
+            'total' => $result['total'],
+            'alreadyPaid' => $result['alreadyPaid'],
+            'start' => (new \DateTime())->format('Y-m-d'),
+            'end' => (new \DateTime())->format('Y-m-d'),
         ]);
     }
 
     #[Route('/admin/orders/waitting', name: 'admin_order_waitting')]
     #[IsGranted('ROLE_ADMIN')]
-    public function waitting(Request $request, OrderRepository $orderRepo): Response
+    public function waitting(): Response
     {
-        $orders = $orderRepo->findOrderNotComplete();
-        $total = 0;
-        $alreadyPaid = 0;
-
-        if ($orders) {
-            foreach ($orders as $order) {
-                $total = $total + $order->getTotal();
-                $alreadyPaid = $alreadyPaid + $order->getPaid();
-            }   
-        }
-
-        $start = new \DateTime('now', timezone_open('Europe/Paris'));
-        $end = new \DateTime('now', timezone_open('Europe/Paris'));
-        $start = $start->format('Y-m-d');
-        $end = $end->format('Y-m-d');
-
+        $result = $this->orderService->getWaitingOrders();
+        
         return $this->render('admin/order/index.html.twig', [
             'search' => '',
-            'orders' => $orders,
-            'total' => $total,
-            'alreadyPaid' => $alreadyPaid,
-            'start' => $start,
-            'end' => $end,
+            'orders' => $result['orders'],
+            'total' => $result['total'],
+            'alreadyPaid' => $result['alreadyPaid'],
+            'start' => (new \DateTime())->format('Y-m-d'),
+            'end' => (new \DateTime())->format('Y-m-d'),
         ]);
     }
 
@@ -826,77 +788,43 @@ class AdminOrderController extends AbstractController
 
     #[Route('/admin/order/upload', name: 'admin_order_upload')]
     #[IsGranted('ROLE_ADMIN')]
-    public function upload(Request $request, EntityManagerInterface $manager, OrderRepository $orderRepo): Response
+    public function upload(Request $request, OrderRepository $orderRepo): Response
     {
+        $orderId = $request->request->get('orderId');
+        $order = $orderRepo->find($orderId);
+        
+        if (!$order) {
+            throw $this->createNotFoundException('Commande non trouvée');
+        }
+
         $file = $request->files->get('file');
-        $orderId = $request->request->get('order');
-        $order = null;
-
-        if ($orderId) {
-            $order = $orderRepo->find($orderId);
-        }
-
         if (!$file) {
-            return $this->json([
-                'code' => 400,
-                'message' => "Pas de fichier"
-            ], 400);
+            throw new \InvalidArgumentException('Aucun fichier uploadé');
         }
 
-        if ($file->getError()) {
-            return $this->json([
-                'code' => 400,
-                'message' => $file->getErrorMessage()
-            ], 400);
-        }
-
-        $upload = new Upload();
-        $upload->setFile($file);
-        
-        if ($order) {
-            $upload->setOrder($order);
-        }
-        
-        $manager->persist($upload);
-        $manager->flush();
-
-        $history = new OrderHistory();
-        $history->setTitle("Le fichier '{$upload->getFilename()}' a été supprimé");
-        $history->setInvoice($upload->getOrder());
-        $history->setAdmin($this->getAdmin());
-        $manager->persist($history);
+        $upload = $this->orderUploadService->handleUpload($file, $order);
 
         return $this->json([
-            'filename' => $upload->getFilename(),
             'id' => $upload->getId(),
+            'filename' => $upload->getFilename(),
             'name' => $upload->getName()
-        ], 200);
+        ]);
     }
 
     #[Route('/admin/order/upload/delete', name: 'admin_order_upload_delete')]
     #[IsGranted('ROLE_ADMIN')]
-    public function deleteUpload(Request $request, EntityManagerInterface $manager, UploadRepository $repo): Response
+    public function deleteUpload(Request $request, UploadRepository $repo): Response
     {
-        $filename = $request->query->get('filename');
-
-        if ($filename) {
-            $upload = $repo->findOneByFilename($filename);
-            
-            if ($upload) {
-                /** @var Admin */
-                $admin = $this->getAdmin();
-                $history = new OrderHistory();
-                $history->setTitle("Le fichier '{$upload->getFilename()}' a été supprimé");
-                $history->setInvoice($upload->getOrder());
-                $history->setAdmin($admin);
-                $manager->persist($history);
-
-                $manager->remove($upload);
-                $manager->flush();
-            }
+        $uploadId = $request->request->get('uploadId');
+        $upload = $repo->find($uploadId);
+        
+        if (!$upload) {
+            throw $this->createNotFoundException('Upload non trouvé');
         }
 
-        return $this->json(true, 200);
+        $this->orderUploadService->deleteUpload($upload);
+
+        return $this->json(['success' => true]);
     }
 
     #[Route('/admin/lineitem/delete/{id}', name: 'admin_lineitem_delete')]
@@ -979,11 +907,10 @@ class AdminOrderController extends AbstractController
 
     #[Route('/admin/orders/export/{id}', name: 'admin_order_export')]
     #[IsGranted('ROLE_ADMIN')]
-    public function exportOrder(Order $order): Response
+    public function exportOrder(Order $order, Request $request): Response
     {
-        return $this->render('admin/order/export.html.twig', [
-            'order' => $order
-        ]);
+        $format = $request->query->get('format', 'pdf');
+        return $this->orderExportService->exportOrder($order, $format);
     }
 
     #[Route('/admin/orders/customer/autocomplete', name: 'admin_order_customer')]
