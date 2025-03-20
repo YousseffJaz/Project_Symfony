@@ -108,7 +108,7 @@
               <div class="show_lines" style="margin-top: 10px; ">
                 {% if order.lineItems.toArray %}
                   {% for lineItem in order.lineItems.toArray %}
-                    <div class="flex justify-center items-center m-2 font-medium py-1 px-2 bg-white rounded bg-gray-100 border" style="max-width: fit-content;display: flex;"><div class="text-xs font-normal leading-none max-w-full flex-initial" style="padding: 7px 5px 7px 15px;">{{ lineItem.quantity }} x ({{ lineItem.title }}) - {{ lineItem.price|number_format(2, ',', ' ') }}€</div><div><i class="fal fa-times js-delete-lineitem" data-id="{{ lineItem.id }}" data-price="{{ lineItem.price }}" style=" color: #aaa; margin-top: 5px; margin-left: 7px; margin-right: 3px; cursor: pointer;"></i></div></div>
+                    <div class="flex justify-center items-center m-2 font-medium py-1 px-2 bg-white rounded bg-gray-100 border" style="max-width: fit-content;display: flex;"><div class="text-xs font-normal leading-none max-w-full flex-initial" style="padding: 7px 5px 7px 15px;">{{ lineItem.quantity }} x ({{ lineItem.title }}) - {{ lineItem.price|number_format(2, ',', ' ') }}€</div><div><i class="fas fa-times js-delete-lineitem" data-id="{{ lineItem.id }}" data-price="{{ lineItem.price }}" style=" color: #aaa; margin-top: 5px; margin-left: 7px; margin-right: 3px; cursor: pointer;"></i></div></div>
                   {% endfor %}
                 {% endif %}
               </div><br>
@@ -162,7 +162,7 @@
                                   {% endif %}
                                   </a>
                                   {% if app.user.role == "ROLE_SUPER_ADMIN" %}
-                                    <a href="{{ app.request.getBaseUrl() }}/uploads/{{ upload.filename }}" class=" flex items-center js-delete-file" data-filename="{{ upload.filename }}" style=""><i class="fal fa-times" style="padding-right: 7px; color: red; font-size: 17px;"></i></a>
+                                    <a href="{{ app.request.getBaseUrl() }}/uploads/{{ upload.filename }}" class=" flex items-center js-delete-file" data-filename="{{ upload.filename }}" style=""><i class="fas fa-times" style="padding-right: 7px; color: red; font-size: 17px;"></i></a>
                                   {% endif %}
                                 </div>
                               </li>
@@ -615,7 +615,7 @@ $(function () {
                   </div>
                   ${preview}
                   <a href="{{ app.request.getBaseUrl() }}/uploads/${upload.filename}" class="flex items-center js-delete-file" data-filename="${upload.filename}">
-                    <i class="fal fa-times" style="padding-right: 7px; color: red; font-size: 17px;"></i>
+                    <i class="fas fa-times" style="padding-right: 7px; color: red; font-size: 17px;"></i>
                   </a>
                 </div>
               </li>
@@ -713,7 +713,7 @@ $(function () {
 
 
   $("body").on("click", "#lineItemButton", function (e) {
-    $('.show_lines').append(`<div class="lineitem flex justify-center items-center m-2 font-medium py-1 px-2 bg-white rounded bg-gray-100 border" style="max-width: fit-content;display: flex;"><input type="hidden" name="variantId[]" value="`+ $("#lineItemButton").data('id') +`"><input type="hidden" name="stockListId[]" value="`+  $('#admin_order_stockList').val() + `"><input type="hidden" name="title[]" value="`+ $("#lineItemTitle").val() +`"><input type="hidden" name="price[]" value="`+ $("#lineItemPrice").val() +`"><input type="hidden" name="priceList[]" value="`+ $('#admin_order_priceList').val() +`"><input type="hidden" name="quantity[]" value="`+ $("#lineItemQuantity").val() +`"><div class="text-xs font-normal leading-none max-w-full flex-initial" style="padding: 7px 5px 7px 15px;">`+ $("#lineItemQuantity").val() +` x (` + $("#lineItemTitle").val() +`) - `+ $("#lineItemPrice").val() +`€ <i class="fal fa-times js-delete-product" data-price="`+ $("#lineItemPrice").val() +`" style=" color: #aaa; margin-left: 7px; margin-right: 3px; cursor: pointer;"></i></div>`);
+    $('.show_lines').append(`<div class="lineitem flex justify-center items-center m-2 font-medium py-1 px-2 bg-white rounded bg-gray-100 border" style="max-width: fit-content;display: flex;"><input type="hidden" name="variantId[]" value="`+ $("#lineItemButton").data('id') +`"><input type="hidden" name="stockListId[]" value="`+  $('#admin_order_stockList').val() + `"><input type="hidden" name="title[]" value="`+ $("#lineItemTitle").val() +`"><input type="hidden" name="price[]" value="`+ $("#lineItemPrice").val() +`"><input type="hidden" name="priceList[]" value="`+ $('#admin_order_priceList').val() +`"><input type="hidden" name="quantity[]" value="`+ $("#lineItemQuantity").val() +`"><div class="text-xs font-normal leading-none max-w-full flex-initial" style="padding: 7px 5px 7px 15px;">`+ $("#lineItemQuantity").val() +` x (` + $("#lineItemTitle").val() +`) - `+ $("#lineItemPrice").val() +`€ <i class="fas fa-times js-delete-product" data-price="`+ $("#lineItemPrice").val() +`" style=" color: #aaa; margin-left: 7px; margin-right: 3px; cursor: pointer;"></i></div>`);
 
     var total = $('#admin_order_total').val();
     var price = $("#lineItemPrice").val();
@@ -777,7 +777,7 @@ $(function () {
                 $(".search_results").append(`<li class="result" data-title="` + element.title + `" data-price="` + element.price + `" data-id="` + element.id + `"><div class="result_text"><p class="name">` + element.title + ` - `+ element.price+`€ - (`+ element.quantity+` disponibles)</p></div></li>`);
               }
             });
-            $(".search_results").append(`<li class="result add-product"><div class="result_text"><p class="name" style="color: #1a73e8;"><i class="fal fa-plus" style="padding-right: 5px;"></i> Ajouter un nouveau produit</p></div></li>`);
+            $(".search_results").append(`<li class="result add-product"><div class="result_text"><p class="name" style="color: #1a73e8;"><i class="fas fa-plus" style="padding-right: 5px;"></i> Ajouter un nouveau produit</p></div></li>`);
           } else {
             $(".search_results").empty();
             $(".search_results").removeClass("open");

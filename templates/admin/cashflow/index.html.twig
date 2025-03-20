@@ -51,7 +51,7 @@
 													<h3 class="m-b-0 f-w-700 text-white" style="padding: 10px 0px; color: #2ed8b6 !important;">{{ total|number_format(2, ',', ' ') }}€</h3>
 												</div>
 												<div class="col-auto">
-													<i class="fal fa-coins text-c-red f-18" style=" color: #333"></i>
+													<i class="fas fa-coins text-c-red f-18" style=" color: #333"></i>
 												</div>
 											</div>
 										</div>
@@ -67,16 +67,16 @@
 													<div class="col">
 													<h6 class="m-b-5 text-white" style="color: #333 !important;">{{ cashflow.name|capitalize }} 
 														<a href="{{ path('admin_cashflow_edit', { id: cashflow.id }) }}">
-															<i class="fal fa-edit" style="color: #4099ff; font-size: 16px; padding: 0px 0px 0px 7px; width: initial; height: initial; cursor: pointer"></i>
+															<i class="fas fa-edit" style="color: #4099ff; font-size: 16px; padding: 0px 0px 0px 7px; width: initial; height: initial; cursor: pointer"></i>
 														</a>
 														<a href="{{ path('admin_cashflow_delete', { id : cashflow.id }) }}" class="js-delete-element">
-															<i class="fal fa-trash" style="color: #ff5370; font-size: 16px; padding: 0px 0px 0px 5px; width: initial; height: initial; cursor: pointer"></i>
+															<i class="fas fa-trash" style="color: #ff5370; font-size: 16px; padding: 0px 0px 0px 5px; width: initial; height: initial; cursor: pointer"></i>
 														</a>
 													</h6>
 														<h3 class="m-b-0 f-w-700 text-white" style="padding: 10px 0px; {% if cashflow.amount > 0 %} color: #2ed8b6 !important; {% else %} color: #ff5370 !important; {% endif %}">{{ cashflow.amount|number_format(2, ',', ' ') }}€</h3>
 													</div>
 													<div class="col-auto">
-														<i class="fal fa-wallet text-c-red f-18" style=" color: #333"></i>
+														<i class="fas fa-wallet text-c-red f-18" style=" color: #333"></i>
 													</div>
 												</div>
 											</div>
@@ -93,7 +93,7 @@
 														<h3 class="m-b-0 f-w-700 text-white" style="padding: 10px 0px; {% if notPaid > 0 %} color: #2ed8b6 !important; {% else %} color: #ff5370 !important; {% endif %}">{{ notPaid|number_format(2, ',', ' ') }}€</h3>
 													</div>
 													<div class="col-auto">
-														<i class="fal fa-wallet text-c-red f-18" style=" color: #333"></i>
+														<i class="fas fa-wallet text-c-red f-18" style=" color: #333"></i>
 													</div>
 												</div>
 											</div>

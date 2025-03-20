@@ -97,11 +97,11 @@
                               {% if not loop.first %}
                                 {% if transaction.invoice %}
                                   <a href="{{ path('admin_order_export', {id: transaction.invoice.id }) }}" target="_blank">
-                                    <i class="fal fa-download" style="color: #7f8c8d; font-size: 20px; padding: 3px;"></i>
+                                    <i class="fas fa-download" style="color: #7f8c8d; font-size: 20px; padding: 3px;"></i>
                                   </a>
                                 {% endif %}
                                 <a href="{{ path('admin_transaction_delete', { id : transaction.id }) }}" class="js-delete">
-                                  <i class="fal fa-trash" style="color: #ff5370; font-size: 20px; padding: 3px;"></i>
+                                  <i class="fas fa-trash" style="color: #ff5370; font-size: 20px; padding: 3px;"></i>
                                 </a>
                               {% endif %}
                             </td>

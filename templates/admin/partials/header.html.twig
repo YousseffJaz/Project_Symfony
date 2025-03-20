@@ -7,10 +7,10 @@
         <div class="navbar-wrapper">
             <div class="navbar-logo">
                 <a class="mobile-menu" id="mobile-collapse" href="#!">
-                    <i class="fal fa-toggle-off"></i>
+                    <i class="fas fa-toggle-off"></i>
                 </a>
                 <a class="mobile-options waves-effect waves-light">
-                    <i class="fal fa-bars"></i>
+                    <i class="fas fa-bars"></i>
                 </a>
             </div>
             <div class="navbar-container container-fluid">
@@ -23,7 +23,7 @@
                                         <input type="text" class="form-control" name="search" placeholder="Rechercher" style="width: 200px; border: 1px solid #ccc; border-radius: 8px;">
                                         <input type="hidden" name="_token" value="{{ csrf_token('search') }}">
                                         <button type="submit" class="btn btn-primary" style="border-radius: 8px; padding: 5px 10px;">
-                                            <i class="fal fa-search"></i>
+                                            <i class="fas fa-search"></i>
                                         </button>
                                     </form>
                                 </div>
@@ -35,7 +35,7 @@
                     <li class="user-profile header-notification">
                         <a href="{{ path('admin_profile') }}">
                             <span style="font-weight: bold; font-size: 16px;">{{ app.user.firstname|upper }}</span>
-                            <i class="fal fa-chevron-down"></i>
+                            <i class="fas fa-chevron-down"></i>
                         </a>
                     </li>
                 </ul>
@@ -53,7 +53,7 @@
                             <li class="{{ app.request.get('_route') == 'app_admin_dashboard' ? 'active' }}">
                                 <a href="{{ path('app_admin_dashboard') }}">
                                     <span class="pcoded-micon">
-                                        <i class="fal fa-chart-line"></i>
+                                        <i class="fas fa-chart-line"></i>
                                     </span>
                                     <span class="pcoded-mtext">Tableau de bord</span>
                                 </a>
@@ -62,7 +62,7 @@
                             <li class="{{ app.request.get('_route') == 'admin_statistique_index' ? 'active' }}">
                                 <a href="{{ path('admin_statistique_index') }}">
                                     <span class="pcoded-micon">
-                                        <i class="fal fa-chart-pie"></i>
+                                        <i class="fas fa-chart-pie"></i>
                                     </span>
                                     <span class="pcoded-mtext">Statistiques</span>
                                 </a>
@@ -72,7 +72,7 @@
                         <li class="{{ app.request.get('_route') == 'admin_order_index' ? 'active' }}">
                             <a href="{{ path('admin_order_index') }}">
                                 <span class="pcoded-micon">
-                                    <i class="fal fa-file-invoice"></i>
+                                    <i class="fas fa-file-invoice"></i>
                                 </span>
                                 <span class="pcoded-mtext">Commandes</span>
                             </a>
@@ -82,7 +82,7 @@
                             <li class="{{ app.request.get('_route') == 'admin_order_customers' ? 'active' }}">
                                 <a href="{{ path('admin_order_customers') }}">
                                     <span class="pcoded-micon">
-                                        <i class="fal fa-users"></i>
+                                        <i class="fas fa-users"></i>
                                     </span>
                                     <span class="pcoded-mtext">Clients</span>
                                 </a>
@@ -91,7 +91,7 @@
                             <li class="{{ app.request.get('_route') == 'admin_order_histories' ? 'active' }}">
                                 <a href="{{ path('admin_order_histories') }}">
                                     <span class="pcoded-micon">
-                                        <i class="fal fa-flag"></i>
+                                        <i class="fas fa-flag"></i>
                                     </span>
                                     <span class="pcoded-mtext">Historique</span>
                                 </a>
@@ -102,7 +102,7 @@
                             <li class="pcoded-hasmenu {{ app.request.get('_route') == 'admin_variant_index' ? 'pcoded-trigger' }} {{ app.request.get('_route') == 'admin_product_index' ? 'pcoded-trigger' }} {{ app.request.get('_route') == 'admin_category_index' ? 'pcoded-trigger' }}">
                                 <a href="javascript:void(0)">
                                     <span class="pcoded-micon">
-                                        <i class="fal fa-cube"></i>
+                                        <i class="fas fa-cube"></i>
                                     </span>
                                     <span class="pcoded-mtext">Produits</span>
                                 </a>
@@ -110,26 +110,26 @@
                                     {% if app.user.role == "ROLE_SUPER_ADMIN" %}
                                         <li class="">
                                             <a href="{{ path('admin_variant_index') }}">
-                                                <i class="fal fa-chevron-right"></i> 
+                                                <i class="fas fa-chevron-right"></i> 
                                                 <span class="pcoded-mtext">Grille tarifaire</span>
                                             </a>
                                         </li>
                                         <li class="">
                                             <a href="{{ path('admin_product_index') }}">
-                                                <i class="fal fa-chevron-right"></i> 
+                                                <i class="fas fa-chevron-right"></i> 
                                                 <span class="pcoded-mtext">Stocks</span>
                                             </a>
                                         </li>
                                         <li class="">
                                             <a href="{{ path('admin_category_index') }}">
-                                                <i class="fal fa-chevron-right"></i> 
+                                                <i class="fas fa-chevron-right"></i> 
                                                 <span class="pcoded-mtext">Catégories</span>
                                             </a>
                                         </li>
                                     {% endif %}
                                     <li class="">
                                         <a href="{{ path('admin_preorder_index') }}">
-                                            <i class="fal fa-chevron-right"></i> 
+                                            <i class="fas fa-chevron-right"></i> 
                                             <span class="pcoded-mtext">Á commander</span>
                                         </a>
                                     </li>
@@ -141,26 +141,26 @@
                             <li class="pcoded-hasmenu {{ app.request.get('_route') == 'admin_note_index' ? 'pcoded-trigger' }} {{ app.request.get('_route') == 'admin_cashflow_index' ? 'pcoded-trigger' }} {{ app.request.get('_route') == 'admin_expense_index' ? 'pcoded-trigger' }}">
                                 <a href="javascript:void(0)">
                                     <span class="pcoded-micon">
-                                        <i class="fal fa-euro-sign"></i>
+                                        <i class="fas fa-euro-sign"></i>
                                     </span>
                                     <span class="pcoded-mtext">Comptabilité</span>
                                 </a>
                                 <ul class="pcoded-submenu" style="{{ app.request.get('_route') == 'admin_note_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_cashflow_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_expense_index' ? 'display: block;' }}">
                                     <li class="">
                                         <a href="{{ path('admin_note_index') }}">
-                                            <i class="fal fa-chevron-right"></i> 
+                                            <i class="fas fa-chevron-right"></i> 
                                             <span class="pcoded-mtext">Notes</span>
                                         </a>
                                     </li>
                                     <li class="">
                                         <a href="{{ path('admin_cashflow_index') }}">
-                                            <i class="fal fa-chevron-right"></i> 
+                                            <i class="fas fa-chevron-right"></i> 
                                             <span class="pcoded-mtext">Trésorerie</span>
                                         </a>
                                     </li>
                                     <li class="">
                                         <a href="{{ path('admin_expense_index') }}">
-                                            <i class="fal fa-chevron-right"></i> 
+                                            <i class="fas fa-chevron-right"></i> 
                                             <span class="pcoded-mtext">Dépenses</span>
                                         </a>
                                     </li>
@@ -172,7 +172,7 @@
                             <li class="{{ app.request.get('_route') == 'admin_task_index' ? 'active' }}">
                                 <a href="{{ path('admin_task_index') }}">
                                     <span class="pcoded-micon">
-                                        <i class="fal fa-envelope"></i>
+                                        <i class="fas fa-envelope"></i>
                                     </span>
                                     <span class="pcoded-mtext">Messages</span>
                                 </a>
@@ -183,7 +183,7 @@
                             <li class="{{ app.request.get('_route') == 'admin_admin_index' ? 'active' }}">
                                 <a href="{{ path('admin_admin_index') }}">
                                     <span class="pcoded-micon">
-                                        <i class="fal fa-user-check"></i>
+                                        <i class="fas fa-user-check"></i>
                                     </span>
                                     <span class="pcoded-mtext">Administrateurs</span>
                                 </a>
@@ -193,7 +193,7 @@
                          <li class="">
                             <a href="{{ path('admin_account_logout') }}">
                                 <span class="pcoded-micon">
-                                    <i class="fal fa-power-off"></i>
+                                    <i class="fas fa-power-off"></i>
                                 </span>
                                 <span class="pcoded-mtext">Déconnexion</span>
                             </a>

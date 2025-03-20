@@ -1,0 +1,164 @@
+/* Styles pour la facture */
+body {
+  background: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Logo et en-tête */
+.css-omoi4l {
+  width: auto;
+  margin: 0;
+  vertical-align: inherit;
+  text-align: inherit;
+  padding: 0 2.5rem 0 0;
+}
+
+.css-85hqc7 {
+  max-width: 200px;
+  max-height: 150px;
+}
+
+/* Structure de base */
+.css-1qm6rmu {
+  width: 100%;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.css-1tbjw1x {
+  margin-bottom: 2rem;
+}
+
+.css-adnbnt {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* En-tête de facture */
+.css-1tjvop5 {
+  vertical-align: top;
+}
+
+.css-qja4fv {
+  padding: 3rem 0 0 0;
+  vertical-align: top;
+}
+
+.css-1wp1anf {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.css-vfx11v {
+  margin-bottom: 1rem;
+}
+
+.css-ksw96z {
+  font-size: 2rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+/* Informations de facture */
+.css-9it01c {
+  margin-bottom: 0.5rem;
+}
+
+.css-1e6vnmf {
+  color: #666;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.css-1h1mkoa {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Tableau des articles */
+.css-880ie2 {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem 0;
+}
+
+.css-1azt77c {
+  border-bottom: 1px dashed #bfbfbf;
+}
+
+.css-1hadtxw {
+  padding: 1rem 0;
+  text-align: left;
+  color: #666;
+}
+
+.css-1thp6wa {
+  word-break: break-word;
+  line-height: 1.8rem;
+  font-weight: 400;
+}
+
+.css-1grq8xf {
+  width: 45%;
+  vertical-align: top;
+  padding: 1rem 0 1rem 1.5rem;
+  text-align: left;
+}
+
+.css-9sqco9, .css-1qy6ejf, .css-831qf3 {
+  vertical-align: top;
+  white-space: nowrap;
+  text-align: right;
+  padding: 1rem 0 1rem 1.5rem;
+}
+
+.css-9sqco9 { width: 10%; }
+.css-1qy6ejf { width: 8%; }
+.css-831qf3 { width: 12%; }
+
+/* Totaux */
+.css-zoqlj {
+  padding: 1rem 1rem 1rem 0;
+  text-align: left;
+  vertical-align: middle;
+  width: 20%;
+}
+
+.css-qewpne {
+  padding: 1rem 0;
+  text-align: right;
+}
+
+.css-v4u37s {
+  font-weight: 500;
+}
+
+/* Solde dû */
+.css-3y78v1 {
+  border-top: 2px solid #333;
+}
+
+.css-1euzpax {
+  font-weight: 600;
+  padding: 1rem 1rem 1rem 0;
+}
+
+.css-teyi8j {
+  font-weight: 600;
+  font-size: 1.25rem;
+  padding: 1rem 0;
+  text-align: right;
+}
+
+.css-mu7w39 {
+  color: #e53e3e;
+}
+
+/* Utilitaires */
+.css-blu5nf {
+  border: 0;
+  border-top: 1px solid #e2e8f0;
+  margin: 2rem 0;
+} 

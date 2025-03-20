@@ -44,10 +44,10 @@
                           <td>
                             {% if app.user.role == "ROLE_SUPER_ADMIN" %}
                               <a href="{{ path('admin_category_edit', { id: category.id }) }}">
-                                <i class="fal fa-edit" style="color: #4099ff; font-size: 20px; padding: 3px;"></i>
+                                <i class="fas fa-edit" style="color: #4099ff; font-size: 20px; padding: 3px;"></i>
                               </a>
                               <a href="{{ path('admin_category_delete', { id : category.id }) }}" class="js-delete-element">
-                                <i class="fal fa-trash" style="color: #ff5370; font-size: 20px; padding: 3px;"></i>
+                                <i class="fas fa-trash" style="color: #ff5370; font-size: 20px; padding: 3px;"></i>
                               </a>
                             {% endif %}
                           </td>
