@@ -12,6 +12,7 @@ use App\Repository\CategoryRepository;
 use App\Repository\TransactionRepository;
 use App\Repository\OrderRepository;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,236 +23,92 @@ class AdminStatistiqueController extends AbstractController
    /**
    * Permet d'afficher les statistiques
    */
-   #[Route('/admin/statistiques', name: 'admin_statistiques')]
+   #[Route('/admin/statistiques', name: 'admin_statistique_index')]
    #[IsGranted('ROLE_ADMIN')]
-   public function statistiques(OrderRepository $orderRepo, LineItemRepository $lineItemRepo, Request $request, ObjectManager $manager, FluxRepository $fluxRepo, ProductRepository $productRepo, PriceListRepository $priceRepo, StockListRepository $stockRepo, CategoryRepository $categoryRepo, TransactionRepository $transactionRepo, NoteRepository $noteRepo) {
-   	$start = $request->query->get('start');
-   	$end = $request->query->get('end');
-   	$date1 = new \DateTime('now', timezone_open('Europe/Paris'));
-   	$note = $transactionRepo->totalAmount();
-   	$note ? $note = $note[0]['total'] : $note = 0; $notPaid = 0;
-   	$amounts = [];
-   	$annual = 0;
+   public function index(Request $request, OrderRepository $orderRepo): Response
+   {
+       $labels = [];
+       $data = [];
+       $total = 0;
+       $month = (int)date('m');
+       $year = (int)date('Y');
+       
+       for ($i = 1; $i <= $month; $i++) {
+           $orders = $orderRepo->findByMonth($i, $year);
+           $amount = 0;
+           
+           if ($orders) {
+               foreach ($orders as $order) {
+                   $amount += (float)$order->getTotal();
+               }
+           }
+           
+           $data[] = number_format($amount, 2, '.', '');
+           $total += $amount;
+           $labels[] = $this->getMonthName($i);
+       }
 
-   	if ($start && $end) {
-   		$total = $orderRepo->totalAmountByStartAndEnd($start, $end);
-   		$orders = count($orderRepo->findByStartAndEnd($start, $end));
-   		$online = count($orderRepo->findByPaymentTypeAndStartAndEnd(0, $start, $end));
-   		$local = count($orderRepo->findByPaymentTypeAndStartAndEnd(1, $start, $end));
-      $delivery = count($orderRepo->findByPaymentTypeAndStartAndEnd(2, $start, $end));
-   		$cash = count($orderRepo->findByPaymentMethodAndStartAndEnd(0, $start, $end));
-   		$transcash = count($orderRepo->findByPaymentMethodAndStartAndEnd(1, $start, $end));
-   		$card = count($orderRepo->findByPaymentMethodAndStartAndEnd(2, $start, $end));
-   		$paypal = count($orderRepo->findByPaymentMethodAndStartAndEnd(3, $start, $end));
-   		$pcs = count($orderRepo->findByPaymentMethodAndStartAndEnd(4, $start, $end));
-   		$check = count($orderRepo->findByPaymentMethodAndStartAndEnd(5, $start, $end));
-   		$paysafecard = count($orderRepo->findByPaymentMethodAndStartAndEnd(6, $start, $end));
-   		$bank = count($orderRepo->findByPaymentMethodAndStartAndEnd(7, $start, $end));
-   		$waiting = count($orderRepo->findByStatusAndStartAndEnd(0, $start, $end));
-   		$partial = count($orderRepo->findByStatusAndStartAndEnd(1, $start, $end));
-   		$paid = count($orderRepo->findByStatusAndStartAndEnd(2, $start, $end));
-   		$refund = count($orderRepo->findByStatusAndStartAndEnd(3, $start, $end));
-   		$bestProducts = $orderRepo->findBestProductsStartAndEnd($start, $end);
-   		$bestCategories = $orderRepo->findBestCategoriesStartAndEnd($start, $end);
-   		$bestCustomers = $orderRepo->findBestCustomersStartAndEnd($start, $end);
-   		$expenses = $fluxRepo->totalAmountStartAndEnd(1, $start, $end);
-   		$results = $orderRepo->findByStartAndEnd($start, $end);
-   		$profit = 0;
-
-   		foreach ($results as $result) {
-   			$profit = $profit + ($result->getTotal() - $result->getShippingCost());
-   			foreach ($result->getLineItems() as $line) {
-   				$profit = $profit - ($line->getQuantity() * $line->getProduct()->getPurchasePrice());
-   			}
-   		}
-
-   		$now = \DateTime::createFromFormat("Y-m-d",$start, new \DateTimeZone('Europe/Paris'));
-   		$now2 = \DateTime::createFromFormat("Y-m-d",$end, new \DateTimeZone('Europe/Paris'));
-   		$days = $now2->diff($now)->format("%a") + 1;
-
-   		for ($i = 0; $i < $days; $i++) {
-   			$labels[] = static::dateToFrench($now->format('d M'));
-   			$amount = $orderRepo->totalAmountByDay($now->format('Y-m-d'));
-   			$url = "/admin/orders?start=". $now->format('Y-m-d') . "&end=". $now->format('Y-m-d');
-   			$now->modify('+1 day');
-
-   			if ($amount[0]['total']) {
-   				$amounts[] = [ 'total' => str_replace(",", ".", round($amount[0]['total'], 2)), 'url' => $url ];
-   			} else {
-   				$amounts[] = [ 'total' => 0, 'url' => $url ];
-   			}
-   		}
-   		$array['labels'] = $labels;
-   		$array['amounts'] = $amounts;
-
-   		$category = $categoryRepo->findOneByName('IMPRESSION');
-
-   	} else {
-   		$total = $orderRepo->totalAmount();
-   		$orders = count($orderRepo->findAll());
-   		$online = count($orderRepo->findBy([ "paymentType" => 0 ]));
-   		$local = count($orderRepo->findBy([ "paymentType" => 1 ]));
-      $delivery = count($orderRepo->findBy([ "paymentType" => 2 ]));
-   		$cash = count($orderRepo->findBy([ "paymentMethod" => 0 ]));
-   		$transcash = count($orderRepo->findBy([ "paymentMethod" => 1 ]));
-   		$card = count($orderRepo->findBy([ "paymentMethod" => 2 ]));
-   		$paypal = count($orderRepo->findBy([ "paymentMethod" => 3 ]));
-   		$pcs = count($orderRepo->findBy([ "paymentMethod" => 4 ]));
-   		$check = count($orderRepo->findBy([ "paymentMethod" => 5 ]));
-   		$paysafecard = count($orderRepo->findBy([ "paymentMethod" => 6 ]));
-   		$bank = count($orderRepo->findBy([ "paymentMethod" => 7 ]));
-   		$waiting = count($orderRepo->findBy([ "status" => 0 ]));
-   		$partial = count($orderRepo->findBy([ "status" => 1 ]));
-   		$paid = count($orderRepo->findBy([ "status" => 2 ]));
-   		$refund = count($orderRepo->findBy([ "status" => 3 ]));
-   		$bestProducts = $orderRepo->findBestProducts();
-   		$bestCategories = $orderRepo->findBestCategories();
-   		$bestCustomers = $orderRepo->findBestCustomers();
-   		$expenses = $fluxRepo->findByMonth(1);
-   		$results = $orderRepo->findByMonth();
-   		$profit = 0;
-
-   		foreach ($results as $result) {
-   			$profit = $profit + ($result->getTotal() - $result->getShippingCost());
-   			foreach ($result->getLineItems() as $line) {
-   				$profit = $profit - ($line->getQuantity() * $line->getProduct()->getPurchasePrice());
-   			}
-   		}
-
-
-   		$priceLists = $priceRepo->findPriceListName();
-   		$category = $categoryRepo->findOneByName('IMPRESSION');
-
-   		$now = new \DateTime('now', timezone_open('Europe/Paris'));
-   		$nb = $now->format('d');
-
-      // mois actuel
-   		for ($i = 0; $i < $nb; $i++) {
-   			$labels[] = static::dateToFrench($now->format('d M'));
-   			$amount = $orderRepo->totalAmountByDay($now->format('Y-m-d'));
-   			$url = "/admin/orders?start=". $now->format('Y-m-d') . "&end=". $now->format('Y-m-d');
-   			$now->modify('-1 day');
-
-   			if ($amount[0]['total']) {
-   				$amounts[] = [ 'total' => str_replace(",", ".", round($amount[0]['total'], 2)), 'url' => $url ];
-   			} else {
-   				$amounts[] = [ 'total' => 0, 'url' => $url ];
-   			}
-   		}
-   		$array['labels'] = array_reverse($labels);
-   		$array['amounts'] = array_reverse($amounts);
-   	}
-
-   	$cashflows = $fluxRepo->totalAmount(0);
-   	$products = $productRepo->findBy(['archive' => false, 'digital' => false ]);
-   	$stock = 0; 
-
-   	foreach ($products as $product) {
-   		$quantity = $stockRepo->findQuantityByProduct($product);
-   		$listPrices = $priceRepo->findByProduct($product);
-   		if ($listPrices && $quantity) {
-   			$price = 0;
-   			foreach ($listPrices as $list) {
-   				$price = $price + $list['price'];
-   			}
-   			$price = $price / sizeof($listPrices);
-   			$stock = $stock + ($quantity[0]['quantity'] * round($price, 2));
-   		}
-   	}
-
-      // 12 derniers mois
-   	$date1->modify('first day of this month')->setTime(0, 0, 0);
-   	$year = $date1->format('Y');
-
-   	for ($i = 0; $i < 12; $i++) {
-   		$labels2[] = static::dateToFrench($date1->format('M Y'));
-   		$last = cal_days_in_month(CAL_GREGORIAN, $date1->format('m'), $date1->format('Y'));
-
-   		$amount2 = $orderRepo->totalAmountByStartAndEnd($date1->format('Y-m-01'), $date1->format('Y-m') . "-" . $last . "");
-   		if ($i == 0) {
-   			$month = $amount2;
-   			$annual = $amount2[0]['total'];
-   		} elseif ($date1->format('Y') == $year) {
-   			$annual = $annual + $amount2[0]['total'];
-   		}
-
-   		$url = "/admin/statistiques?start=". $date1->format('Y-m-01') . "&end=". $date1->format('Y-m') . "-" . $last . "";
-   		$date1->modify('-1 month');
-
-   		if ($amount2[0]['total']) {
-   			$amounts2[] = [ 'total' => str_replace(",", ".", round($amount2[0]['total'], 2)), 'url' => $url ];
-   		} else {
-   			$amounts2[] = [ 'total' => 0, 'url' => $url ];
-   		}
-   	}
-
-
-   	$notes = $noteRepo->findAll();
-   	$ordersNote = $orderRepo->findByNotNote();
-
-   	if ($notes) {
-   		foreach ($notes as $note) {
-   			foreach ($note->getTransactions() as $key => $transaction) {
-   				if ($key == 0) {
-   					$notPaid = $notPaid + $transaction->getAmount();
-   				} elseif ($transaction->getInvoice()) {
-   					$remaining = $transaction->getInvoice()->getTotal() - $transaction->getInvoice()->getPaid();
-   					$notPaid = $notPaid + $remaining;
-   				} elseif ($transaction->getAmount() > 0) {
-   					$notPaid = $notPaid + $transaction->getAmount();
-   				}
-   			}
-   		}
-   	}
-
-   	foreach ($ordersNote as $item) {
-   		$notPaid = $notPaid + ($item->getTotal() - $item->getPaid());
-   	}
-
-   	if ($cashflows) {
-   		$notPaid = $notPaid + $cashflows[0]['amount'];
-   	}
-
-   	$array2['labels'] = array_reverse($labels2);
-   	$array2['amounts'] = array_reverse($amounts2);
-
-   	return $this->render('admin/statistiques/index.html.twig', [
-   		'start' => $start,
-   		'end' => $end,
-   		'now' => $now,
-   		'note' => $note,
-   		'profit' => $profit,
-   		'stock' => $stock,
-   		'orders' => $orders,
-   		'annual' => $annual,
-   		'month' => $month,
-   		'total' => $total,
-   		'expenses' => $expenses,
-   		'cashflows' => $cashflows,
-   		'online' => $online,
-   		'local' => $local,
-      'delivery' => $delivery,
-   		'cash' => $cash,
-   		'transcash' => $transcash,
-   		'card' => $card,
-   		'paypal' => $paypal,
-   		'pcs' => $pcs,
-   		'check' => $check,
-   		'paysafecard' => $paysafecard,
-   		'bank' => $bank,
-   		'waiting' => $waiting,
-   		'partial' => $partial,
-   		'paid' => $paid,
-   		'refund' => $refund,
-   		'bestProducts' => $bestProducts,
-   		'bestCategories' => $bestCategories,
-   		'bestCustomers' => $bestCustomers,
-   		'array' => $array,
-   		'array2' => $array2,
-   		'notPaid' => $notPaid,
-   	]);
+       return $this->render('admin/statistique/index.html.twig', [
+           'labels' => json_encode($labels),
+           'data' => json_encode($data),
+           'total' => number_format($total, 2, '.', ' '),
+       ]);
    }
 
+   #[Route('/admin/statistiques/month', name: 'admin_statistique_month')]
+   #[IsGranted('ROLE_ADMIN')]
+   public function month(Request $request, OrderRepository $orderRepo): Response
+   {
+       $month = (int)$request->query->get('month', date('m'));
+       $year = (int)$request->query->get('year', date('Y'));
+       $days = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+       $labels = [];
+       $data = [];
+       $total = 0;
+
+       for ($i = 1; $i <= $days; $i++) {
+           $orders = $orderRepo->findByDay($i, $month, $year);
+           $amount = 0;
+           
+           if ($orders) {
+               foreach ($orders as $order) {
+                   $amount += (float)$order->getTotal();
+               }
+           }
+           
+           $data[] = number_format($amount, 2, '.', '');
+           $total += $amount;
+           $labels[] = $i;
+       }
+
+       return $this->render('admin/statistique/month.html.twig', [
+           'labels' => json_encode($labels),
+           'data' => json_encode($data),
+           'total' => number_format($total, 2, '.', ' '),
+           'month' => $this->getMonthName($month),
+           'year' => $year
+       ]);
+   }
+
+   private function getMonthName(int $month): string
+   {
+       $months = [
+           1 => 'Janvier',
+           2 => 'Février',
+           3 => 'Mars',
+           4 => 'Avril',
+           5 => 'Mai',
+           6 => 'Juin',
+           7 => 'Juillet',
+           8 => 'Août',
+           9 => 'Septembre',
+           10 => 'Octobre',
+           11 => 'Novembre',
+           12 => 'Décembre'
+       ];
+       
+       return $months[$month] ?? '';
+   }
 
    /**
    * Permet d'afficher la valeur des stocks
@@ -287,12 +144,11 @@ class AdminStatistiqueController extends AbstractController
    	]);
    }
 
-
    public static function dateToFrench($date) {
 
    	$french_months = ["Janv.", "Févr.", "Mars", "Avr.", "Mai", "Juin", "Juil.", "Aoùt", "Sept.", "Oct.", "Nov.", "Déc."];
    	$english_months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
    	return str_replace($english_months, $french_months, $date);
-  }
+   }
 }

@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Task;
+use App\Entity\Admin;
 use App\Form\AdminTaskType;
 use App\Repository\TaskRepository;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,6 +16,12 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/admin/task')]
 class AdminTaskController extends AbstractController
 {
+    private function getAdmin(): Admin
+    {
+        /** @var Admin */
+        return $this->getUser();
+    }
+
     #[Route('', name: 'admin_task_index')]
     #[IsGranted('ROLE_ADMIN')]
     public function index(Request $request, TaskRepository $taskRepo): Response
@@ -32,20 +39,20 @@ class AdminTaskController extends AbstractController
 
     #[Route('/new', name: 'admin_task_new')]
     #[IsGranted('ROLE_ADMIN')]
-    public function new(TaskRepository $taskRepo, Request $request, EntityManagerInterface $manager): Response
+    public function new(Request $request, EntityManagerInterface $manager): Response
     {
         $task = new Task();
         $form = $this->createForm(AdminTaskType::class, $task);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $task->setCreatedBy($this->getUser());
+            $task->setCreatedBy($this->getAdmin());
             $manager->persist($task);
             $manager->flush();
 
             $this->addFlash(
                 'success',
-                "Un nouveau message à été ajouté !"
+                "Une nouvelle tâche a été ajoutée !"
             );
 
             return $this->redirectToRoute('admin_task_index');
@@ -85,7 +92,7 @@ class AdminTaskController extends AbstractController
     public function complete(Task $task, TaskRepository $taskRepo, Request $request, EntityManagerInterface $manager): Response
     {
         $task->setComplete(true);
-        $task->setCompleteBy($this->getUser());
+        $task->setCompleteBy($this->getAdmin());
         $task->setUpdatedAt(new \DateTime('now', timezone_open('Europe/Paris')));
         $manager->flush();
 

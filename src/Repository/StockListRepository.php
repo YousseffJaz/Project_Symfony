@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\StockList;
+use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -79,9 +80,9 @@ class StockListRepository extends ServiceEntityRepository
     return $this->findOneBy(['id' => $id]);
   }
 
-  public function findByProduct(int $productId)
+  public function findByProduct(Product $product): array
   {
-    return $this->findBy(['product' => $productId]);
+    return $this->findBy(['product' => $product]);
   }
 }
 

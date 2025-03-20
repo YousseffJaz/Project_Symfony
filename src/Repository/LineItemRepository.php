@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\LineItem;
+use App\Entity\StockList;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -53,7 +54,7 @@ class LineItemRepository extends ServiceEntityRepository
     ->getResult();
   }
 
-  public function findByStock(string $stock)
+  public function findByStock(StockList $stock): array
   {
     return $this->findBy(['stock' => $stock]);
   }

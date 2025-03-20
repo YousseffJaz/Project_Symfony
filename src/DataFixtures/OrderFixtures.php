@@ -14,14 +14,6 @@ use Faker\Factory;
 
 class OrderFixtures extends Fixture implements DependentFixtureInterface
 {
-    private const PAYMENT_TYPES = [
-        0 => 'Non défini',
-        1 => 'Carte bancaire',
-        2 => 'Virement',
-        3 => 'Espèces',
-        4 => 'Chèque'
-    ];
-
     private const ORDER_STATUSES = [
         0 => 'En attente',
         1 => 'En cours',
@@ -29,10 +21,15 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
         3 => 'Annulé'
     ];
 
+    private $faker;
+
+    public function __construct()
+    {
+        $this->faker = Factory::create('fr_FR');
+    }
+
     public function load(ObjectManager $manager): void
     {
-        $faker = Factory::create('fr_FR');
-        
         // Liste des produits disponibles avec leurs prix
         $products = [
             'product_ordinateur_portable_pro' => ['title' => 'Ordinateur Portable Pro', 'price' => 1299.99],
@@ -49,26 +46,26 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
             $order = new Order();
             
             // Informations de base
-            $adminRef = $faker->randomElement($admins);
+            $adminRef = $this->faker->randomElement($admins);
             $order->setAdmin($this->getReference($adminRef, Admin::class));
-            $order->setFirstname($faker->firstName());
-            $order->setLastname($faker->lastName());
-            $order->setPhone($faker->phoneNumber());
-            $order->setEmail($faker->email());
-            $order->setAddress($faker->streetAddress() . ', ' . $faker->postcode() . ' ' . $faker->city());
-            $order->setIdentifier(sprintf('CMD-%s-%03d', $faker->dateTimeBetween('-1 year')->format('Y'), $i));
+            $order->setFirstname($this->faker->firstName());
+            $order->setLastname($this->faker->lastName());
+            $order->setPhone($this->faker->phoneNumber());
+            $order->setEmail($this->faker->email());
+            $order->setAddress($this->faker->streetAddress() . ', ' . $this->faker->postcode() . ' ' . $this->faker->city());
+            $order->setIdentifier(sprintf('CMD-%s-%03d', $this->faker->dateTimeBetween('-1 year')->format('Y'), $i));
 
             // Date de création (répartie sur les 12 derniers mois)
-            $createdAt = $faker->dateTimeBetween('-1 year');
+            $createdAt = $this->faker->dateTimeBetween('-1 year');
             $order->setCreatedAt($createdAt);
 
             // Statut de la commande
-            $status = $faker->randomElement(array_keys(self::ORDER_STATUSES));
+            $status = $this->faker->randomElement(array_keys(self::ORDER_STATUSES));
             $order->setStatus($status);
-            $order->setOrderStatus($faker->numberBetween(0, 2));
+            $order->setOrderStatus($this->faker->numberBetween(0, 2));
 
             // Produits de la commande
-            $numberOfProducts = $faker->numberBetween(1, 4);
+            $numberOfProducts = $this->faker->numberBetween(1, 4);
             $total = 0;
             
             // Sélection aléatoire des produits
@@ -78,7 +75,7 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
 
             foreach ($selectedProductRefs as $productRef) {
                 $productInfo = $products[$productRef];
-                $quantity = $faker->numberBetween(1, 3);
+                $quantity = $this->faker->numberBetween(1, 3);
                 $lineItem = new LineItem();
                 $lineItem->setProduct($this->getReference($productRef, Product::class));
                 $lineItem->setTitle($productInfo['title']);
@@ -91,8 +88,8 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
             }
 
             // Frais de livraison et remises
-            $shippingCost = $total > 1000 ? 0 : $faker->randomElement([0, 15, 20, 25]);
-            $discount = $total > 500 ? $faker->randomElement([0, 50, 100, 150]) : 0;
+            $shippingCost = $total > 1000 ? 0 : $this->faker->randomElement([0, 15, 20, 25]);
+            $discount = $total > 500 ? $this->faker->randomElement([0, 50, 100, 150]) : 0;
             
             $finalTotal = $total + $shippingCost - $discount;
             
@@ -102,8 +99,8 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
 
             // Paiement
             if ($status !== 3) { // Si la commande n'est pas annulée
-                $paymentType = $faker->randomElement([1, 2, 3, 4]); // Exclure le type 0 (Non défini)
-                $paid = $status === 2 ? $finalTotal : ($faker->boolean(70) ? $finalTotal : 0);
+                $paymentType = $this->faker->randomElement([1, 2, 3, 4]); // Exclure le type 0 (Non défini)
+                $paid = $status === 2 ? $finalTotal : ($this->faker->boolean(70) ? $finalTotal : 0);
             } else {
                 $paymentType = 0;
                 $paid = 0;
@@ -123,7 +120,7 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
                 'Commande annulée - Rupture de stock',
                 'Instructions spéciales de livraison',
             ];
-            $order->setNote($faker->randomElement($notes));
+            $order->setNote($this->faker->randomElement($notes));
 
             // Historique de la commande
             $this->createOrderHistory($manager, $order, $status, $createdAt);

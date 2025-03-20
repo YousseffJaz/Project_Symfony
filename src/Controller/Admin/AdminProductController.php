@@ -213,4 +213,39 @@ class AdminProductController extends AbstractController
 
         return $this->redirectToRoute("admin_product_index");
     }
+
+    #[Route('/admin/products/variant/delete', name: 'admin_product_variant_delete')]
+    #[IsGranted('ROLE_ADMIN')]
+    public function deleteVariant(Request $request, VariantRepository $variantRepo, EntityManagerInterface $manager): Response
+    {
+        $id = $request->query->get('id');
+        if ($id) {
+            $variant = $variantRepo->find($id);
+            if ($variant) {
+                $manager->remove($variant);
+                $manager->flush();
+            }
+        }
+
+        return $this->json(true);
+    }
+
+    #[Route('/admin/products/stock', name: 'admin_product_stock')]
+    #[IsGranted('ROLE_ADMIN')]
+    public function stock(Request $request, StockListRepository $stockRepo, ProductRepository $productRepo): Response
+    {
+        $productId = $request->query->get('id');
+        if ($productId) {
+            $product = $productRepo->find($productId);
+            if ($product) {
+                $stocks = $stockRepo->findByProduct($product);
+                return $this->render('admin/product/stock.html.twig', [
+                    'stocks' => $stocks,
+                    'product' => $product
+                ]);
+            }
+        }
+        
+        return $this->redirectToRoute('admin_product_index');
+    }
 }

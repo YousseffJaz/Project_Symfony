@@ -9,6 +9,7 @@ use App\Entity\Upload;
 use App\Entity\Folder;
 use App\Entity\LineItem;
 use App\Entity\Order;
+use App\Entity\Admin;
 use App\Form\AdminOrderType;
 use Spipu\Html2Pdf\Html2Pdf;
 use App\Repository\UserRepository;
@@ -38,6 +39,12 @@ class AdminOrderController extends AbstractController
     {
     }
 
+    private function getAdmin(): Admin
+    {
+        /** @var Admin */
+        return $this->getUser();
+    }
+
     #[Route('/admin/orders', name: 'admin_order_index')]
     #[IsGranted('ROLE_ADMIN')]
     public function index(Request $request, OrderRepository $orderRepo, LineItemRepository $lineItemRepo): Response
@@ -47,7 +54,7 @@ class AdminOrderController extends AbstractController
         $alreadyPaid = 0;
 
         if ($this->security->isGranted('ROLE_LIVREUR')) {
-            $orders = $orderRepo->findByDeliveryAndUser($this->getUser());
+            $orders = $orderRepo->findByDeliveryAndUser($this->getAdmin());
 
             return $this->render('admin/order/index.html.twig', [
                 'search' => '',
@@ -382,10 +389,12 @@ class AdminOrderController extends AbstractController
                             $order->addLineItem($item);
                             $stock->setQuantity($stock->getQuantity() - $quantity[$i]);
 
+                            /** @var Admin */
+                            $admin = $this->getAdmin();
                             $history = new OrderHistory();
                             $history->setTitle("Le produit '{$variant->getTitle()}' a été ajouté en '{$quantity[$i]}' exemplaire(s) pour '{$price[$i]}€'");
                             $history->setInvoice($order);
-                            $history->setAdmin($this->getUser());
+                            $history->setAdmin($admin);
                             $manager->persist($history);
                             $manager->flush();
                         }
@@ -434,7 +443,9 @@ class AdminOrderController extends AbstractController
                 }
             }
 
-            $order->setAdmin($this->getUser());
+            /** @var Admin */
+            $admin = $this->getAdmin();
+            $order->setAdmin($admin);
             $manager->persist($order);
             $manager->flush();
 
@@ -502,10 +513,12 @@ class AdminOrderController extends AbstractController
                             $order->addLineItem($item);
                             $stock->setQuantity($stock->getQuantity() - $quantity[$i]);
 
+                            /** @var Admin */
+                            $admin = $this->getAdmin();
                             $history = new OrderHistory();
                             $history->setTitle("Le produit '{$variant->getTitle()}' a été ajouté en '{$quantity[$i]}' exemplaire(s) pour '{$price[$i]}€'");
                             $history->setInvoice($order);
-                            $history->setAdmin($this->getUser());
+                            $history->setAdmin($admin);
                             $manager->persist($history);
                             $manager->flush();
                         }
@@ -561,7 +574,7 @@ class AdminOrderController extends AbstractController
                 $history = new OrderHistory();
                 $history->setTitle("Le prénom '{$order2->getFirstname()}' a été modifié par '{$order->getFirstname()}'");
                 $history->setInvoice($order);
-                $history->setAdmin($this->getUser());
+                $history->setAdmin($this->getAdmin());
                 $manager->persist($history);
             }
 
@@ -569,7 +582,7 @@ class AdminOrderController extends AbstractController
                 $history = new OrderHistory();
                 $history->setTitle("Le nom '{$order2->getLastname()}' a été modifié par '{$order->getLastname()}'");
                 $history->setInvoice($order);
-                $history->setAdmin($this->getUser());
+                $history->setAdmin($this->getAdmin());
                 $manager->persist($history);
             }
 
@@ -577,7 +590,7 @@ class AdminOrderController extends AbstractController
                 $history = new OrderHistory();
                 $history->setTitle("L'adresse '{$order2->getAddress()}' a été modifié par '{$order->getAddress()}'");
                 $history->setInvoice($order);
-                $history->setAdmin($this->getUser());
+                $history->setAdmin($this->getAdmin());
                 $manager->persist($history);
             }
 
@@ -585,7 +598,7 @@ class AdminOrderController extends AbstractController
                 $history = new OrderHistory();
                 $history->setTitle("Le numéro de téléphone '{$order2->getPhone()}' a été modifié par '{$order->getPhone()}'");
                 $history->setInvoice($order);
-                $history->setAdmin($this->getUser());
+                $history->setAdmin($this->getAdmin());
                 $manager->persist($history);
             }
 
@@ -593,7 +606,7 @@ class AdminOrderController extends AbstractController
                 $history = new OrderHistory();
                 $history->setTitle("Les frais d'expédition '{$order2->getShippingCost()}€' ont été modifié par '{$order->getShippingCost()}€'");
                 $history->setInvoice($order);
-                $history->setAdmin($this->getUser());
+                $history->setAdmin($this->getAdmin());
                 $manager->persist($history);
             }
 
@@ -601,7 +614,7 @@ class AdminOrderController extends AbstractController
                 $history = new OrderHistory();
                 $history->setTitle("La réduction de '{$order2->getDiscount()}%' a été modifié par '{$order->getDiscount()}%'");
                 $history->setInvoice($order);
-                $history->setAdmin($this->getUser());
+                $history->setAdmin($this->getAdmin());
                 $manager->persist($history);
             }
 
@@ -609,7 +622,7 @@ class AdminOrderController extends AbstractController
                 $history = new OrderHistory();
                 $history->setTitle("Le montant payé de '{$order2->getPaid()}€' a été modifié par '{$order->getPaid()}€'");
                 $history->setInvoice($order);
-                $history->setAdmin($this->getUser());
+                $history->setAdmin($this->getAdmin());
                 $manager->persist($history);
             }
 
@@ -617,7 +630,7 @@ class AdminOrderController extends AbstractController
                 $history = new OrderHistory();
                 $history->setTitle("Le commentaire '{$order2->getNote()}' a été modifié par '{$order->getNote()}'");
                 $history->setInvoice($order);
-                $history->setAdmin($this->getUser());
+                $history->setAdmin($this->getAdmin());
                 $manager->persist($history);
             }
 
@@ -648,7 +661,7 @@ class AdminOrderController extends AbstractController
                 $history = new OrderHistory();
                 $history->setTitle("Le statut du paiement '{$status1}' a été modifié par '{$status2}'");
                 $history->setInvoice($order);
-                $history->setAdmin($this->getUser());
+                $history->setAdmin($this->getAdmin());
                 $manager->persist($history);
             }
 
@@ -676,7 +689,7 @@ class AdminOrderController extends AbstractController
                 $history = new OrderHistory();
                 $history->setTitle("Le statut de la commande '{$status1}' a été modifié par '{$status2}'");
                 $history->setInvoice($order);
-                $history->setAdmin($this->getUser());
+                $history->setAdmin($this->getAdmin());
                 $manager->persist($history);
             }
 
@@ -712,7 +725,7 @@ class AdminOrderController extends AbstractController
                 $history = new OrderHistory();
                 $history->setTitle("Le type de paiement '{$status1}' a été modifié par '{$status2}'");
                 $history->setInvoice($order);
-                $history->setAdmin($this->getUser());
+                $history->setAdmin($this->getAdmin());
                 $manager->persist($history);
             }
 
@@ -760,7 +773,7 @@ class AdminOrderController extends AbstractController
                 $history = new OrderHistory();
                 $history->setTitle("Le moyen de paiement '{$status1}' a été modifié par '{$status2}'");
                 $history->setInvoice($order);
-                $history->setAdmin($this->getUser());
+                $history->setAdmin($this->getAdmin());
                 $manager->persist($history);
             }
 
@@ -772,7 +785,7 @@ class AdminOrderController extends AbstractController
                     $history->setTitle("Un ficher a été ajouté !");
                 }
                 $history->setInvoice($order);
-                $history->setAdmin($this->getUser());
+                $history->setAdmin($this->getAdmin());
                 $manager->persist($history);
             }
 
@@ -851,6 +864,12 @@ class AdminOrderController extends AbstractController
         $manager->persist($upload);
         $manager->flush();
 
+        $history = new OrderHistory();
+        $history->setTitle("Le fichier '{$upload->getFilename()}' a été supprimé");
+        $history->setInvoice($upload->getOrder());
+        $history->setAdmin($this->getAdmin());
+        $manager->persist($history);
+
         return $this->json([
             'filename' => $upload->getFilename(),
             'id' => $upload->getId(),
@@ -868,10 +887,12 @@ class AdminOrderController extends AbstractController
             $upload = $repo->findOneByFilename($filename);
             
             if ($upload) {
+                /** @var Admin */
+                $admin = $this->getAdmin();
                 $history = new OrderHistory();
                 $history->setTitle("Le fichier '{$upload->getFilename()}' a été supprimé");
                 $history->setInvoice($upload->getOrder());
-                $history->setAdmin($this->getUser());
+                $history->setAdmin($admin);
                 $manager->persist($history);
 
                 $manager->remove($upload);
@@ -895,10 +916,12 @@ class AdminOrderController extends AbstractController
             $order->setTotal($order->getTotal() - $lineItem->getPrice());
         }
 
+        /** @var Admin */
+        $admin = $this->getAdmin();
         $history = new OrderHistory();
         $history->setTitle("Le produit '{$lineItem->getTitle()}' en '{$lineItem->getQuantity()}' exemplaire(s) pour '{$lineItem->getPrice()}€' a été supprimé");
         $history->setInvoice($lineItem->getOrderItem());
-        $history->setAdmin($this->getUser());
+        $history->setAdmin($admin);
         $manager->persist($history);
 
         $manager->remove($lineItem);            

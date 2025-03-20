@@ -148,15 +148,16 @@ class OrderRepository extends ServiceEntityRepository
   }
 
 
-  public function findByMonth(){
-    $now = new \DateTime('now', timezone_open('Europe/Paris'));
-    $now = $now->setTime(00, 00, 00);
+  public function findByMonth(int $month, int $year): array
+  {
+    $qb = $this->createQueryBuilder('o')
+      ->where('MONTH(o.createdAt) = :month')
+      ->andWhere('YEAR(o.createdAt) = :year')
+      ->setParameter('month', $month)
+      ->setParameter('year', $year)
+      ->orderBy('o.createdAt', 'DESC');
 
-    $query = $this->createQueryBuilder('o')
-    ->andWhere('o.createdAt >= :start')
-    ->setParameter('start', $now->format('Y-m-01'));
-
-    return $query->getQuery()->getResult();
+    return $qb->getQuery()->getResult();
   }
 
   public function findByLivraison(){
@@ -432,6 +433,20 @@ class OrderRepository extends ServiceEntityRepository
   public function findByFirstname(string $firstname)
   {
     return $this->findBy(['firstname' => $firstname]);
+  }
+
+  public function findByDay(int $day, int $month, int $year): array
+  {
+    $qb = $this->createQueryBuilder('o')
+      ->where('DAY(o.createdAt) = :day')
+      ->andWhere('MONTH(o.createdAt) = :month')
+      ->andWhere('YEAR(o.createdAt) = :year')
+      ->setParameter('day', $day)
+      ->setParameter('month', $month)
+      ->setParameter('year', $year)
+      ->orderBy('o.createdAt', 'DESC');
+
+    return $qb->getQuery()->getResult();
   }
 }
 
