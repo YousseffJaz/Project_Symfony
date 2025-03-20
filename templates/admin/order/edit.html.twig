@@ -10,7 +10,7 @@
   <div class="pcoded-inner-content">
     <div class="main-body">
       <div class="page-wrapper">
-        <div class="page-body">
+        <div class="page-body" data-order="{{ order.id }}">
           {% for label, messages in app.flashes %}
             <div class="alert alert-{{ label }} background-{{ label }}">
               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -131,7 +131,7 @@
                 <section class="row p-6 md:p-8 md:flex md:flex-row md:rounded-xl">
                   <div class="col-md-6 w-full md:px-0 md:mr-8 md:w-1/2">
                   <label class="required" for="admin_order_orderStatus" style=" margin-top: 10px;">Ajouter des fichiers</label>
-                    <send-upload-area class="flex flex-col items-center justify-center border-2 border-dashed border-grey-transparent rounded px-6 py-16 h-full w-full dark:border-grey-60" style="max-height: 200px;">
+                    <send-upload-area class="flex flex-col items-center justify-center border-2 border-dashed border-grey-transparent rounded px-6 py-16 h-full w-full dark:border-grey-60" style="max-height: 200px;" data-order="{{ order.id }}">
                       <input id="file-upload" type="file" multiple="multiple" class="opacity-0 w-0 h-0 appearance-none absolute overflow-hidden" />
                       <label role="button" for="file-upload" class="btn rounded-lg flex items-center mt-4" style="background-color: rgba(0, 96, 223, 1); color :white; padding: 12px 30px;">Ajouter un fichier</label>
                     </send-upload-area>
@@ -586,7 +586,7 @@ $(function () {
   });
   function saveFile(input) {
     var url = '{{ path("admin_order_upload") }}';
-    var order = $('.card').data('order');
+    var order = $('div[data-order]').first().data('order');
     var length = input.files.length;
     $.each(input.files, function(index, value) {
       let formData = new FormData();           
@@ -596,15 +596,28 @@ $(function () {
       .then(function(response) {
         if (response.status == "200") {
           response.json().then(function(upload) {
-            if (upload.filename.includes("pdf")) {
-              $('#show-files').append(`<li class="bg-white mt-2 mb-4 shadow-light rounded dark:bg-grey-90 dark:border dark:border-grey-80" style="list-style: none;"><div class="flex flex-row items-center p3 w-full" style="justify-content: space-between"><div><h1 data-id="`+upload.id+`" class="text-base font-medium word-break-all" style="margin-bottom: 5px;">`+upload.filename+`</h1><a href="{{ app.request.getBaseUrl() }}/uploads/`+upload.filename+`" target="_blank" data-filename="`+upload.filename+`" style="font-size: 13px; cursor: pointer; text-decoration: underline; color: #007bff;" download="`+upload.filename+`">Télécharger</a></div><object type="application/pdf" data="{{ app.request.getBaseUrl() }}/uploads/`+upload.filename+`" height="200"></object><a href="{{ app.request.getBaseUrl() }}/uploads/`+upload.filename+`" class="flex items-center js-delete-file" data-filename="`+upload.filename+`"><i class="fal fa-times" style="padding-right: 7px; color: red; font-size: 17px;"></i></a></div></li>`);
-            } else {
-              $('#show-files').append(`<li class="bg-white mt-2 mb-4 shadow-light rounded dark:bg-grey-90 dark:border dark:border-grey-80" style="list-style: none;"><div class="flex flex-row items-center p3 w-full" style="justify-content: space-between"><div><h1 data-id="`+upload.id+`" class="text-base font-medium word-break-all" style="margin-bottom: 5px;">`+upload.filename+`</h1><a href="{{ app.request.getBaseUrl() }}/uploads/`+upload.filename+`" target="_blank" data-filename="`+upload.filename+`" style="font-size: 13px; cursor: pointer; text-decoration: underline; color: #007bff;" download="`+upload.filename+`">Télécharger</a></div><img src="{{ app.request.getBaseUrl() }}/uploads/`+upload.filename+`" style="width: 300px; max-height: 200px;object-fit: cover;"><a href="{{ app.request.getBaseUrl() }}/uploads/`+upload.filename+`" class="flex items-center js-delete-file" data-filename="`+upload.filename+`"><i class="fal fa-times" style="padding-right: 7px; color: red; font-size: 17px;"></i></a></div></li>`);
-            }
+            var preview = upload.filename.includes("pdf") 
+              ? `<object type="application/pdf" data="{{ app.request.getBaseUrl() }}/uploads/${upload.filename}" height="200"></object>`
+              : `<img src="{{ app.request.getBaseUrl() }}/uploads/${upload.filename}" style="width: 300px; max-height: 200px;object-fit: cover;">`;
+            
+            $('#show-files').append(`
+              <li class="bg-white mt-2 mb-4 shadow-light rounded dark:bg-grey-90 dark:border dark:border-grey-80" style="list-style: none;">
+                <div class="flex flex-row items-center p3 w-full" style="justify-content: space-between">
+                  <div>
+                    <h1 data-id="${upload.id}" class="text-base font-medium word-break-all" style="margin-bottom: 5px;">${upload.filename}</h1>
+                    <a href="{{ app.request.getBaseUrl() }}/uploads/${upload.filename}" target="_blank" data-filename="${upload.filename}" style="font-size: 13px; cursor: pointer; text-decoration: underline; color: #007bff;" download="${upload.filename}">Télécharger</a>
+                  </div>
+                  ${preview}
+                  <a href="{{ app.request.getBaseUrl() }}/uploads/${upload.filename}" class="flex items-center js-delete-file" data-filename="${upload.filename}">
+                    <i class="fal fa-times" style="padding-right: 7px; color: red; font-size: 17px;"></i>
+                  </a>
+                </div>
+              </li>
+            `);
           });
         } else {
           response.json().then(function(error) { 
-            alert(error);
+            alert(error.message);
           });
         }
       }).catch(function(error) {

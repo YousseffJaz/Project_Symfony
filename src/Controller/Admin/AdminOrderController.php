@@ -381,6 +381,7 @@ class AdminOrderController extends AbstractController
                             $history->setInvoice($order);
                             $history->setAdmin($this->getUser());
                             $manager->persist($history);
+                            $manager->flush();
                         }
                     }
                 }
@@ -448,7 +449,7 @@ class AdminOrderController extends AbstractController
 
     #[Route('/admin/orders/edit/{id}', name: 'admin_order_edit')]
     #[IsGranted('ROLE_ADMIN')]
-    public function edit(Order $order, ProductRepository $productRepository, VariantRepository $variantRepo, Request $request, EntityManagerInterface $manager, TransactionRepository $transactionRepo, StockListRepository $stockRepo, AdminRepository $adminRepo, FolderRepository $folderRepo): Response
+    public function edit(Order $order, ProductRepository $productRepository, VariantRepository $variantRepo, Request $request, EntityManagerInterface $manager, TransactionRepository $transactionRepo, StockListRepository $stockRepo, AdminRepository $adminRepo): Response
     {
         $order2 = clone $order;
         $form = $this->createForm(AdminOrderType::class, $order);
@@ -500,6 +501,7 @@ class AdminOrderController extends AbstractController
                             $history->setInvoice($order);
                             $history->setAdmin($this->getUser());
                             $manager->persist($history);
+                            $manager->flush();
                         }
                     }
                 }
@@ -555,26 +557,6 @@ class AdminOrderController extends AbstractController
                 $history->setInvoice($order);
                 $history->setAdmin($this->getUser());
                 $manager->persist($history);
-                $manager->flush();
-
-                if ($order->getUploads()) {
-                    foreach ($order->getUploads() as $upload) {
-                        $name = $upload->getInvoice()->getFirstname() . " " . $upload->getInvoice()->getLastname();
-                        $name = trim($name);
-                        $folder = $folderRepo->findOneByName($name);
-
-                        if (!$folder) {
-                            $folder = new Folder();
-                            $folder->setName($name);
-                            $folder->setType(0);
-                            $manager->persist($folder);
-                        }
-                        
-                        $upload->setFolder($folder);
-                        $manager->flush();
-                    }
-                }
-
             }
 
             if ($order2->getLastname() != $order->getLastname()) {
@@ -583,25 +565,6 @@ class AdminOrderController extends AbstractController
                 $history->setInvoice($order);
                 $history->setAdmin($this->getUser());
                 $manager->persist($history);
-                $manager->flush();
-
-                if ($order->getUploads()) {
-                    foreach ($order->getUploads() as $upload) {
-                        $name = $upload->getInvoice()->getFirstname() . " " . $upload->getInvoice()->getLastname();
-                        $name = trim($name);
-                        $folder = $folderRepo->findOneByName($name);
-
-                        if (!$folder) {
-                            $folder = new Folder();
-                            $folder->setName($name);
-                            $folder->setType(0);
-                            $manager->persist($folder);
-                        }
-                        
-                        $upload->setFolder($folder);
-                        $manager->flush();
-                    }
-                }
             }
 
             if ($order2->getAddress() != $order->getAddress()) {
@@ -848,55 +811,45 @@ class AdminOrderController extends AbstractController
 
     #[Route('/admin/order/upload', name: 'admin_order_upload')]
     #[IsGranted('ROLE_ADMIN')]
-    public function upload(Request $request, EntityManagerInterface $manager, OrderRepository $orderRepo, UserRepository $userRepo, FolderRepository $folderRepo): Response
+    public function upload(Request $request, EntityManagerInterface $manager, OrderRepository $orderRepo, UserRepository $userRepo): Response
     {
         $file = $request->files->get('file');
-        $order = $request->request->get('order');
-        $user = $request->request->get('user');
+        $orderId = $request->request->get('order');
+        $order = null;
+
+        if ($orderId) {
+            $order = $orderRepo->find($orderId);
+        }
 
         if (!$file) {
-            return $this->json("Le fichier est introuvable !", 404);
+            return $this->json([
+                'code' => 400,
+                'message' => "Pas de fichier"
+            ], 400);
         }
 
-        if (!$order) {
-            return $this->json("La commande est introuvable !", 404);
-        } else {
-            $order = $orderRepo->findOneById($order);
+        if ($file->getError()) {
+            return $this->json([
+                'code' => 400,
+                'message' => $file->getErrorMessage()
+            ], 400);
         }
-
-        $filepath = $this->getParameter('uploads_directory') . '/';
-        $file->move($filepath, $file->getClientOriginalName());
 
         $upload = new Upload();
-        $upload->setFilename($file->getClientOriginalName());
-        $upload->setName($file->getClientOriginalName());
-
-        $history = new OrderHistory();
-        $history->setTitle("Le fichier '{$upload->getFilename()}' a été ajouté");
-        $history->setAdmin($this->getUser());
-
+        $upload->setFile($file);
+        
         if ($order) {
-            $upload->setInvoice($order);
-            $history->setInvoice($upload->getInvoice());
+            $upload->setOrder($order);
         }
-        $name = $upload->getInvoice()->getFirstname() . " " . $upload->getInvoice()->getLastname();
-        $name = trim($name);
-        $folder = $folderRepo->findOneByName($name);
-
-        if (!$folder) {
-            $folder = new Folder();
-            $folder->setName($name);
-            $folder->setType(0);
-            $manager->persist($folder);
-        }
-
-        $upload->setFolder($folder);
-
+        
         $manager->persist($upload);
-        $manager->persist($history);
         $manager->flush();
 
-        return $this->json($upload);
+        return $this->json([
+            'filename' => $upload->getFilename(),
+            'id' => $upload->getId(),
+            'name' => $upload->getName()
+        ], 200);
     }
 
     #[Route('/admin/order/upload/delete', name: 'admin_order_upload_delete')]
@@ -911,7 +864,7 @@ class AdminOrderController extends AbstractController
             if ($upload) {
                 $history = new OrderHistory();
                 $history->setTitle("Le fichier '{$upload->getFilename()}' a été supprimé");
-                $history->setInvoice($upload->getInvoice());
+                $history->setInvoice($upload->getOrder());
                 $history->setAdmin($this->getUser());
                 $manager->persist($history);
 

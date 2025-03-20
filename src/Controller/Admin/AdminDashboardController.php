@@ -27,12 +27,74 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class AdminDashboardController extends AbstractController
 {
     #[Route('/', name: 'app_admin_dashboard')]
-    public function index(UserRepository $userRepo): Response
-    {
+    public function index(
+        UserRepository $userRepo,
+        OrderRepository $orderRepo,
+        ProductRepository $productRepo,
+        TaskRepository $taskRepo
+    ): Response {
+        // Statistiques utilisateurs
         $totalUsers = count($userRepo->findAll());
+
+        // Statistiques commandes
+        $today = new \DateTime('now');
+        $todayStart = clone $today;
+        $todayStart->setTime(0, 0, 0);
+        $todayEnd = clone $today;
+        $todayEnd->setTime(23, 59, 59);
+
+        // Commandes du jour
+        $todayOrders = $orderRepo->findByStartAndEnd(
+            $todayStart->format('Y-m-d'),
+            $todayEnd->format('Y-m-d')
+        );
+        $todayOrdersCount = count($todayOrders);
+        $todayOrdersTotal = 0;
+        foreach ($todayOrders as $order) {
+            $todayOrdersTotal += $order->getTotal();
+        }
+
+        // Commandes en attente
+        $pendingOrders = count($orderRepo->findBy(['status' => 0]));
+        
+        // Commandes en cours
+        $processingOrders = count($orderRepo->findBy(['status' => 1]));
+        
+        // Commandes livrées
+        $deliveredOrders = count($orderRepo->findBy(['status' => 2]));
+        
+        // Commandes annulées
+        $canceledOrders = count($orderRepo->findBy(['status' => 3]));
+
+        // Chiffre d'affaires du mois
+        $monthStart = new \DateTime('first day of this month');
+        $monthEnd = new \DateTime('last day of this month');
+        $monthOrders = $orderRepo->findByStartAndEnd(
+            $monthStart->format('Y-m-d'),
+            $monthEnd->format('Y-m-d')
+        );
+        $monthlyRevenue = 0;
+        foreach ($monthOrders as $order) {
+            $monthlyRevenue += $order->getTotal();
+        }
+
+        // Produits en rupture de stock
+        $lowStockProducts = count($productRepo->findBy(['alert' => true]));
+
+        // Tâches en attente
+        $pendingTasks = count($taskRepo->findBy(['complete' => false]));
 
         return $this->render('admin/dashboard/index.html.twig', [
             'totalUsers' => $totalUsers,
+            'todayOrdersCount' => $todayOrdersCount,
+            'todayOrdersTotal' => $todayOrdersTotal,
+            'pendingOrders' => $pendingOrders,
+            'processingOrders' => $processingOrders,
+            'deliveredOrders' => $deliveredOrders,
+            'canceledOrders' => $canceledOrders,
+            'monthlyRevenue' => $monthlyRevenue,
+            'lowStockProducts' => $lowStockProducts,
+            'pendingTasks' => $pendingTasks,
         ]);
     }
 

@@ -97,37 +97,6 @@
                                 </a>
                             </li>
                         {% endif %}
-                        {% if app.user.role == "ROLE_SUPER_ADMIN" or app.user.role == "ROLE_EMPLOYÉ" %}
-                            <hr style="border-top: 1px solid rgba(0,0,0,0.1);margin: 0px;">
-                            <li class="pcoded-hasmenu {{ app.request.get('_route') == 'admin_folder_search' ? 'pcoded-trigger' }} {{ app.request.get('_route') == 'admin_folder_collections' ? 'pcoded-trigger' }}">
-                                <a href="javascript:void(0)">
-                                    <span class="pcoded-micon">
-                                        <i class="fal fa-images"></i>
-                                    </span>
-                                    <span class="pcoded-mtext">Fichiers</span>
-                                </a>
-                                <ul class="pcoded-submenu" style="{{ app.request.get('_route') == 'admin_folder_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_folder_search' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_folder_collections' ? 'display: block;' }}">
-                                    <li class="">
-                                        <a href="{{ path('admin_folder_index') }}">
-                                            <i class="fal fa-chevron-right"></i> 
-                                            <span class="pcoded-mtext">Clients</span>
-                                        </a>
-                                    </li>
-                                    <li class="">
-                                        <a href="{{ path('admin_folder_collections') }}">
-                                            <i class="fal fa-chevron-right"></i> 
-                                            <span class="pcoded-mtext">Collections</span>
-                                        </a>
-                                    </li>
-                                    <li class="">
-                                        <a href="{{ path('admin_folder_search') }}">
-                                            <i class="fal fa-chevron-right"></i> 
-                                            <span class="pcoded-mtext">Recherche</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                        {% endif %}
                         {% if app.user.role == "ROLE_SUPER_ADMIN" %}
                             <hr style="border-top: 1px solid rgba(0,0,0,0.1);margin: 0px;">
                             <li class="pcoded-hasmenu {{ app.request.get('_route') == 'admin_variant_index' ? 'pcoded-trigger' }} {{ app.request.get('_route') == 'admin_product_index' ? 'pcoded-trigger' }} {{ app.request.get('_route') == 'admin_category_index' ? 'pcoded-trigger' }}">

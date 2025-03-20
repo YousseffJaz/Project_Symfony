@@ -71,7 +71,7 @@ class Order
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $orderStatus = null;
 
-    #[ORM\OneToMany(targetEntity: Upload::class, mappedBy: 'invoice', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Upload::class, mappedBy: 'order', orphanRemoval: true)]
     private Collection $uploads;
 
     #[ORM\Column(type: 'boolean', nullable: true)]
@@ -375,7 +375,7 @@ class Order
     {
         if (!$this->uploads->contains($upload)) {
             $this->uploads[] = $upload;
-            $upload->setInvoice($this);
+            $upload->setOrder($this);
         }
 
         return $this;
@@ -385,8 +385,8 @@ class Order
     {
         if ($this->uploads->removeElement($upload)) {
             // set the owning side to null (unless already changed)
-            if ($upload->getInvoice() === $this) {
-                $upload->setInvoice(null);
+            if ($upload->getOrder() === $this) {
+                $upload->setOrder(null);
             }
         }
 

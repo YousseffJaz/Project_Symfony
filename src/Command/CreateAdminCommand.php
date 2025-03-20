@@ -58,7 +58,6 @@ class CreateAdminCommand extends Command
         $admin->setStatistics(true);
         $admin->setInvoices(true);
         $admin->setHistories(true);
-        $admin->setFolders(true);
         $admin->setProducts(true);
         $admin->setAccounting(true);
 

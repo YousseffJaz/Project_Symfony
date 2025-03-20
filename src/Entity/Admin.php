@@ -54,9 +54,6 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
     private bool $histories = false;
 
     #[ORM\Column(type: 'boolean', nullable: true)]
-    private bool $folders = false;
-
-    #[ORM\Column(type: 'boolean', nullable: true)]
     private bool $products = false;
 
     #[ORM\Column(type: 'boolean', nullable: true)]
@@ -99,7 +96,6 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
         $this->statistics = false;
         $this->invoices = false;
         $this->histories = false;
-        $this->folders = false;
         $this->products = false;
         $this->accounting = false;
         $this->orderHistories = new ArrayCollection();
@@ -443,18 +439,6 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
     public function setHistories(bool $histories): self
     {
         $this->histories = $histories;
-
-        return $this;
-    }
-
-    public function isFolders(): bool
-    {
-        return $this->folders;
-    }
-
-    public function setFolders(bool $folders): self
-    {
-        $this->folders = $folders;
 
         return $this;
     }

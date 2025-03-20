@@ -10,211 +10,190 @@ use App\Entity\OrderHistory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use Faker\Factory;
 
 class OrderFixtures extends Fixture implements DependentFixtureInterface
 {
+    private const PAYMENT_TYPES = [
+        0 => 'Non défini',
+        1 => 'Carte bancaire',
+        2 => 'Virement',
+        3 => 'Espèces',
+        4 => 'Chèque'
+    ];
+
+    private const ORDER_STATUSES = [
+        0 => 'En attente',
+        1 => 'En cours',
+        2 => 'Livré',
+        3 => 'Annulé'
+    ];
+
     public function load(ObjectManager $manager): void
     {
-        $orders = [
-            [
-                'reference' => 'order_1',
-                'admin' => 'admin_test',
-                'firstname' => 'John',
-                'lastname' => 'Doe',
-                'phone' => '0612345678',
-                'address' => '123 Rue de la Paix, 75001 Paris',
-                'identifier' => 'CMD-2024-001',
-                'createdAt' => new \DateTime('2024-03-15 10:30:00'),
-                'products' => [
-                    [
-                        'product' => 'product_ordinateur_portable_pro',
-                        'title' => 'Ordinateur Portable Pro',
-                        'quantity' => 1,
-                        'price' => 1299.99,
-                    ],
-                    [
-                        'product' => 'product_cable_usb_type-c',
-                        'title' => 'Cable USB Type-C',
-                        'quantity' => 2,
-                        'price' => 19.99,
-                    ],
-                ],
-                'status' => 2, // Livré
-                'orderStatus' => 1,
-                'total' => 1339.97,
-                'shippingCost' => 15.00,
-                'discount' => 0,
-                'paid' => 1339.97,
-                'paymentType' => 1, // CB
-                'paymentMethod' => 1,
-                'note' => 'Commande urgente',
-                'history' => [
-                    ['title' => 'Commande créée', 'date' => '2024-03-15 10:30:00'],
-                    ['title' => 'Paiement validé', 'date' => '2024-03-15 10:35:00'],
-                    ['title' => 'Commande expédiée', 'date' => '2024-03-16 14:20:00'],
-                    ['title' => 'Commande livrée', 'date' => '2024-03-17 09:45:00'],
-                ]
-            ],
-            [
-                'reference' => 'order_2',
-                'admin' => 'admin_user1',
-                'firstname' => 'Jane',
-                'lastname' => 'Smith',
-                'phone' => '0623456789',
-                'address' => '456 Avenue des Champs-Élysées, 75008 Paris',
-                'identifier' => 'CMD-2024-002',
-                'createdAt' => new \DateTime('2024-02-20 15:45:00'),
-                'products' => [
-                    [
-                        'product' => 'product_smartphone_premium',
-                        'title' => 'Smartphone Premium',
-                        'quantity' => 1,
-                        'price' => 899.99,
-                    ],
-                    [
-                        'product' => 'product_cable_usb_type-c',
-                        'title' => 'Cable USB Type-C',
-                        'quantity' => 1,
-                        'price' => 19.99,
-                    ],
-                    [
-                        'product' => 'product_processeur_intel_i7',
-                        'title' => 'Processeur Intel i7',
-                        'quantity' => 1,
-                        'price' => 399.99,
-                    ],
-                ],
-                'status' => 1, // En cours
-                'orderStatus' => 2,
-                'total' => 1319.97,
-                'shippingCost' => 20.00,
-                'discount' => 50.00,
-                'paid' => 1289.97,
-                'paymentType' => 2, // Virement
-                'paymentMethod' => 2,
-                'note' => 'Livraison standard',
-                'history' => [
-                    ['title' => 'Commande créée', 'date' => '2024-02-20 15:45:00'],
-                    ['title' => 'Paiement en attente', 'date' => '2024-02-20 15:50:00'],
-                ]
-            ],
-            [
-                'reference' => 'order_3',
-                'admin' => 'admin_user2',
-                'firstname' => 'Robert',
-                'lastname' => 'Johnson',
-                'phone' => '0634567890',
-                'address' => '789 Boulevard Saint-Germain, 75006 Paris',
-                'identifier' => 'CMD-2023-150',
-                'createdAt' => new \DateTime('2023-12-10 09:15:00'),
-                'products' => [
-                    [
-                        'product' => 'product_processeur_intel_i7',
-                        'title' => 'Processeur Intel i7',
-                        'quantity' => 1,
-                        'price' => 399.99,
-                    ],
-                    [
-                        'product' => 'product_cable_usb_type-c',
-                        'title' => 'Cable USB Type-C',
-                        'quantity' => 1,
-                        'price' => 19.99,
-                    ],
-                ],
-                'status' => 3, // Annulé
-                'orderStatus' => 0,
-                'total' => 419.98,
-                'shippingCost' => 10.00,
-                'discount' => 0,
-                'paid' => 0,
-                'paymentType' => 0,
-                'paymentMethod' => 0,
-                'note' => 'Commande annulée - Rupture de stock',
-                'history' => [
-                    ['title' => 'Commande créée', 'date' => '2023-12-10 09:15:00'],
-                    ['title' => 'Commande annulée', 'date' => '2023-12-10 14:30:00'],
-                ]
-            ],
-            [
-                'reference' => 'order_4',
-                'admin' => 'admin_test',
-                'firstname' => 'Marie',
-                'lastname' => 'Dubois',
-                'phone' => '0645678901',
-                'address' => '321 Rue de Rivoli, 75004 Paris',
-                'identifier' => 'CMD-2024-003',
-                'createdAt' => new \DateTime('2024-03-01 11:20:00'),
-                'products' => [
-                    [
-                        'product' => 'product_smartphone_premium',
-                        'title' => 'Smartphone Premium',
-                        'quantity' => 2,
-                        'price' => 899.99,
-                    ],
-                ],
-                'status' => 1, // En cours
-                'orderStatus' => 1,
-                'total' => 1799.98,
-                'shippingCost' => 0, // Livraison gratuite
-                'discount' => 100.00,
-                'paid' => 1699.98,
-                'paymentType' => 1, // CB
-                'paymentMethod' => 1,
-                'note' => 'Commande professionnelle',
-                'history' => [
-                    ['title' => 'Commande créée', 'date' => '2024-03-01 11:20:00'],
-                    ['title' => 'Paiement validé', 'date' => '2024-03-01 11:25:00'],
-                    ['title' => 'En préparation', 'date' => '2024-03-02 09:00:00'],
-                ]
-            ],
+        $faker = Factory::create('fr_FR');
+        
+        // Liste des produits disponibles avec leurs prix
+        $products = [
+            'product_ordinateur_portable_pro' => ['title' => 'Ordinateur Portable Pro', 'price' => 1299.99],
+            'product_smartphone_premium' => ['title' => 'Smartphone Premium', 'price' => 899.99],
+            'product_cable_usb_type-c' => ['title' => 'Cable USB Type-C', 'price' => 19.99],
+            'product_processeur_intel_i7' => ['title' => 'Processeur Intel i7', 'price' => 399.99],
         ];
 
-        foreach ($orders as $orderData) {
+        // Liste des admins disponibles
+        $admins = ['admin_test', 'admin_user1', 'admin_user2'];
+
+        // Générer 100 commandes
+        for ($i = 1; $i <= 100; $i++) {
             $order = new Order();
-            $order->setAdmin($this->getReference($orderData['admin'], Admin::class));
-            $order->setFirstname($orderData['firstname']);
-            $order->setLastname($orderData['lastname']);
-            $order->setPhone($orderData['phone']);
-            $order->setAddress($orderData['address']);
-            $order->setIdentifier($orderData['identifier']);
-            $order->setCreatedAt($orderData['createdAt']);
-            $order->setStatus($orderData['status']);
-            $order->setOrderStatus($orderData['orderStatus']);
-            $order->setTotal($orderData['total']);
-            $order->setShippingCost($orderData['shippingCost']);
-            $order->setDiscount($orderData['discount']);
-            $order->setPaid($orderData['paid']);
-            $order->setPaymentType($orderData['paymentType']);
-            $order->setPaymentMethod($orderData['paymentMethod']);
-            $order->setNote($orderData['note']);
             
-            foreach ($orderData['products'] as $productData) {
+            // Informations de base
+            $adminRef = $faker->randomElement($admins);
+            $order->setAdmin($this->getReference($adminRef, Admin::class));
+            $order->setFirstname($faker->firstName());
+            $order->setLastname($faker->lastName());
+            $order->setPhone($faker->phoneNumber());
+            $order->setAddress($faker->streetAddress() . ', ' . $faker->postcode() . ' ' . $faker->city());
+            $order->setIdentifier(sprintf('CMD-%s-%03d', $faker->dateTimeBetween('-1 year')->format('Y'), $i));
+
+            // Date de création (répartie sur les 12 derniers mois)
+            $createdAt = $faker->dateTimeBetween('-1 year');
+            $order->setCreatedAt($createdAt);
+
+            // Statut de la commande
+            $status = $faker->randomElement(array_keys(self::ORDER_STATUSES));
+            $order->setStatus($status);
+            $order->setOrderStatus($faker->numberBetween(0, 2));
+
+            // Produits de la commande
+            $numberOfProducts = $faker->numberBetween(1, 4);
+            $total = 0;
+            
+            // Sélection aléatoire des produits
+            $productRefs = array_keys($products);
+            shuffle($productRefs);
+            $selectedProductRefs = array_slice($productRefs, 0, $numberOfProducts);
+
+            foreach ($selectedProductRefs as $productRef) {
+                $productInfo = $products[$productRef];
+                $quantity = $faker->numberBetween(1, 3);
                 $lineItem = new LineItem();
-                $lineItem->setProduct($this->getReference($productData['product'], Product::class));
-                $lineItem->setTitle($productData['title']);
-                $lineItem->setQuantity($productData['quantity']);
-                $lineItem->setPrice($productData['price']);
+                $lineItem->setProduct($this->getReference($productRef, Product::class));
+                $lineItem->setTitle($productInfo['title']);
+                $lineItem->setQuantity($quantity);
+                $lineItem->setPrice($productInfo['price']);
                 $lineItem->setOrderItem($order);
                 
+                $total += $productInfo['price'] * $quantity;
                 $manager->persist($lineItem);
             }
 
-            // Création de l'historique des commandes
-            foreach ($orderData['history'] as $historyData) {
-                $history = new OrderHistory();
-                $history->setTitle($historyData['title']);
-                $history->setCreatedAt(new \DateTime($historyData['date']));
-                $history->setInvoice($order);
-                $history->setAdmin($order->getAdmin());
-                
-                $manager->persist($history);
+            // Frais de livraison et remises
+            $shippingCost = $total > 1000 ? 0 : $faker->randomElement([0, 15, 20, 25]);
+            $discount = $total > 500 ? $faker->randomElement([0, 50, 100, 150]) : 0;
+            
+            $finalTotal = $total + $shippingCost - $discount;
+            
+            $order->setTotal($finalTotal);
+            $order->setShippingCost($shippingCost);
+            $order->setDiscount($discount);
+
+            // Paiement
+            if ($status !== 3) { // Si la commande n'est pas annulée
+                $paymentType = $faker->randomElement([1, 2, 3, 4]); // Exclure le type 0 (Non défini)
+                $paid = $status === 2 ? $finalTotal : ($faker->boolean(70) ? $finalTotal : 0);
+            } else {
+                $paymentType = 0;
+                $paid = 0;
             }
             
+            $order->setPaid($paid);
+            $order->setPaymentType($paymentType);
+            $order->setPaymentMethod($paymentType);
+
+            // Note
+            $notes = [
+                'Livraison standard',
+                'Commande urgente',
+                'Appeler avant livraison',
+                'Livraison à l\'étage',
+                'Client professionnel',
+                'Commande annulée - Rupture de stock',
+                'Instructions spéciales de livraison',
+            ];
+            $order->setNote($faker->randomElement($notes));
+
+            // Historique de la commande
+            $this->createOrderHistory($manager, $order, $status, $createdAt);
+
             $manager->persist($order);
-            $this->addReference($orderData['reference'], $order);
+            $this->addReference('order_' . $i, $order);
         }
 
         $manager->flush();
+    }
+
+    private function createOrderHistory(ObjectManager $manager, Order $order, int $status, \DateTime $createdAt): void
+    {
+        // Création de la commande
+        $history = new OrderHistory();
+        $history->setTitle('Commande créée');
+        $history->setCreatedAt(clone $createdAt);
+        $history->setInvoice($order);
+        $history->setAdmin($order->getAdmin());
+        $manager->persist($history);
+
+        if ($status === 3) { // Commande annulée
+            $cancelDate = clone $createdAt;
+            $cancelDate->modify('+' . rand(1, 24) . ' hours');
+            
+            $history = new OrderHistory();
+            $history->setTitle('Commande annulée');
+            $history->setCreatedAt($cancelDate);
+            $history->setInvoice($order);
+            $history->setAdmin($order->getAdmin());
+            $manager->persist($history);
+        } else {
+            // Paiement
+            if ($order->getPaid() > 0) {
+                $paymentDate = clone $createdAt;
+                $paymentDate->modify('+' . rand(5, 60) . ' minutes');
+                
+                $history = new OrderHistory();
+                $history->setTitle('Paiement validé');
+                $history->setCreatedAt($paymentDate);
+                $history->setInvoice($order);
+                $history->setAdmin($order->getAdmin());
+                $manager->persist($history);
+            }
+
+            // Si la commande est en cours ou livrée
+            if ($status >= 1) {
+                $prepDate = clone $createdAt;
+                $prepDate->modify('+' . rand(1, 24) . ' hours');
+                
+                $history = new OrderHistory();
+                $history->setTitle('En préparation');
+                $history->setCreatedAt($prepDate);
+                $history->setInvoice($order);
+                $history->setAdmin($order->getAdmin());
+                $manager->persist($history);
+            }
+
+            // Si la commande est livrée
+            if ($status === 2) {
+                $deliveryDate = clone $createdAt;
+                $deliveryDate->modify('+' . rand(2, 5) . ' days');
+                
+                $history = new OrderHistory();
+                $history->setTitle('Commande livrée');
+                $history->setCreatedAt($deliveryDate);
+                $history->setInvoice($order);
+                $history->setAdmin($order->getAdmin());
+                $manager->persist($history);
+            }
+        }
     }
 
     public function getDependencies(): array

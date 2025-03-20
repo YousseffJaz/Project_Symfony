@@ -4,9 +4,10 @@ namespace App\Entity;
 
 use App\Repository\UploadRepository;
 use Doctrine\ORM\Mapping as ORM;
-use JsonSerializable;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[ORM\Entity(repositoryClass: UploadRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Upload
 {
     #[ORM\Id]
@@ -22,13 +23,12 @@ class Upload
 
     #[ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'uploads')]
     #[ORM\JoinColumn(nullable: true)]
-    private ?Order $invoice = null;
-
-    #[ORM\ManyToOne(targetEntity: Folder::class, inversedBy: 'upload')]
-    private ?Folder $folder = null;
+    private ?Order $order = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $name = null;
+
+    private ?UploadedFile $file = null;
 
     public function __construct()
     {
@@ -64,26 +64,14 @@ class Upload
         return $this;
     }
 
-    public function getInvoice(): ?Order
+    public function getOrder(): ?Order
     {
-        return $this->invoice;
+        return $this->order;
     }
 
-    public function setInvoice(?Order $invoice): self
+    public function setOrder(?Order $order): self
     {
-        $this->invoice = $invoice;
-
-        return $this;
-    }
-
-    public function getFolder(): ?Folder
-    {
-        return $this->folder;
-    }
-
-    public function setFolder(?Folder $folder): self
-    {
-        $this->folder = $folder;
+        $this->order = $order;
 
         return $this;
     }
@@ -98,5 +86,34 @@ class Upload
         $this->name = $name;
 
         return $this;
+    }
+
+    public function getFile(): ?UploadedFile
+    {
+        return $this->file;
+    }
+
+    public function setFile(UploadedFile $file): self
+    {
+        $this->file = $file;
+        if ($file) {
+            $this->setFilename($file->getClientOriginalName());
+            $this->setName($file->getClientOriginalName());
+        }
+
+        return $this;
+    }
+
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
+    public function handleFileUpload(): void
+    {
+        if ($this->file) {
+            $uploadDir = __DIR__ . '/../../public/uploads/';
+            if (!file_exists($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+            $this->file->move($uploadDir, $this->filename);
+        }
     }
 }
