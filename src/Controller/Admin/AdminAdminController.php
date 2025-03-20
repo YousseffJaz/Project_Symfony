@@ -56,10 +56,7 @@ class AdminAdminController extends AbstractController
             $manager->persist($admin);
             $manager->flush();
 
-            $this->addFlash(
-                'success',
-                "Un nouveau administrateur à été ajouté !"
-            );
+            $this->addFlash('success', "Un nouveau administrateur à été ajouté !");
 
             return $this->redirectToRoute('admin_admin_index');
         }
@@ -99,10 +96,7 @@ class AdminAdminController extends AbstractController
             
             $manager->flush();
 
-            $this->addFlash(
-                'success',
-                "L'administrateur '{$admin->getFirstName()}' a été modifié !"
-            );
+            $this->addFlash('success', "L'administrateur '{$admin->getFirstName()}' a été modifié !");
 
             return $this->redirectToRoute("admin_admin_index");
         }
@@ -126,10 +120,7 @@ class AdminAdminController extends AbstractController
         $admin->setHash("$2y$13$9LylwaPvvQbbrggFEZ3thgvdfaDgeoEIgd7TPpPJbrVghyKeBvgly");
         $manager->flush();
 
-        $this->addFlash(
-            'success',
-            "L'administrateur a été supprimé !"
-        );
+        $this->addFlash('success', "L'administrateur a été supprimé !");
 
         return $this->redirectToRoute('admin_admin_index');
     }

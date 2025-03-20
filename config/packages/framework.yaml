@@ -1,24 +1,37 @@
 framework:
     secret: '%env(APP_SECRET)%'
+    
+    # Disable HTTP method override as it's a potential security risk
+    http_method_override: false
+    
+    # Enable better error handling for PHP 8
+    handle_all_throwables: true
+    
     router:
         utf8: true
 
     #default_locale: en
     #csrf_protection: true
-    #http_method_override: true
 
     # Enables session support. Note that the session will ONLY be started if you read or write from it.
     # Remove or comment this section to explicitly disable session support.
     session:
-        handler_id: ~ 
+        handler_id: ~
         cookie_lifetime: 14400
         gc_maxlifetime: 14400
         storage_factory_id: session.storage.factory.native
+        # Secure cookie settings
+        cookie_secure: auto
+        cookie_samesite: lax
 
     #esi: true
     #fragments: true
     php_errors:
         log: true
+
+    # Email validation mode
+    validation:
+        email_validation_mode: html5
 
     cache:
         # Put the unique name of your app here: the prefix seed

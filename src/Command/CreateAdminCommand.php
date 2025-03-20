@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Entity\Admin;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -12,11 +13,13 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Helper\QuestionHelper;
 
+#[AsCommand(
+    name: 'app:create-admin',
+    description: 'Crée un administrateur avec le rôle ROLE_SUPER_ADMIN',
+    hidden: false
+)]
 class CreateAdminCommand extends Command
 {
-    protected static $defaultName = 'app:create-admin';
-    protected static $defaultDescription = 'Crée un administrateur avec le rôle ROLE_SUPER_ADMIN';
-
     private SymfonyStyle $io;
 
     public function __construct(
