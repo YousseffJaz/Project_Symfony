@@ -64,7 +64,7 @@
                                   <img src="{{ app.request.getBaseUrl() }}/uploads/{{ upload.filename }}" style="width: 300px; max-height: 200px;object-fit: cover;">
                                 {% endif %}
                                 {# {% if app.user.role == "ROLE_SUPER_ADMIN" %} #}
-                                  <a href="{{ app.request.getBaseUrl() }}/uploads/{{ upload.filename }}" class=" flex items-center js-delete-file" data-filename="{{ upload.filename }}" style=""><i class="fal fa-times" style="padding-right: 7px; color: red; font-size: 17px;"></i></a>
+                                  <a href="{{ app.request.getBaseUrl() }}/uploads/{{ upload.filename }}" class="flex items-center js-delete-file" data-id="{{ upload.id }}" data-filename="{{ upload.filename }}" style=""><i class="fal fa-times" style="padding-right: 7px; color: red; font-size: 17px;"></i></a>
                                 {# {% endif %} #}
                               </div>
                             </li>
@@ -236,10 +236,10 @@
         if (response.status == "200") {
           response.json().then(function(upload) {
             if (upload.filename.includes("pdf")) {
-              $('#show-files').append(`<li class="bg-white mt-2 mb-4 shadow-light rounded dark:bg-grey-90 dark:border dark:border-grey-80" style="list-style: none;"><div class="flex flex-row items-center p3 w-full" style="justify-content: space-between"><div><h1 data-id="`+upload.id+`" class="editable text-base font-medium word-break-all" style="margin-bottom: 5px;" contentEditable="true">`+upload.filename+`</h1><a href="{{ app.request.getBaseUrl() }}/uploads/`+upload.filename+`" target="_blank" data-filename="`+upload.filename+`" style="font-size: 13px; cursor: pointer; text-decoration: underline; color: #007bff;" download="`+upload.filename+`">Télécharger</a></div><object type="application/pdf" data="{{ app.request.getBaseUrl() }}/uploads/`+upload.filename+`" height="200"></object><a href="{{ app.request.getBaseUrl() }}/uploads/`+upload.filename+`" class="flex items-center js-delete-file" data-filename="`+upload.filename+`"><i class="fal fa-times" style="padding-right: 7px; color: red; font-size: 17px;"></i></a></div></li>`);
+              $('#show-files').append(`<li class="bg-white mt-2 mb-4 shadow-light rounded dark:bg-grey-90 dark:border dark:border-grey-80" style="list-style: none;"><div class="flex flex-row items-center p3 w-full" style="justify-content: space-between"><div><h1 data-id="`+upload.id+`" class="editable text-base font-medium word-break-all" style="margin-bottom: 5px;" contentEditable="true">`+upload.filename+`</h1><a href="{{ app.request.getBaseUrl() }}/uploads/`+upload.filename+`" target="_blank" data-filename="`+upload.filename+`" style="font-size: 13px; cursor: pointer; text-decoration: underline; color: #007bff;" download="`+upload.filename+`">Télécharger</a></div><object type="application/pdf" data="{{ app.request.getBaseUrl() }}/uploads/`+upload.filename+`" height="200"></object><a href="{{ app.request.getBaseUrl() }}/uploads/`+upload.filename+`" class="flex items-center js-delete-file" data-id="`+upload.id+`" data-filename="`+upload.filename+`"><i class="fal fa-times" style="padding-right: 7px; color: red; font-size: 17px;"></i></a></div></li>`);
             } else {
               $('#show-files').append(`<li class="bg-white mt-2 mb-4 shadow-light rounded dark:bg-grey-90 dark:border dark:border-grey-80" style="list-style: none;"><div class="flex flex-row items-center p3 w-full" style="justify-content: space-between"><div><h1 data-id="`+upload.id+`" class="editable text-base font-medium word-break-all" style="margin-bottom: 5px;" contentEditable="true">`+upload.filename+`</h1><a href="{{ app.request.getBaseUrl() }}/uploads/`+upload.filename+`" target="_blank" data-filename="`+upload.filename+`" style="font-size: 13px; cursor: pointer; text-decoration: underline; color: #007bff;"
-   download="`+upload.filename+`">Télécharger</a></div><img src="{{ app.request.getBaseUrl() }}/uploads/`+upload.filename+`" style="width: 300px; max-height: 200px;object-fit: cover;"><a href="{{ app.request.getBaseUrl() }}/uploads/`+upload.filename+`" class="flex items-center js-delete-file" data-filename="`+upload.filename+`"><i class="fal fa-times" style="padding-right: 7px; color: red; font-size: 17px;"></i></a></div></li>`);
+   download="`+upload.filename+`">Télécharger</a></div><img src="{{ app.request.getBaseUrl() }}/uploads/`+upload.filename+`" style="width: 300px; max-height: 200px;object-fit: cover;"><a href="{{ app.request.getBaseUrl() }}/uploads/`+upload.filename+`" class="flex items-center js-delete-file" data-id="`+upload.id+`" data-filename="`+upload.filename+`"><i class="fal fa-times" style="padding-right: 7px; color: red; font-size: 17px;"></i></a></div></li>`);
             }
           });
         } else {
@@ -255,7 +255,9 @@
 
   $('body').on('click', '.js-delete-file', function (e) {
     e.preventDefault();
-    var url = '{{ path("admin_folder_upload_delete") }}';
+    var id = $(this).data('id');
+    var url = '{{ path("admin_folder_upload_delete", {'id': '__id__'}) }}';
+    url = url.replace('__id__', id);
     var filename = $(this).data('filename');
     $(this).parent().parent().remove();
 

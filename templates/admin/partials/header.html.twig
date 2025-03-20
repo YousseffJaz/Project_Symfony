@@ -19,8 +19,12 @@
                         <li class="header-search">
                             <div class="main-search morphsearch-search open">
                                 <div class="input-group">
-                                    <form action="{{ path('admin_search_global') }}" method="post" style="display: flex;">
+                                    <form action="{{ path('admin_search_global') }}" method="post" style="display: flex; gap: 10px;">
                                         <input type="text" class="form-control" name="search" placeholder="Rechercher" style="width: 200px; border: 1px solid #ccc; border-radius: 8px;">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('search') }}">
+                                        <button type="submit" class="btn btn-primary" style="border-radius: 8px; padding: 5px 10px;">
+                                            <i class="fal fa-search"></i>
+                                        </button>
                                     </form>
                                 </div>
                             </div>
