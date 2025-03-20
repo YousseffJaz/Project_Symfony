@@ -1,0 +1,247 @@
+/* Style de base optimisé pour l'administration */
+
+/* Structure principale */
+.pcoded {
+    position: relative;
+    overflow-x: hidden;
+}
+
+.pcoded-overlay-box {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1090;
+    display: none;
+}
+
+/* Header */
+.pcoded-header {
+    z-index: 1028;
+    position: relative;
+    display: flex;
+    min-height: 50px;
+    padding: 0;
+    position: relative;
+    top: 0;
+    background: #fff;
+    color: #333;
+}
+
+/* Navigation */
+.pcoded-navbar {
+    display: block;
+    z-index: 1027;
+    position: fixed;
+    transition: all 0.3s ease-in-out;
+    width: 264px;
+    height: 100vh;
+    top: 0;
+    background: #404E67;
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+
+/* Menu principal */
+.pcoded-inner-navbar {
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.pcoded-inner-navbar ul {
+    padding-left: 0;
+    list-style: none;
+    margin-bottom: 0;
+}
+
+.pcoded-item {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+}
+
+/* Items du menu */
+.pcoded-item li {
+    position: relative;
+}
+
+.pcoded-item > li > a {
+    padding: 12px 20px;
+    display: block;
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+}
+
+.pcoded-item > li > a:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+/* Icônes du menu */
+.pcoded-micon {
+    font-size: 16px;
+    padding: 0 7px 0 0;
+    margin-right: 5px;
+}
+
+.pcoded-mtext {
+    font-size: 14px;
+    position: relative;
+}
+
+/* Sous-menus */
+.pcoded-submenu {
+    display: none;
+    padding-left: 15px;
+}
+
+.pcoded-trigger .pcoded-submenu {
+    display: block;
+}
+
+.pcoded-submenu a {
+    padding: 8px 15px;
+    display: block;
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+}
+
+.pcoded-submenu a:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+/* Contenu principal */
+.pcoded-content {
+    position: relative;
+    display: block;
+    padding: 20px;
+    margin-left: 264px;
+}
+
+.pcoded-inner-content {
+    padding: 0;
+}
+
+/* Responsive */
+@media only screen and (max-width: 992px) {
+    .pcoded-navbar {
+        width: 264px;
+        left: -264px;
+    }
+
+    .pcoded-navbar.show-menu {
+        left: 0;
+    }
+
+    .pcoded-content {
+        margin-left: 0;
+    }
+}
+
+/* États actifs */
+.active > a,
+.pcoded-trigger > a {
+    background: rgba(255,255,255,0.1);
+}
+
+/* Composants de page */
+.card {
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    margin-bottom: 30px;
+}
+
+.card-header {
+    padding: 15px 20px;
+    margin-bottom: 0;
+    background: #fff;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.card-block {
+    padding: 20px;
+}
+
+/* Utilitaires */
+.m-0 { margin: 0 !important; }
+.p-0 { padding: 0 !important; }
+.mb-20 { margin-bottom: 20px !important; }
+.mt-4 { margin-top: 1rem !important; }
+
+/* Notifications et alertes */
+.notification-popup {
+    position: fixed;
+    right: 10px;
+    top: 60px;
+    z-index: 9999;
+}
+
+.alert {
+    padding: 15px;
+    margin-bottom: 10px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+/* Tableaux */
+.table {
+    width: 100%;
+    margin-bottom: 1rem;
+    background-color: transparent;
+}
+
+.table th,
+.table td {
+    padding: 12px;
+    vertical-align: top;
+    border-top: 1px solid #f1f1f1;
+}
+
+/* Formulaires */
+.form-control {
+    display: block;
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    transition: border-color 0.15s ease-in-out;
+}
+
+.form-control:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+
+/* Boutons */
+.btn {
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+    padding: 8px 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    border-radius: 4px;
+    transition: all 0.15s ease-in-out;
+    cursor: pointer;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0069d9;
+    border-color: #0062cc;
+} 
