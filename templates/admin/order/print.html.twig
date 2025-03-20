@@ -44,7 +44,15 @@
                           {% for order in orders %}
                             <tr>
                               <td>{{order.createdAt|date('d/m/Y') }} <br>  à {{ order.createdAt|date('H:i') }}</td>
-                              <td>{{ order.firstname }} {{ order.lastname }}</td>
+                              <td>
+                                {{ order.firstname }} {{ order.lastname }}
+                                {% if order.phone %}
+                                  <br><i class="fal fa-phone"></i> {{ order.phone }}
+                                {% endif %}
+                                {% if order.email %}
+                                  <br><i class="fal fa-envelope"></i> {{ order.email }}
+                                {% endif %}
+                              </td>
                               <td>
                                 {% set totalDiscount = 0 %}
                                 {% if order.lineItems.toArray %}

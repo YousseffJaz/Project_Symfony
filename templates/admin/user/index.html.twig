@@ -32,6 +32,7 @@
                       <tr>
                         <th>Pseudo</th>
                         <th>Téléphone</th>
+                        <th>Email</th>
                         <th>Note</th>
                         <th>Actions</th>
                       </tr>
@@ -41,6 +42,7 @@
                         <tr>
                           <td>{{ user.pseudo }}</td>
                           <td>{{ user.phone }}</td>
+                          <td>{{ user.email }}</td>
                           <td>{{ user.note }}</td>
                           <td>
                             <a href="{{ path('app_admin_user_edit', {'id': user.id}) }}" class="btn btn-primary btn-sm">Modifier</a>

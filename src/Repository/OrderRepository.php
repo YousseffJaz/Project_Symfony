@@ -218,8 +218,9 @@ class OrderRepository extends ServiceEntityRepository
 
   public function groupByCustomers(){
     $query = $this->createQueryBuilder('o')
-    ->select('o.firstname as firstname, COUNT(o.id) as number')
+    ->select('o.firstname as firstname, COUNT(o.id) as number, o.email as email')
     ->groupBy('o.firstname')
+    ->addGroupBy('o.email')
     ->orderBy('o.firstname', 'ASC');
 
     return $query->getQuery()->getResult();

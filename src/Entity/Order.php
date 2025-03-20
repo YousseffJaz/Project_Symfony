@@ -26,6 +26,9 @@ class Order
     private ?string $phone = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $email = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $identifier = null;
 
     #[ORM\Column(type: 'datetime')]
@@ -161,6 +164,18 @@ class Order
     public function setPhone(?string $phone): self
     {
         $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(?string $email): self
+    {
+        $this->email = $email;
 
         return $this;
     }

@@ -50,6 +50,12 @@
                 </div>
               </div>
 
+              <div class="row">
+                <div class="col-md-12">
+                  {{ form_row(form.email, { 'label': 'Email' }) }}
+                </div>
+              </div>
+
               {{ form_row(form.address, { 'label': 'Adresse', 'attr': { 'rows' : '4'} }) }}
 
               {% if app.user.role != "ROLE_LIVREUR" %}

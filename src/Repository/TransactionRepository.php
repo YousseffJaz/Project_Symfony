@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Transaction;
+use App\Entity\Order;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -29,7 +30,7 @@ class TransactionRepository extends ServiceEntityRepository
     ->getResult();
   }
 
-  public function findOneByInvoice(string $invoice): ?Transaction
+  public function findOneByInvoice(Order $invoice): ?Transaction
   {
     return $this->findOneBy(['invoice' => $invoice]);
   }

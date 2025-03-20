@@ -318,7 +318,12 @@ class AdminOrderController extends AbstractController
 
         foreach ($customers as $customer) {
             $orders = $orderRepo->findByFirstname($customer['firstname']);
-            $array[] = [ 'firstname' => $customer['firstname'], 'number' => $customer['number'], 'orders' => $orders ];
+            $array[] = [
+                'firstname' => $customer['firstname'],
+                'number' => $customer['number'],
+                'email' => $customer['email'],
+                'orders' => $orders
+            ];
         }
 
         return $this->render('admin/order/customers.html.twig', [
@@ -880,7 +885,7 @@ class AdminOrderController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function deleteLineitem(LineItem $lineItem, StockListRepository $stockRepo, Request $request, EntityManagerInterface $manager): Response
     {
-        $stock = $stockRepo->findOneById($lineItem->getStock());
+        $stock = $stockRepo->findOneById($lineItem->getStock()?->getId());
 
         if ($stock) {
             $quantity = $lineItem->getQuantity();
@@ -911,7 +916,7 @@ class AdminOrderController extends AbstractController
 
         if ($items) {
             foreach ($items as $item) {
-                $stock = $stockRepo->findOneById($item->getStock());
+                $stock = $stockRepo->findOneById($item->getStock()?->getId());
 
                 if ($stock) {
                     $quantity = $item->getQuantity();

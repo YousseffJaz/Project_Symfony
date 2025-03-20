@@ -33,6 +33,7 @@
 												<th>Prénom</th>
 												<th>Adresse</th>
 												<th>Téléphone</th>
+												<th>Email</th>
 												<th>Nb commandes</th>
 												<th>Commandes</th>
 												<th>Montant</th>
@@ -59,6 +60,9 @@
 																{{ order.phone }}
 															{% endif %}
 														{% endfor %}
+													</td>
+													<td>
+														{{ item.email }}
 													</td>
 													<td>{{ item.number }}</td>
 													<td>

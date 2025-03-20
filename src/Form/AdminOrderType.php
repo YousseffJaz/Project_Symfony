@@ -35,14 +35,14 @@ class AdminOrderType extends AbstractType
   {
     $user = $this->tokenStorage->getToken()->getUser();
 
-    if ($user->getRole() === "ROLE_LIVREUR") {
+    $statusOptions = [
+      'Commande à expédier' => 1,
+      'Commande à livrer' => 4,
+      'Commande terminée' => 3,
+    ];
+
+    if ($user instanceof Admin && $user->getRole() === "ROLE_LIVREUR") {
       $statusOptions = [
-        'Commande terminée' => 3,
-      ];
-    } else {
-      $statusOptions = [
-        'Commande à expédier' => 1,
-        'Commande à livrer' => 4,
         'Commande terminée' => 3,
       ];
     }
@@ -63,6 +63,13 @@ class AdminOrderType extends AbstractType
       'required' => false
     ])
     ->add('phone', TextType::class, [
+      'attr' => [
+        'class' => 'form-control',
+        'autocomplete' => 'off'
+      ],
+      'required' => false
+    ])
+    ->add('email', EmailType::class, [
       'attr' => [
         'class' => 'form-control',
         'autocomplete' => 'off'
