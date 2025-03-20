@@ -5,33 +5,23 @@ namespace App\Entity;
 use App\Repository\PriceListRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=PriceListRepository::class)
- */
+#[ORM\Entity(repositoryClass: PriceListRepository::class)]
 class PriceList
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $title;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $title = null;
 
-    /**
-     * @ORM\Column(type="float")
-     */
-    private $price;
+    #[ORM\Column(type: 'float')]
+    private float $price = 0.0;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Variant::class, inversedBy="priceLists")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $variant;
+    #[ORM\ManyToOne(targetEntity: Variant::class, inversedBy: 'priceLists')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Variant $variant = null;
 
     public function getId(): ?int
     {

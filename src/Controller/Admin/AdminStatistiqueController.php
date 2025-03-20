@@ -70,7 +70,7 @@ class AdminStatistiqueController extends AbstractController
    		$days = $now2->diff($now)->format("%a") + 1;
 
    		for ($i = 0; $i < $days; $i++) {
-   			$labels[] = $this->dateToFrench($now->format('d M'));
+   			$labels[] = static::dateToFrench($now->format('d M'));
    			$amount = $orderRepo->totalAmountByDay($now->format('Y-m-d'));
    			$url = "/admin/orders?start=". $now->format('Y-m-d') . "&end=". $now->format('Y-m-d');
    			$now->modify('+1 day');
@@ -127,7 +127,7 @@ class AdminStatistiqueController extends AbstractController
 
       // mois actuel
    		for ($i = 0; $i < $nb; $i++) {
-   			$labels[] = $this->dateToFrench($now->format('d M'));
+   			$labels[] = static::dateToFrench($now->format('d M'));
    			$amount = $orderRepo->totalAmountByDay($now->format('Y-m-d'));
    			$url = "/admin/orders?start=". $now->format('Y-m-d') . "&end=". $now->format('Y-m-d');
    			$now->modify('-1 day');
@@ -164,7 +164,7 @@ class AdminStatistiqueController extends AbstractController
    	$year = $date1->format('Y');
 
    	for ($i = 0; $i < 12; $i++) {
-   		$labels2[] = $this->dateToFrench($date1->format('M Y'));
+   		$labels2[] = static::dateToFrench($date1->format('M Y'));
    		$last = cal_days_in_month(CAL_GREGORIAN, $date1->format('m'), $date1->format('Y'));
 
    		$amount2 = $orderRepo->totalAmountByStartAndEnd($date1->format('Y-m-01'), $date1->format('Y-m') . "-" . $last . "");

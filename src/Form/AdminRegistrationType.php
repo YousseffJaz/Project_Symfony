@@ -16,7 +16,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class AdminRegistrationType extends AbstractType
 {
-  public function buildForm(FormBuilderInterface $builder, array $options)
+  public function buildForm(FormBuilderInterface $builder, array $options): void
   {
     $builder
     ->add('firstName', TextType::class, [
@@ -29,18 +29,18 @@ class AdminRegistrationType extends AbstractType
         'class' => 'form-control',
         'autocomplete' => 'off'
       ]])
-    ->add('role', ChoiceType::class, array(
+    ->add('role', ChoiceType::class, [
       'attr' => [
         'class' => 'form-control',
         'autocomplete' => 'off'
       ],
-      'choices'  => array(
+      'choices'  => [
         'ROLE_LIVREUR' => 'ROLE_LIVREUR',
         'ROLE_EMPLOYÉ' => 'ROLE_EMPLOYÉ',
         'ROLE_SUPER_ADMIN' => 'ROLE_SUPER_ADMIN',
-      ),
+      ],
       'placeholder' => 'Selectionner un rôle'
-    ))
+    ])
     ->add('hash', PasswordType::class, [
       'attr' => [
         'class' => 'form-control',
@@ -55,7 +55,7 @@ class AdminRegistrationType extends AbstractType
     ]);
   }
 
-  public function configureOptions(OptionsResolver $resolver)
+  public function configureOptions(OptionsResolver $resolver): void
   {
     $resolver->setDefaults([
       'data_class' => Admin::class,

@@ -27,14 +27,11 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 class AdminOrderType extends AbstractType
 {
-  private $tokenStorage;
-
-  public function __construct(TokenStorageInterface $tokenStorage)
+  public function __construct(private TokenStorageInterface $tokenStorage)
   {
-    $this->tokenStorage = $tokenStorage;
   }
 
-  public function buildForm(FormBuilderInterface $builder, array $options)
+  public function buildForm(FormBuilderInterface $builder, array $options): void
   {
     $user = $this->tokenStorage->getToken()->getUser();
 
@@ -164,35 +161,29 @@ class AdminOrderType extends AbstractType
       ],
       'required' => false
     ])
-    ->add('note2', EntityType::class, array(
+    ->add('note2', EntityType::class, [
       'class' => Note::class,
-      'query_builder' => function (EntityRepository $er) {
-        return $er->createQueryBuilder('i')
-        ->orderBy('i.name', 'ASC');
-      },
+      'query_builder' => fn(EntityRepository $er) => $er->createQueryBuilder('i')
+      ->orderBy('i.name', 'ASC'),
       'choice_label' => 'name',
       'label' => "Note",
       'placeholder'   =>'Sélectionnez une note',
       'required' => false
-    ))
+    ])
     ->add('delivery', EntityType::class, [
       'class' => Admin::class,
-      'choice_label' => function (Admin $admin) {
-        return ucfirst($admin->getFirstName());
-      },
+      'choice_label' => fn(Admin $admin) => ucfirst($admin->getFirstName()),
       'label' => 'Livraison',
       'placeholder' => 'Sélectionnez un livreur',
       'required' => false,
-      'query_builder' => function (EntityRepository $er) {
-        return $er->createQueryBuilder('a')
-        ->where('a.role = :role')
-        ->andWhere('a.archive = false')
-        ->setParameter('role', 'ROLE_LIVREUR');
-      },
+      'query_builder' => fn(EntityRepository $er) => $er->createQueryBuilder('a')
+      ->where('a.role = :role')
+      ->andWhere('a.archive = false')
+      ->setParameter('role', 'ROLE_LIVREUR'),
     ]);
   }
 
-  public function configureOptions(OptionsResolver $resolver)
+  public function configureOptions(OptionsResolver $resolver): void
   {
     $resolver->setDefaults([
       'data_class' => Order::class,

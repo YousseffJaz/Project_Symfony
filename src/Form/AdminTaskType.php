@@ -24,7 +24,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 
 class AdminTaskType extends AbstractType
 {
-  public function buildForm(FormBuilderInterface $builder, array $options)
+  public function buildForm(FormBuilderInterface $builder, array $options): void
   {
     $builder
     ->add('name', TextType::class, [
@@ -33,21 +33,19 @@ class AdminTaskType extends AbstractType
         'autocomplete' => 'off'
       ],
     ])
-    ->add('admin', EntityType::class, array(
+    ->add('admin', EntityType::class, [
       'class' => Admin::class,
-      'query_builder' => function (EntityRepository $er) {
-        return $er->createQueryBuilder('a')
-        ->where('a.archive = false')
-        ->orderBy('a.firstName', 'ASC');
-      },
+      'query_builder' => fn(EntityRepository $er) => $er->createQueryBuilder('a')
+      ->where('a.archive = false')
+      ->orderBy('a.firstName', 'ASC'),
       'choice_label' => 'firstName',
       'label' => "Utilisateur",
       'placeholder'   =>'Choisir un utilisateur',
       'required' => false
-    ));
+    ]);
   }
 
-  public function configureOptions(OptionsResolver $resolver)
+  public function configureOptions(OptionsResolver $resolver): void
   {
     $resolver->setDefaults([
       'data_class' => Task::class,

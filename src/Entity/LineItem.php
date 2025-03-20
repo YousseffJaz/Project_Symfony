@@ -5,59 +5,39 @@ namespace App\Entity;
 use App\Repository\LineItemRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=LineItemRepository::class)
- */
+#[ORM\Entity(repositoryClass: LineItemRepository::class)]
 class LineItem
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $title;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $title = null;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $quantity;
+    #[ORM\Column(type: 'integer')]
+    private int $quantity = 0;
 
-    /**
-     * @ORM\Column(type="float")
-     */
-    private $price;
+    #[ORM\Column(type: 'float')]
+    private float $price = 0.0;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Product::class, inversedBy="lineItems")
-     * @ORM\JoinColumn(nullable=true)
-     */
-    private $product;
+    #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'lineItems')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Product $product = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Order::class, inversedBy="lineItems")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $orderItem;
+    #[ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'lineItems')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Order $orderItem = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Variant::class, inversedBy="lineItems")
-     */
-    private $variant;
+    #[ORM\ManyToOne(targetEntity: Variant::class, inversedBy: 'lineItems')]
+    private ?Variant $variant = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=StockList::class, inversedBy="lineItems")
-     */
-    private $stock;
+    #[ORM\ManyToOne(targetEntity: StockList::class, inversedBy: 'lineItems')]
+    private ?StockList $stock = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $priceList;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $priceList = null;
 
     public function getId(): ?int
     {

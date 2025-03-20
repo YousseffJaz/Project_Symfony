@@ -5,37 +5,25 @@ namespace App\Entity;
 use App\Repository\OrderHistoryRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=OrderHistoryRepository::class)
- */
+#[ORM\Entity(repositoryClass: OrderHistoryRepository::class)]
 class OrderHistory
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $title;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $title = null;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $createdAt;
+    #[ORM\Column(type: 'datetime')]
+    private \DateTimeInterface $createdAt;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Order::class, inversedBy="orderHistories")
-     */
-    private $invoice;
+    #[ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'orderHistories')]
+    private ?Order $invoice = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Admin::class, inversedBy="orderHistories")
-     */
-    private $admin;
+    #[ORM\ManyToOne(targetEntity: Admin::class, inversedBy: 'orderHistories')]
+    private ?Admin $admin = null;
 
     public function __construct()
     {

@@ -7,37 +7,25 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=NoteRepository::class)
- */
+#[ORM\Entity(repositoryClass: NoteRepository::class)]
 class Note
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Column(type: 'string', length: 255)]
     private $name;
 
-    /**
-     * @ORM\Column(type="float")
-     */
+    #[ORM\Column(type: 'float')]
     private $amount;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Transaction::class, mappedBy="note")
-     * @ORM\OrderBy({"createdAt" = "ASC"})
-     */
+    #[ORM\OneToMany(targetEntity: Transaction::class, mappedBy: 'note')]
+    #[ORM\OrderBy(['createdAt' => 'ASC'])]
     private $transactions;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Order::class, mappedBy="note2")
-     */
+    #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'note2')]
     private $invoice;
 
     public function __construct()

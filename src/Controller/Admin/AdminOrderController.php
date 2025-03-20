@@ -30,15 +30,12 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Bundle\SecurityBundle\Security;
 
 class AdminOrderController extends AbstractController
 {
-    private Security $security;
-
-    public function __construct(Security $security)
+    public function __construct(private Security $security)
     {
-        $this->security = $security;
     }
 
     #[Route('/admin/orders', name: 'admin_order_index')]
@@ -91,9 +88,9 @@ class AdminOrderController extends AbstractController
             'search' => '',
             'orders' => $orders,
             'alreadyPaid' => $alreadyPaid,
-            'total' => $total ? $total : "",
-            'start' => $start ? $start : "",
-            'end' => $end ? $end : "",
+            'total' => $total ?: "",
+            'start' => $start ?: "",
+            'end' => $end ?: "",
         ]);
     }
 

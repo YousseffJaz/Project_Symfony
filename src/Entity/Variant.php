@@ -7,43 +7,29 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=VariantRepository::class)
- */
+#[ORM\Entity(repositoryClass: VariantRepository::class)]
 class Variant
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Product::class, inversedBy="variants")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $product;
+    #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'variants')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Product $product = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $title;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $title = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $archive;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private bool $archive = false;
 
-    /**
-     * @ORM\OneToMany(targetEntity=PriceList::class, mappedBy="variant", orphanRemoval=true)
-     */
-    private $priceLists;
+    #[ORM\OneToMany(targetEntity: PriceList::class, mappedBy: 'variant', orphanRemoval: true)]
+    private Collection $priceLists;
 
-    /**
-     * @ORM\OneToMany(targetEntity=LineItem::class, mappedBy="variant")
-     */
-    private $lineItems;
+    #[ORM\OneToMany(targetEntity: LineItem::class, mappedBy: 'variant')]
+    private Collection $lineItems;
 
     public function __construct()
     {

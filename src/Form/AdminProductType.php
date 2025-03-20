@@ -25,7 +25,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 
 class AdminProductType extends AbstractType
 {
-  public function buildForm(FormBuilderInterface $builder, array $options)
+  public function buildForm(FormBuilderInterface $builder, array $options): void
   {
     $builder
     ->add('title', TextType::class, [
@@ -48,12 +48,10 @@ class AdminProductType extends AbstractType
       ],
       'required' => false
     ])
-    ->add('category', EntityType::class, array(
+    ->add('category', EntityType::class, [
       'class' => Category::class,
-      'query_builder' => function (EntityRepository $er) {
-        return $er->createQueryBuilder('i')
-        ->orderBy('i.name', 'ASC');
-      },
+      'query_builder' => fn(EntityRepository $er) => $er->createQueryBuilder('i')
+      ->orderBy('i.name', 'ASC'),
       'choice_label' => 'name',
       'label' => "Catégorie",
       'placeholder'   =>'Sélectionnez une catégorie',
@@ -62,7 +60,7 @@ class AdminProductType extends AbstractType
         'class' => 'form-control',
         'autocomplete' => 'off'
       ],
-    ))
+    ])
     ->add('stockLists', CollectionType::class, [
       'entry_type' => AdminStockPriceType::class,
       'allow_add' => true,
@@ -80,7 +78,7 @@ class AdminProductType extends AbstractType
     ]);
   }
 
-  public function configureOptions(OptionsResolver $resolver)
+  public function configureOptions(OptionsResolver $resolver): void
   {
     $resolver->setDefaults([
       'data_class' => Product::class,

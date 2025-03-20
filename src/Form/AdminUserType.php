@@ -19,23 +19,21 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class AdminUserType extends AbstractType
 {
-  public function buildForm(FormBuilderInterface $builder, array $options)
+  public function buildForm(FormBuilderInterface $builder, array $options): void
   {
     $builder
-    ->add('reseller', EntityType::class, array(
+    ->add('reseller', EntityType::class, [
       'class' => Reseller::class,
-      'query_builder' => function (EntityRepository $er) {
-        return $er->createQueryBuilder('r')
-        ->orderBy('r.name', 'ASC');
-      },
+      'query_builder' => fn(EntityRepository $er) => $er->createQueryBuilder('r')
+      ->orderBy('r.name', 'ASC'),
       'choice_label' => 'name',
       'label' => "Associer à un revendeur",
       'placeholder'   =>'Sélectionner un revendeur',
       "required" => false
-    ));
+    ]);
   }
 
-  public function configureOptions(OptionsResolver $resolver)
+  public function configureOptions(OptionsResolver $resolver): void
   {
     $resolver->setDefaults([
       'data_class' => User::class,

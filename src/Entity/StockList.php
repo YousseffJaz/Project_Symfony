@@ -7,38 +7,26 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=StockListRepository::class)
- */
+#[ORM\Entity(repositoryClass: StockListRepository::class)]
 class StockList
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $name;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $name = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $quantity;
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $quantity = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Product::class, inversedBy="stockLists")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $product;
+    #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'stockLists')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Product $product = null;
 
-    /**
-     * @ORM\OneToMany(targetEntity=LineItem::class, mappedBy="stock")
-     */
-    private $lineItems;
+    #[ORM\OneToMany(targetEntity: LineItem::class, mappedBy: 'stock')]
+    private Collection $lineItems;
 
     public function __construct()
     {

@@ -7,14 +7,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class PasswordUpdate
 {
-    /**
-     * @Assert\Length(min=8, minMessage="Votre mot de passe doit faire au moins 8 caractères !")
-     */
+    #[Assert\Length(min: 8, minMessage: 'Votre mot de passe doit faire au moins 8 caractères !')]
     private $newPassword;
 
-    /**
-     * @Assert\EqualTo(propertyPath="newPassword", message="Les mots de passe sont différents !")
-     */
+    #[Assert\EqualTo(propertyPath: 'newPassword', message: 'Les mots de passe sont différents !')]
     private $confirmPassword;
 
 

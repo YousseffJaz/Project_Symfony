@@ -5,38 +5,26 @@ namespace App\Entity;
 use App\Repository\PreorderRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=PreorderRepository::class)
- */
+#[ORM\Entity(repositoryClass: PreorderRepository::class)]
 class Preorder
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $title;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $title = null;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $createdAt;
+    #[ORM\Column(type: 'datetime')]
+    private \DateTimeInterface $createdAt;
 
-    /**
-     * @ORM\Column(type="float")
-     */
-    private $quantity;
+    #[ORM\Column(type: 'float')]
+    private float $quantity = 0.0;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Product::class, inversedBy="preorders")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $product;
+    #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'preorders')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Product $product = null;
 
     public function __construct()
     {

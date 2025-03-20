@@ -7,73 +7,47 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=ProductRepository::class)
- */
+#[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $title;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $title = null;
 
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $price;
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $price = null;
 
-    /**
-     * @ORM\OneToMany(targetEntity=LineItem::class, mappedBy="product", orphanRemoval=true)
-     */
-    private $lineItems;
+    #[ORM\OneToMany(targetEntity: LineItem::class, mappedBy: 'product', orphanRemoval: true)]
+    private Collection $lineItems;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $archive;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private bool $archive = false;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="product")
-     * @ORM\JoinColumn(nullable=true)
-     */
-    private $category;
+    #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'product')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Category $category = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $alert;
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private int $alert = 10;
 
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $purchasePrice;
+    #[ORM\Column(type: 'float', nullable: true)]
+    private float $purchasePrice = 0.0;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Variant::class, mappedBy="product")
-     */
-    private $variants;
+    #[ORM\OneToMany(targetEntity: Variant::class, mappedBy: 'product')]
+    private Collection $variants;
 
-    /**
-     * @ORM\OneToMany(targetEntity=StockList::class, mappedBy="product")
-     */
-    private $stockLists;
+    #[ORM\OneToMany(targetEntity: StockList::class, mappedBy: 'product')]
+    private Collection $stockLists;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $digital;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private bool $digital = false;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Preorder::class, mappedBy="product")
-     */
-    private $preorders;
+    #[ORM\OneToMany(targetEntity: Preorder::class, mappedBy: 'product')]
+    private Collection $preorders;
 
     public function __construct()
     {

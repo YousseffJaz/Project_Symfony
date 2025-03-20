@@ -23,7 +23,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 
 class AdminNoteType extends AbstractType
 {
-  public function buildForm(FormBuilderInterface $builder, array $options)
+  public function buildForm(FormBuilderInterface $builder, array $options): void
   {
     $builder
     ->add('name', TextType::class, [
@@ -41,7 +41,7 @@ class AdminNoteType extends AbstractType
     ]);
   }
 
-  public function configureOptions(OptionsResolver $resolver)
+  public function configureOptions(OptionsResolver $resolver): void
   {
     $resolver->setDefaults([
       'data_class' => Note::class,

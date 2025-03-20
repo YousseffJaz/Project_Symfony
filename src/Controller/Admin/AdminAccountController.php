@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Admin;
 use App\Entity\PasswordUpdate;
 use App\Form\PasswordUpdateType;
 use App\Form\AdminAccountType;
@@ -43,7 +44,7 @@ class AdminAccountController extends AbstractController
         EntityManagerInterface $entityManager,
         UserPasswordHasherInterface $passwordHasher
     ): Response {
-        /** @var \App\Entity\Admin $admin */
+        /** @var Admin $admin */
         $admin = $this->getUser();
         $passwordUpdate = new PasswordUpdate();
 

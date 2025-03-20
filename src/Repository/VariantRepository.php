@@ -20,7 +20,7 @@ class VariantRepository extends ServiceEntityRepository
   }
 
   public function filter($keyword, $stockList){
-    $fields = array('v.id', 'v.title', 'l.price', 's.quantity');
+    $fields = ['v.id', 'v.title', 'l.price', 's.quantity'];
     $query = $this->createQueryBuilder('v')
     ->leftjoin('v.priceLists', 'l')
     ->leftjoin('v.product', 'p')

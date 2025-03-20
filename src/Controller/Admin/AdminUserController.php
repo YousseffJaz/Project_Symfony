@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use App\Entity\User;
 use App\Form\AdminUserType;
 use App\Repository\UserRepository;
@@ -40,7 +41,7 @@ class AdminUserController extends AbstractController
                 if (!$user) {
                     $user = new User();
                     $user->setPseudo($param['username']);
-                    if ($user instanceof \Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface) {
+                    if ($user instanceof PasswordAuthenticatedUserInterface) {
                         $hash = $hasher->hashPassword($user, $param['password']);
                         $user->setHash($hash);
                     } else {

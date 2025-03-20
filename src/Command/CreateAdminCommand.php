@@ -10,52 +10,50 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Helper\QuestionHelper;
 
 class CreateAdminCommand extends Command
 {
     protected static $defaultName = 'app:create-admin';
+    protected static $defaultDescription = 'Crée un administrateur avec le rôle ROLE_SUPER_ADMIN';
 
-    private $entityManager;
-    private $passwordHasher;
-    private $io;
+    private SymfonyStyle $io;
 
-    public function __construct(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher)
-    {
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private UserPasswordHasherInterface $passwordHasher
+    ) {
         parent::__construct();
-        $this->entityManager = $entityManager;
-        $this->passwordHasher = $passwordHasher;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
-        $this
-            ->setDescription('Crée un utilisateur administrateur initial')
-            ->setHelp('Cette commande permet de créer un utilisateur administrateur avec les droits nécessaires');
+        $this->setHelp('Cette commande permet de créer un administrateur avec tous les droits');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
+        /** @var QuestionHelper $questionHelper */
+        $questionHelper = $this->getHelper('question');
 
         $this->io->title('Création d\'un utilisateur administrateur');
 
-        $helper = $this->getHelper('question');
-
         $question = new Question('Entrez le prénom de l\'administrateur : ');
-        $firstName = $helper->ask($input, $output, $question);
+        $firstName = $questionHelper->ask($input, $output, $question);
 
         $question = new Question('Entrez l\'email de l\'administrateur : ');
-        $email = $helper->ask($input, $output, $question);
+        $email = $questionHelper->ask($input, $output, $question);
 
         $question = new Question('Entrez le mot de passe de l\'administrateur : ');
         $question->setHidden(true);
         $question->setHiddenFallback(false);
-        $password = $helper->ask($input, $output, $question);
+        $password = $questionHelper->ask($input, $output, $question);
 
         $admin = new Admin();
         $admin->setFirstName($firstName);
         $admin->setEmail($email);
-        $admin->setRole('ROLE_ADMIN');
+        $admin->setRole('ROLE_SUPER_ADMIN');
         $admin->setArchive(false);
         $admin->setStatistics(true);
         $admin->setInvoices(true);

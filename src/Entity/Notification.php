@@ -5,38 +5,26 @@ namespace App\Entity;
 use App\Repository\NotificationRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=NotificationRepository::class)
- */
+#[ORM\Entity(repositoryClass: NotificationRepository::class)]
 class Notification
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Admin::class, inversedBy="notifications")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $admin;
+    #[ORM\ManyToOne(targetEntity: Admin::class, inversedBy: 'notifications')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Admin $admin = null;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private $seen;
+    #[ORM\Column(type: 'boolean')]
+    private bool $seen = false;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Order::class, inversedBy="notifications")
-     */
-    private $invoice;
+    #[ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'notifications')]
+    private ?Order $invoice = null;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $createdAt;
+    #[ORM\Column(type: 'datetime')]
+    private \DateTimeInterface $createdAt;
 
     public function __construct()
     {

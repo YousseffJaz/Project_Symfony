@@ -5,53 +5,35 @@ namespace App\Entity;
 use App\Repository\TaskRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=TaskRepository::class)
- */
+#[ORM\Entity(repositoryClass: TaskRepository::class)]
 class Task
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $name;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $name = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Admin::class, inversedBy="tasks")
-     */
-    private $admin;
+    #[ORM\ManyToOne(targetEntity: Admin::class, inversedBy: 'tasks')]
+    private ?Admin $admin = null;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private $complete;
+    #[ORM\Column(type: 'boolean')]
+    private bool $complete = false;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $createdAt;
+    #[ORM\Column(type: 'datetime')]
+    private \DateTimeInterface $createdAt;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Admin::class, inversedBy="taskBy")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $createdBy;
+    #[ORM\ManyToOne(targetEntity: Admin::class, inversedBy: 'taskBy')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Admin $createdBy = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Admin::class, inversedBy="tasksComplete")
-     */
-    private $completeBy;
+    #[ORM\ManyToOne(targetEntity: Admin::class, inversedBy: 'tasksComplete')]
+    private ?Admin $completeBy = null;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
-    private $updatedAt;
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $updatedAt = null;
 
     public function __construct()
     {

@@ -7,181 +7,113 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=OrderRepository::class)
- * @ORM\Table(name="`order`")
- */
+#[ORM\Entity(repositoryClass: OrderRepository::class)]
+#[ORM\Table(name: '`order`')]
 class Order
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $firstname;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $firstname = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $lastname;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $lastname = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $phone;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $phone = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $identifier;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $identifier = null;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $createdAt;
+    #[ORM\Column(type: 'datetime')]
+    private \DateTimeInterface $createdAt;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $status;
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $status = null;
 
-    /**
-     * @ORM\Column(type="float")
-     */
-    private $total;
+    #[ORM\Column(type: 'float')]
+    private float $total = 0.0;
 
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $shippingCost;
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $shippingCost = null;
 
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $discount;
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $discount = null;
 
-    /**
-     * @ORM\Column(type="float")
-     */
-    private $paid;
+    #[ORM\Column(type: 'float')]
+    private float $paid = 0.0;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $paymentType;
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $paymentType = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $paymentMethod;
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $paymentMethod = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Admin::class, inversedBy="orders")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $admin;
+    #[ORM\ManyToOne(targetEntity: Admin::class, inversedBy: 'orders')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Admin $admin = null;
 
-    /**
-     * @ORM\OneToMany(targetEntity=LineItem::class, mappedBy="orderItem", orphanRemoval=true)
-     */
-    private $lineItems;
+    #[ORM\OneToMany(targetEntity: LineItem::class, mappedBy: 'orderItem', orphanRemoval: true)]
+    private Collection $lineItems;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private $note;
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $note = null;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private $shopifyNote;
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $shopifyNote = null;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private $address;
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $address = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $orderStatus;
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $orderStatus = null;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Upload::class, mappedBy="invoice", orphanRemoval=true)
-     */
-    private $uploads;
+    #[ORM\OneToMany(targetEntity: Upload::class, mappedBy: 'invoice', orphanRemoval: true)]
+    private Collection $uploads;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $option1;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private ?bool $option1 = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $option2;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private ?bool $option2 = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $option3;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private ?bool $option3 = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $option4;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private ?bool $option4 = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $option5;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private ?bool $option5 = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $option6;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private ?bool $option6 = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Note::class, inversedBy="invoice")
-     */
-    private $note2;
+    #[ORM\ManyToOne(targetEntity: Note::class, inversedBy: 'invoice')]
+    private ?Note $note2 = null;
 
-    /**
-     * @ORM\OneToMany(targetEntity=OrderHistory::class, mappedBy="invoice")
-     * @ORM\OrderBy({"createdAt" = "DESC"})
-     */
-    private $orderHistories;
+    #[ORM\OneToMany(targetEntity: OrderHistory::class, mappedBy: 'invoice')]
+    #[ORM\OrderBy(['createdAt' => 'DESC'])]
+    private Collection $orderHistories;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $shopifyId;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $shopifyId = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $shopifyOrderId;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $shopifyOrderId = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $trackingId;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $trackingId = null;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Notification::class, mappedBy="invoice")
-     */
-    private $notifications;
+    #[ORM\OneToMany(targetEntity: Notification::class, mappedBy: 'invoice')]
+    private Collection $notifications;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Admin::class, inversedBy="deliveryOrders")
-     * @ORM\JoinColumn(nullable=true)
-     */
-    private $delivery;
+    #[ORM\ManyToOne(targetEntity: Admin::class, inversedBy: 'deliveryOrders')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Admin $delivery = null;
 
     public function __construct()
     {

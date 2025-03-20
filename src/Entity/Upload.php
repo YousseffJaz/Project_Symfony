@@ -6,43 +6,29 @@ use App\Repository\UploadRepository;
 use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
 
-/**
- * @ORM\Entity(repositoryClass=UploadRepository::class)
- */
+#[ORM\Entity(repositoryClass: UploadRepository::class)]
 class Upload
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $filename;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $filename = null;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $createdAt;
+    #[ORM\Column(type: 'datetime')]
+    private \DateTimeInterface $createdAt;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Order::class, inversedBy="uploads")
-     * @ORM\JoinColumn(nullable=true)
-     */
-    private $invoice;
+    #[ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'uploads')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Order $invoice = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Folder::class, inversedBy="upload")
-     */
-    private $folder;
+    #[ORM\ManyToOne(targetEntity: Folder::class, inversedBy: 'upload')]
+    private ?Folder $folder = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $name;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $name = null;
 
     public function __construct()
     {

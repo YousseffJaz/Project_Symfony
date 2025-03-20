@@ -5,137 +5,89 @@ namespace App\Entity;
 use App\Entity\Role;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
-use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use JsonSerializable;
+use App\Repository\AdminRepository;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\AdminRepository")
- * @ORM\HasLifecycleCallbacks
- * @UniqueEntity(
- *     fields={"email"},
- *     message="Un utilisateur s'est déjà inscrit avec cette adresse email"
- * )
- */
+#[ORM\Entity(repositoryClass: AdminRepository::class)]
+#[ORM\HasLifecycleCallbacks]
+#[UniqueEntity(
+    fields: ['email'],
+    message: 'Un utilisateur s\'est déjà inscrit avec cette adresse email'
+)]
 class Admin implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $firstName;
+    #[ORM\Column(type: 'string', length: 255)]
+    private string $firstName;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Assert\Email(message="L'adresse mail est invalide !")
-     */
-    private $email;
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\Email(message: 'L\'adresse mail est invalide !')]
+    private string $email;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $hash;
+    #[ORM\Column(type: 'string', length: 255)]
+    private string $hash;
 
-    /**
-     * @Assert\EqualTo(propertyPath="hash", message="Les mots de passes sont différents !")
-     */
-    public $passwordConfirm;
+    #[Assert\EqualTo(propertyPath: 'hash', message: 'Les mots de passes sont différents !')]
+    public ?string $passwordConfirm = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $role;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $role = null;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Order::class, mappedBy="admin", orphanRemoval=true)
-     */
-    private $orders;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private bool $archive = false;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $archive;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private bool $statistics = false;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Task::class, mappedBy="admin")
-     */
-    private $tasks;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private bool $invoices = false;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Task::class, mappedBy="createdBy")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $taskBy;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private bool $histories = false;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Task::class, mappedBy="completeBy")
-     */
-    private $tasksComplete;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private bool $folders = false;
 
-    /**
-     * @ORM\OneToMany(targetEntity=OrderHistory::class, mappedBy="admin")
-     */
-    private $orderHistories;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private bool $products = false;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $priceList;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private bool $accounting = false;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $stockList;
+    #[ORM\OneToMany(mappedBy: 'admin', targetEntity: Order::class, orphanRemoval: true)]
+    private Collection $orders;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Notification::class, mappedBy="admin")
-     */
-    private $notifications;
+    #[ORM\OneToMany(mappedBy: 'admin', targetEntity: Task::class)]
+    private Collection $tasks;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $statistics;
+    #[ORM\OneToMany(mappedBy: 'createdBy', targetEntity: Task::class)]
+    private Collection $taskBy;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $invoices;
+    #[ORM\OneToMany(mappedBy: 'completeBy', targetEntity: Task::class)]
+    private Collection $tasksComplete;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $histories;
+    #[ORM\OneToMany(mappedBy: 'admin', targetEntity: OrderHistory::class)]
+    private Collection $orderHistories;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $folders;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $priceList = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $products;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $stockList = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    private $accounting;
+    #[ORM\OneToMany(mappedBy: 'admin', targetEntity: Notification::class)]
+    private Collection $notifications;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Order::class, mappedBy="delivery")
-     */
-    private $deliveryOrders;
+    #[ORM\OneToMany(mappedBy: 'delivery', targetEntity: Order::class)]
+    private Collection $deliveryOrders;
 
     public function __construct()
     {
@@ -155,16 +107,16 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
         $this->deliveryOrders = new ArrayCollection();
     }
 
-    public function getClassName() {
+    public function getClassName(): string {
         return (new \ReflectionClass($this))->getShortName();
     }
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getFirstName(): ?string
+    public function getFirstName(): string
     {
         return $this->firstName;
     }
@@ -176,7 +128,7 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getEmail(): ?string
+    public function getEmail(): string
     {
         return $this->email;
     }
@@ -188,7 +140,7 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getHash(): ?string
+    public function getHash(): string
     {
         return $this->hash;
     }
@@ -209,7 +161,7 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
         return array_unique($roles);
     }
 
-    public function getPassword(): ?string
+    public function getPassword(): string
     {
         return $this->hash;
     }
@@ -219,7 +171,7 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
         return null;
     }
 
-    public function getUsername()
+    public function getUsername(): string
     {
         return $this->email;
     }
@@ -273,12 +225,12 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getArchive(): ?bool
+    public function isArchive(): bool
     {
         return $this->archive;
     }
 
-    public function setArchive(?bool $archive): self
+    public function setArchive(bool $archive): self
     {
         $this->archive = $archive;
 
@@ -459,72 +411,72 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getStatistics(): ?bool
+    public function isStatistics(): bool
     {
         return $this->statistics;
     }
 
-    public function setStatistics(?bool $statistics): self
+    public function setStatistics(bool $statistics): self
     {
         $this->statistics = $statistics;
 
         return $this;
     }
 
-    public function getInvoices(): ?bool
+    public function isInvoices(): bool
     {
         return $this->invoices;
     }
 
-    public function setInvoices(?bool $invoices): self
+    public function setInvoices(bool $invoices): self
     {
         $this->invoices = $invoices;
 
         return $this;
     }
 
-    public function getHistories(): ?bool
+    public function isHistories(): bool
     {
         return $this->histories;
     }
 
-    public function setHistories(?bool $histories): self
+    public function setHistories(bool $histories): self
     {
         $this->histories = $histories;
 
         return $this;
     }
 
-    public function getFolders(): ?bool
+    public function isFolders(): bool
     {
         return $this->folders;
     }
 
-    public function setFolders(?bool $folders): self
+    public function setFolders(bool $folders): self
     {
         $this->folders = $folders;
 
         return $this;
     }
 
-    public function getProducts(): ?bool
+    public function isProducts(): bool
     {
         return $this->products;
     }
 
-    public function setProducts(?bool $products): self
+    public function setProducts(bool $products): self
     {
         $this->products = $products;
 
         return $this;
     }
 
-    public function getAccounting(): ?bool
+    public function isAccounting(): bool
     {
         return $this->accounting;
     }
 
-    public function setAccounting(?bool $accounting): self
+    public function setAccounting(bool $accounting): self
     {
         $this->accounting = $accounting;
 
