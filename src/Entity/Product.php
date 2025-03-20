@@ -138,7 +138,25 @@ class Product
 
     public function setCategory(?Category $category): self
     {
+        // Si la nouvelle catégorie est la même que l'ancienne, ne rien faire
+        if ($this->category === $category) {
+            return $this;
+        }
+
+        // Gérer l'ancienne catégorie si elle existe
+        if ($this->category !== null) {
+            $oldCategory = $this->category;
+            $this->category = null;
+            $oldCategory->removeProduct($this);
+        }
+
+        // Gérer la nouvelle catégorie
         $this->category = $category;
+
+        // Si une nouvelle catégorie est définie, ajouter ce produit à sa collection
+        if ($category !== null && !$category->getProduct()->contains($this)) {
+            $category->addProduct($this);
+        }
 
         return $this;
     }

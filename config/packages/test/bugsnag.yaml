@@ -1,0 +1,4 @@
+bugsnag:
+    api_key: 'test_key_123'
+    notify_release_stages: ['test']
+    release_stage: 'test' 
