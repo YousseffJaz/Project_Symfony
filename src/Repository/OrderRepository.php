@@ -150,11 +150,15 @@ class OrderRepository extends ServiceEntityRepository
 
   public function findByMonth(int $month, int $year): array
   {
+    $startDate = new \DateTime(sprintf('%d-%d-01', $year, $month));
+    $endDate = clone $startDate;
+    $endDate->modify('last day of this month');
+    
     $qb = $this->createQueryBuilder('o')
-      ->where('MONTH(o.createdAt) = :month')
-      ->andWhere('YEAR(o.createdAt) = :year')
-      ->setParameter('month', $month)
-      ->setParameter('year', $year)
+      ->where('o.createdAt >= :startDate')
+      ->andWhere('o.createdAt <= :endDate')
+      ->setParameter('startDate', $startDate)
+      ->setParameter('endDate', $endDate)
       ->orderBy('o.createdAt', 'DESC');
 
     return $qb->getQuery()->getResult();
@@ -437,13 +441,14 @@ class OrderRepository extends ServiceEntityRepository
 
   public function findByDay(int $day, int $month, int $year): array
   {
+    $startDate = new \DateTime(sprintf('%d-%d-%d 00:00:00', $year, $month, $day));
+    $endDate = new \DateTime(sprintf('%d-%d-%d 23:59:59', $year, $month, $day));
+    
     $qb = $this->createQueryBuilder('o')
-      ->where('DAY(o.createdAt) = :day')
-      ->andWhere('MONTH(o.createdAt) = :month')
-      ->andWhere('YEAR(o.createdAt) = :year')
-      ->setParameter('day', $day)
-      ->setParameter('month', $month)
-      ->setParameter('year', $year)
+      ->where('o.createdAt >= :startDate')
+      ->andWhere('o.createdAt <= :endDate')
+      ->setParameter('startDate', $startDate)
+      ->setParameter('endDate', $endDate)
       ->orderBy('o.createdAt', 'DESC');
 
     return $qb->getQuery()->getResult();

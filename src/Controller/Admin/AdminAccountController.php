@@ -6,7 +6,6 @@ use App\Entity\Admin;
 use App\Entity\PasswordUpdate;
 use App\Form\PasswordUpdateType;
 use App\Form\AdminAccountType;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +14,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use App\Form\UserType;
 
 class AdminAccountController extends AbstractController
 {

@@ -411,7 +411,7 @@
     var end = $('#end').val();
 
     if (start && end) {
-      var url = "{{ path('admin_statistiques') }}?start=" + start + "&end=" + end;
+      var url = "{{ path('admin_statistique_index') }}?start=" + start + "&end=" + end;
       window.location = url;
     }
   });

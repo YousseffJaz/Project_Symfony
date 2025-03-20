@@ -5,8 +5,6 @@ namespace App\Controller\Admin;
 use App\Entity\Transaction;
 use App\Entity\Note;
 use App\Form\AdminNoteType;
-use App\Repository\TransactionRepository;
-use App\Repository\ProductRepository;
 use App\Repository\NoteRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

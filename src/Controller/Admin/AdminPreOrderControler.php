@@ -5,7 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\Preorder;
 use App\Repository\PreorderRepository;
 use Symfony\Component\HttpFoundation\Request;
-use Doctrine\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -30,7 +30,7 @@ class AdminPreOrderControler extends AbstractController
    */
   #[Route('/admin/preorder/delete/{id}', name: 'admin_preorder_delete')]
   #[IsGranted('ROLE_ADMIN')]
-  public function deletePreorder(Preorder $preorder, PreorderRepository $repo, ObjectManager $manager) {
+  public function deletePreorder(Preorder $preorder, PreorderRepository $repo, EntityManagerInterface $manager) {
     $manager->remove($preorder);
     $manager->flush();
 

@@ -2,20 +2,10 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Order;
-use App\Entity\LineItem;
 use App\Repository\OrderRepository;
-use App\Repository\NoteRepository;
 use App\Repository\ProductRepository;
 use App\Repository\TaskRepository;
 use App\Repository\NotificationRepository;
-use App\Repository\VariantRepository;
-use App\Repository\AdminRepository;
-use App\Repository\FluxRepository;
-use App\Repository\ResellerRepository;
-use App\Repository\TransactionRepository;
-use App\Repository\InfoRepository;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
