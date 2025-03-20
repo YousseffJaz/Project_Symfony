@@ -6,6 +6,8 @@ use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use InvalidArgumentException;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 class Category
@@ -16,6 +18,13 @@ class Category
   private ?int $id = null;
 
   #[ORM\Column(type: 'string', length: 255)]
+  #[Assert\NotBlank(message: "Le nom ne peut pas être vide")]
+  #[Assert\Length(
+    min: 2,
+    max: 255,
+    minMessage: "Le nom doit faire au moins {{ limit }} caractères",
+    maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères"
+  )]
   private ?string $name = null;
 
   #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'category')]
@@ -38,7 +47,15 @@ class Category
 
   public function setName(string $name): self
   {
-    $this->name = $name;
+    if (empty(trim($name))) {
+      throw new InvalidArgumentException("Le nom ne peut pas être vide");
+    }
+
+    if (strlen($name) > 255) {
+      throw new InvalidArgumentException("Le nom ne peut pas dépasser 255 caractères");
+    }
+
+    $this->name = trim($name);
 
     return $this;
   }

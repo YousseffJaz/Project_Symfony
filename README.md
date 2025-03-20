@@ -42,8 +42,6 @@ symfony console doctrine:migrations:migrate
 ## Configuration
 
 Les paramètres principaux sont configurés dans `config/services.yaml` :
-- `session_max_idle_time`: 14400 secondes (4 heures)
-- `cookie_lifetime`: 14400 secondes (4 heures)
 - `uploads_directory`: Dossier pour les fichiers uploadés
 - `sounds_directory`: Dossier pour les fichiers sons
 - `root_directory`: Dossier racine public
@@ -58,7 +56,6 @@ Les paramètres principaux sont configurés dans `config/services.yaml` :
 - Gestion des statistiques
 - Gestion des précommandes
 - Système de notification
-- Gestion des sessions avec timeout automatique
 
 ## Développement
 
@@ -77,7 +74,6 @@ symfony console cache:clear
 - Authentification requise pour l'accès à l'administration
 - Gestion des rôles (ROLE_ADMIN, ROLE_SUPER_ADMIN)
 - Protection CSRF activée
-- Sessions sécurisées avec timeout automatique
 
 ## Structure du projet
 
