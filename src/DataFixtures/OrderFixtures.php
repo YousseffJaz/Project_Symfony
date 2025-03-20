@@ -54,6 +54,7 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
             $order->setFirstname($faker->firstName());
             $order->setLastname($faker->lastName());
             $order->setPhone($faker->phoneNumber());
+            $order->setEmail($faker->email());
             $order->setAddress($faker->streetAddress() . ', ' . $faker->postcode() . ' ' . $faker->city());
             $order->setIdentifier(sprintf('CMD-%s-%03d', $faker->dateTimeBetween('-1 year')->format('Y'), $i));
 

@@ -31,9 +31,10 @@
 										<thead>
 											<tr>
 												<th>Prénom</th>
+												<th>Nom</th>
+												<th>Email</th>
 												<th>Adresse</th>
 												<th>Téléphone</th>
-												<th>Email</th>
 												<th>Nb commandes</th>
 												<th>Commandes</th>
 												<th>Montant</th>
@@ -43,6 +44,8 @@
 											{% for item in array %}
 												<tr>
 													<td>{{ item.firstname|capitalize }}</td>
+													<td>{{ item.lastname|capitalize }}</td>
+													<td>{{ item.email }}</td>
 													<td>
 														{% set equal = "" %}
 														{% for order in item.orders %}
@@ -60,9 +63,6 @@
 																{{ order.phone }}
 															{% endif %}
 														{% endfor %}
-													</td>
-													<td>
-														{{ item.email }}
 													</td>
 													<td>{{ item.number }}</td>
 													<td>

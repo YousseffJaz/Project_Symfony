@@ -28,14 +28,10 @@ class AdminDashboardController extends AbstractController
 {
     #[Route('/', name: 'app_admin_dashboard')]
     public function index(
-        UserRepository $userRepo,
         OrderRepository $orderRepo,
         ProductRepository $productRepo,
         TaskRepository $taskRepo
     ): Response {
-        // Statistiques utilisateurs
-        $totalUsers = count($userRepo->findAll());
-
         // Statistiques commandes
         $today = new \DateTime('now');
         $todayStart = clone $today;
@@ -85,7 +81,6 @@ class AdminDashboardController extends AbstractController
         $pendingTasks = count($taskRepo->findBy(['complete' => false]));
 
         return $this->render('admin/dashboard/index.html.twig', [
-            'totalUsers' => $totalUsers,
             'todayOrdersCount' => $todayOrdersCount,
             'todayOrdersTotal' => $todayOrdersTotal,
             'pendingOrders' => $pendingOrders,
@@ -100,7 +95,7 @@ class AdminDashboardController extends AbstractController
 
     #[Route('/search/global', name: 'admin_search_global')]
     #[IsGranted('ROLE_ADMIN')]
-    public function search(Request $request, OrderRepository $orderRepo, UserRepository $userRepo): Response
+    public function search(Request $request, OrderRepository $orderRepo): Response
     {
         $search = $request->request->get('search');
         $array = [];

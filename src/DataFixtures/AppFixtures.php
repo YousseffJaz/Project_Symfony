@@ -16,7 +16,6 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
     public function getDependencies(): array
     {
         return [
-            UserFixtures::class,
             CategoryFixtures::class,
             ProductFixtures::class,
             AdminFixtures::class,
@@ -27,8 +26,6 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
             PriceListFixtures::class,
             VariantFixtures::class,
             PreorderFixtures::class,
-            FolderFixtures::class,
-            UploadFixtures::class,
             StockListFixtures::class,
             LineItemFixtures::class,
             NoteFixtures::class,

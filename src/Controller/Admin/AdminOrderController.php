@@ -320,6 +320,7 @@ class AdminOrderController extends AbstractController
             $orders = $orderRepo->findByFirstname($customer['firstname']);
             $array[] = [
                 'firstname' => $customer['firstname'],
+                'lastname' => $customer['lastname'],
                 'number' => $customer['number'],
                 'email' => $customer['email'],
                 'orders' => $orders
@@ -816,7 +817,7 @@ class AdminOrderController extends AbstractController
 
     #[Route('/admin/order/upload', name: 'admin_order_upload')]
     #[IsGranted('ROLE_ADMIN')]
-    public function upload(Request $request, EntityManagerInterface $manager, OrderRepository $orderRepo, UserRepository $userRepo): Response
+    public function upload(Request $request, EntityManagerInterface $manager, OrderRepository $orderRepo): Response
     {
         $file = $request->files->get('file');
         $orderId = $request->request->get('order');

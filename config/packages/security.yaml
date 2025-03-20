@@ -3,8 +3,6 @@ security:
     password_hashers:
         App\Entity\Admin:
             algorithm: auto
-        App\Entity\User:
-            algorithm: auto
 
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
@@ -13,10 +11,6 @@ security:
             entity:
                 class: App\Entity\Admin
                 property: email
-        in_user:
-            entity:
-                class: App\Entity\User
-                property: pseudo
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
