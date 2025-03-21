@@ -64,18 +64,18 @@
                                 </div>
                             </div>
 
-                            {# Tâches en attente #}
+                            {# Nombre total de produits #}
                             <div class="col-xl-3 col-md-6">
                                 <div class="card prod-p-card" style="background: #fff">
                                     <div class="card-body">
                                         <div class="row align-items-center">
                                             <div class="col">
-                                                <h6 class="m-b-5" style="font-weight: 700; color: #333">Tâches en attente</h6>
+                                                <h6 class="m-b-5" style="font-weight: 700; color: #333">Total produits</h6>
                                                 <h3 class="m-b-0 f-w-700" style="padding: 10px 0px; color: #2ed8b6">
-                                                    {{ pendingTasks }}</h3>
+                                                    {{ totalProducts }}</h3>
                                             </div>
                                             <div class="col-auto">
-                                                <i class="fas fa-tasks text-c-yellow f-18"></i>
+                                                <i class="fas fa-box text-c-yellow f-18"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -168,7 +168,7 @@
 
                         {# Troisième ligne - Alertes #}
                         <div class="row">
-                            {# Produits en rupture #}
+                            {# Produits en alerte de stock #}
                             <div class="col-xl-3 col-md-6">
                                 <div class="card prod-p-card" style="background: #fff">
                                     <div class="card-body">

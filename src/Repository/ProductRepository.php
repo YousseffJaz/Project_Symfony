@@ -20,12 +20,11 @@ class ProductRepository extends ServiceEntityRepository
   }
 
   public function findProductAlmostSoldOut() {
-
-    $query = $this->createQueryBuilder('p')
-    ->andWhere('p.alert >= p.quantity')
-    ->andWhere('p.archive = false');
-
-    return $query->getQuery()
+    return $this->createQueryBuilder('p')
+    ->leftJoin('p.stockLists', 's')
+    ->andWhere('p.alert >= s.quantity OR s.quantity IS NULL')
+    ->andWhere('p.archive = false')
+    ->getQuery()
     ->getResult();
   }
 

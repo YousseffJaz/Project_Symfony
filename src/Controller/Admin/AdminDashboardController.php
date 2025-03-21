@@ -4,8 +4,8 @@ namespace App\Controller\Admin;
 
 use App\Repository\OrderRepository;
 use App\Repository\ProductRepository;
-use App\Repository\TaskRepository;
 use App\Repository\NotificationRepository;
+use App\Repository\AdminRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,9 +18,10 @@ class AdminDashboardController extends AbstractController
 {
     #[Route('/', name: 'app_admin_dashboard')]
     public function index(
+        Request $request,
         OrderRepository $orderRepo,
         ProductRepository $productRepo,
-        TaskRepository $taskRepo
+        AdminRepository $adminRepo
     ): Response {
         // Statistiques commandes
         $today = new \DateTime('now');
@@ -65,10 +66,11 @@ class AdminDashboardController extends AbstractController
         }
 
         // Produits en rupture de stock
-        $lowStockProducts = count($productRepo->findBy(['alert' => true]));
+        $lowStockProducts = count($productRepo->findProductAlmostSoldOut());
 
-        // Tâches en attente
-        $pendingTasks = count($taskRepo->findBy(['complete' => false]));
+        $totalOrders = count($orderRepo->findAll());
+        $totalProducts = count($productRepo->findAll());
+        $totalAdmins = count($adminRepo->findAll());
 
         return $this->render('admin/dashboard/index.html.twig', [
             'todayOrdersCount' => $todayOrdersCount,
@@ -79,7 +81,9 @@ class AdminDashboardController extends AbstractController
             'canceledOrders' => $canceledOrders,
             'monthlyRevenue' => $monthlyRevenue,
             'lowStockProducts' => $lowStockProducts,
-            'pendingTasks' => $pendingTasks,
+            'totalOrders' => $totalOrders,
+            'totalProducts' => $totalProducts,
+            'totalAdmins' => $totalAdmins,
         ]);
     }
 

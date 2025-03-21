@@ -71,9 +71,7 @@
                         <hr style="border-top: 1px solid rgba(0,0,0,0.1);margin: 0px;">
                         <li class="{{ app.request.get('_route') == 'admin_order_index' ? 'active' }}">
                             <a href="{{ path('admin_order_index') }}">
-                                <span class="pcoded-micon">
-                                    <i class="fas fa-file-invoice"></i>
-                                </span>
+                                <span class="pcoded-micon"><i class="fas fa-shopping-cart"></i></span>
                                 <span class="pcoded-mtext">Commandes</span>
                             </a>
                         </li>
@@ -167,17 +165,6 @@
                                 </ul>
                             </li>
                         {% endif %}
-                        {% if app.user.role != "ROLE_LIVREUR" %}
-                            <hr style="border-top: 1px solid rgba(0,0,0,0.1);margin: 0px;">
-                            <li class="{{ app.request.get('_route') == 'admin_task_index' ? 'active' }}">
-                                <a href="{{ path('admin_task_index') }}">
-                                    <span class="pcoded-micon">
-                                        <i class="fas fa-envelope"></i>
-                                    </span>
-                                    <span class="pcoded-mtext">Messages</span>
-                                </a>
-                            </li>
-                        {% endif %}
                         {% if app.user.role == "ROLE_SUPER_ADMIN" %}
                             <hr style="border-top: 1px solid rgba(0,0,0,0.1);margin: 0px;">
                             <li class="{{ app.request.get('_route') == 'admin_admin_index' ? 'active' }}">
@@ -190,7 +177,7 @@
                             </li>
                         {% endif %}
                         <hr style="border-top: 1px solid rgba(0,0,0,0.1);margin: 0px;">
-                         <li class="">
+                        <li class="">
                             <a href="{{ path('admin_account_logout') }}">
                                 <span class="pcoded-micon">
                                     <i class="fas fa-power-off"></i>

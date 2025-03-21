@@ -5,6 +5,9 @@ namespace App\DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use App\DataFixtures\AdminFixtures;
+use App\DataFixtures\OrderFixtures;
+use App\DataFixtures\ProductFixtures;
 
 class AppFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -16,21 +19,9 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
     public function getDependencies(): array
     {
         return [
-            CategoryFixtures::class,
-            ProductFixtures::class,
             AdminFixtures::class,
             OrderFixtures::class,
-            OrderHistoryFixtures::class,
-            TaskFixtures::class,
-            NotificationFixtures::class,
-            PriceListFixtures::class,
-            VariantFixtures::class,
-            PreorderFixtures::class,
-            StockListFixtures::class,
-            LineItemFixtures::class,
-            NoteFixtures::class,
-            FluxFixtures::class,
-            TransactionFixtures::class,
+            ProductFixtures::class,
         ];
     }
 } 

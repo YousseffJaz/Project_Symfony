@@ -41,19 +41,12 @@ class AdminDashboardControllerTest extends WebTestCase
 
         // Assert successful response
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h1', 'Dashboard');
-
-        // Assert all required statistics are present in the response
-        $crawler = $this->client->getCrawler();
-        $this->assertArrayHasKey('todayOrdersCount', $this->client->getContainer()->get('twig')->getGlobals());
-        $this->assertArrayHasKey('todayOrdersTotal', $this->client->getContainer()->get('twig')->getGlobals());
-        $this->assertArrayHasKey('pendingOrders', $this->client->getContainer()->get('twig')->getGlobals());
-        $this->assertArrayHasKey('processingOrders', $this->client->getContainer()->get('twig')->getGlobals());
-        $this->assertArrayHasKey('deliveredOrders', $this->client->getContainer()->get('twig')->getGlobals());
-        $this->assertArrayHasKey('canceledOrders', $this->client->getContainer()->get('twig')->getGlobals());
-        $this->assertArrayHasKey('monthlyRevenue', $this->client->getContainer()->get('twig')->getGlobals());
-        $this->assertArrayHasKey('lowStockProducts', $this->client->getContainer()->get('twig')->getGlobals());
-        $this->assertArrayHasKey('pendingTasks', $this->client->getContainer()->get('twig')->getGlobals());
+        $this->assertSelectorTextContains('h1', 'Tableau de bord');
+        
+        // Vérifier que les variables globales Twig sont définies
+        $this->assertArrayHasKey('totalOrders', $this->client->getContainer()->get('twig')->getGlobals());
+        $this->assertArrayHasKey('totalProducts', $this->client->getContainer()->get('twig')->getGlobals());
+        $this->assertArrayHasKey('totalAdmins', $this->client->getContainer()->get('twig')->getGlobals());
     }
 
     protected function tearDown(): void

@@ -62,15 +62,6 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'admin', targetEntity: Order::class, orphanRemoval: true)]
     private Collection $orders;
 
-    #[ORM\OneToMany(mappedBy: 'admin', targetEntity: Task::class)]
-    private Collection $tasks;
-
-    #[ORM\OneToMany(mappedBy: 'createdBy', targetEntity: Task::class)]
-    private Collection $taskBy;
-
-    #[ORM\OneToMany(mappedBy: 'completeBy', targetEntity: Task::class)]
-    private Collection $tasksComplete;
-
     #[ORM\OneToMany(mappedBy: 'admin', targetEntity: OrderHistory::class)]
     private Collection $orderHistories;
 
@@ -89,9 +80,6 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct()
     {
         $this->orders = new ArrayCollection();
-        $this->tasks = new ArrayCollection();
-        $this->taskBy = new ArrayCollection();
-        $this->tasksComplete = new ArrayCollection();
         $this->archive = false;
         $this->statistics = false;
         $this->invoices = false;
@@ -229,96 +217,6 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
     public function setArchive(bool $archive): self
     {
         $this->archive = $archive;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Task[]
-     */
-    public function getTasks(): Collection
-    {
-        return $this->tasks;
-    }
-
-    public function addTask(Task $task): self
-    {
-        if (!$this->tasks->contains($task)) {
-            $this->tasks[] = $task;
-            $task->setAdmin($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTask(Task $task): self
-    {
-        if ($this->tasks->removeElement($task)) {
-            // set the owning side to null (unless already changed)
-            if ($task->getAdmin() === $this) {
-                $task->setAdmin(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Task[]
-     */
-    public function getTaskBy(): Collection
-    {
-        return $this->taskBy;
-    }
-
-    public function addTaskBy(Task $taskBy): self
-    {
-        if (!$this->taskBy->contains($taskBy)) {
-            $this->taskBy[] = $taskBy;
-            $taskBy->setCreatedBy($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTaskBy(Task $taskBy): self
-    {
-        if ($this->taskBy->removeElement($taskBy)) {
-            // set the owning side to null (unless already changed)
-            if ($taskBy->getCreatedBy() === $this) {
-                $taskBy->setCreatedBy(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Task[]
-     */
-    public function getTasksComplete(): Collection
-    {
-        return $this->tasksComplete;
-    }
-
-    public function addTasksComplete(Task $tasksComplete): self
-    {
-        if (!$this->tasksComplete->contains($tasksComplete)) {
-            $this->tasksComplete[] = $tasksComplete;
-            $tasksComplete->setCompleteBy($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTasksComplete(Task $tasksComplete): self
-    {
-        if ($this->tasksComplete->removeElement($tasksComplete)) {
-            // set the owning side to null (unless already changed)
-            if ($tasksComplete->getCompleteBy() === $this) {
-                $tasksComplete->setCompleteBy(null);
-            }
-        }
 
         return $this;
     }
