@@ -4,13 +4,11 @@ namespace App\Tests\Entity;
 
 use App\Entity\Product;
 use App\Entity\Category;
-use App\Entity\LineItem;
 use App\Entity\StockList;
 use App\Entity\Variant;
-use App\Entity\Preorder;
-use PHPUnit\Framework\TestCase;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use PHPUnit\Framework\TestCase;
 
 class ProductTest extends TestCase
 {
@@ -40,8 +38,6 @@ class ProductTest extends TestCase
         $this->assertTrue($this->product->getVariants()->isEmpty());
         $this->assertInstanceOf(Collection::class, $this->product->getStockLists());
         $this->assertTrue($this->product->getStockLists()->isEmpty());
-        $this->assertInstanceOf(Collection::class, $this->product->getPreorders());
-        $this->assertTrue($this->product->getPreorders()->isEmpty());
     }
 
     public function testTitleGetterAndSetter(): void
@@ -147,35 +143,5 @@ class ProductTest extends TestCase
         $this->product->removeStockList($stockList);
         $this->assertFalse($this->product->getStockLists()->contains($stockList));
         $this->assertNull($stockList->getProduct());
-    }
-
-    public function testAddAndRemoveLineItem(): void
-    {
-        $lineItem = new LineItem();
-        
-        // Test d'ajout
-        $this->product->addLineItem($lineItem);
-        $this->assertTrue($this->product->getLineItems()->contains($lineItem));
-        $this->assertSame($this->product, $lineItem->getProduct());
-        
-        // Test de suppression
-        $this->product->removeLineItem($lineItem);
-        $this->assertFalse($this->product->getLineItems()->contains($lineItem));
-        $this->assertNull($lineItem->getProduct());
-    }
-
-    public function testAddAndRemovePreorder(): void
-    {
-        $preorder = new Preorder();
-        
-        // Test adding
-        $this->product->addPreorder($preorder);
-        $this->assertTrue($this->product->getPreorders()->contains($preorder));
-        $this->assertSame($this->product, $preorder->getProduct());
-
-        // Test removing
-        $this->product->removePreorder($preorder);
-        $this->assertFalse($this->product->getPreorders()->contains($preorder));
-        $this->assertNull($preorder->getProduct());
     }
 } 

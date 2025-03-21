@@ -104,7 +104,7 @@
                                     </span>
                                     <span class="pcoded-mtext">Produits</span>
                                 </a>
-                                <ul class="pcoded-submenu" style="{{ app.request.get('_route') == 'admin_preorder_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_product_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_category_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_variant_index' ? 'display: block;' }}">
+                                <ul class="pcoded-submenu" style="{{ app.request.get('_route') == 'admin_product_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_category_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_stock_index' ? 'display: block;' }}">
                                     {% if app.user.role == "ROLE_SUPER_ADMIN" %}
                                         <li class="">
                                             <a href="{{ path('admin_variant_index') }}">
@@ -112,7 +112,7 @@
                                                 <span class="pcoded-mtext">Grille tarifaire</span>
                                             </a>
                                         </li>
-                                        <li class="">
+                                        <li class="{{ app.request.get('_route') == 'admin_product_index' ? 'active' }}">
                                             <a href="{{ path('admin_product_index') }}">
                                                 <i class="fas fa-chevron-right"></i> 
                                                 <span class="pcoded-mtext">Stocks</span>
@@ -125,12 +125,6 @@
                                             </a>
                                         </li>
                                     {% endif %}
-                                    <li class="">
-                                        <a href="{{ path('admin_preorder_index') }}">
-                                            <i class="fas fa-chevron-right"></i> 
-                                            <span class="pcoded-mtext">Á commander</span>
-                                        </a>
-                                    </li>
                                 </ul>
                             </li>
                         {% endif %}

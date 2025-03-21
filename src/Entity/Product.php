@@ -21,9 +21,6 @@ class Product
     #[ORM\Column(type: 'float', nullable: true)]
     private ?float $price = null;
 
-    #[ORM\OneToMany(targetEntity: LineItem::class, mappedBy: 'product', orphanRemoval: true)]
-    private Collection $lineItems;
-
     #[ORM\Column(type: 'boolean', nullable: true)]
     private bool $archive = false;
 
@@ -46,18 +43,13 @@ class Product
     #[ORM\Column(type: 'boolean', nullable: true)]
     private bool $digital = false;
 
-    #[ORM\OneToMany(targetEntity: Preorder::class, mappedBy: 'product')]
-    private Collection $preorders;
-
     public function __construct()
     {
-        $this->lineItems = new ArrayCollection();
         $this->archive = false;
         $this->purchasePrice = 0;
         $this->alert = 10;
         $this->variants = new ArrayCollection();
         $this->stockLists = new ArrayCollection();
-        $this->preorders = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -85,36 +77,6 @@ class Product
     public function setPrice(?float $price): self
     {
         $this->price = $price;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|LineItem[]
-     */
-    public function getLineItems(): Collection
-    {
-        return $this->lineItems;
-    }
-
-    public function addLineItem(LineItem $lineItem): self
-    {
-        if (!$this->lineItems->contains($lineItem)) {
-            $this->lineItems[] = $lineItem;
-            $lineItem->setProduct($this);
-        }
-
-        return $this;
-    }
-
-    public function removeLineItem(LineItem $lineItem): self
-    {
-        if ($this->lineItems->removeElement($lineItem)) {
-            // set the owning side to null (unless already changed)
-            if ($lineItem->getProduct() === $this) {
-                $lineItem->setProduct(null);
-            }
-        }
 
         return $this;
     }
@@ -253,36 +215,6 @@ class Product
     public function setDigital(?bool $digital): self
     {
         $this->digital = $digital;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Preorder[]
-     */
-    public function getPreorders(): Collection
-    {
-        return $this->preorders;
-    }
-
-    public function addPreorder(Preorder $preorder): self
-    {
-        if (!$this->preorders->contains($preorder)) {
-            $this->preorders[] = $preorder;
-            $preorder->setProduct($this);
-        }
-
-        return $this;
-    }
-
-    public function removePreorder(Preorder $preorder): self
-    {
-        if ($this->preorders->removeElement($preorder)) {
-            // set the owning side to null (unless already changed)
-            if ($preorder->getProduct() === $this) {
-                $preorder->setProduct(null);
-            }
-        }
 
         return $this;
     }

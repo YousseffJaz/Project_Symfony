@@ -3,7 +3,6 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Variant;
-use App\Entity\Preorder;
 use App\Entity\Product;
 use App\Form\AdminProductType;
 use App\Repository\LineItemRepository;
@@ -22,61 +21,9 @@ class AdminProductController extends AbstractController
 {
     #[Route('', name: 'admin_product_index')]
     #[IsGranted('ROLE_ADMIN')]
-    public function index(
-        Request $request,
-        ProductRepository $productRepo,
-        StockListRepository $stockRepo,
-        EntityManagerInterface $manager
-    ): Response {
-        $quantity = $request->request->all('quantity');
-        $productId = $request->request->all('productId');
-        
-        if (is_array($productId) && is_array($quantity) && count($productId) > 0 && count($quantity) > 0) {
-            for ($i = 0; $i < count($productId); $i++) {
-                if (isset($quantity[$i]) && isset($productId[$i])) {
-                    $product = $productRepo->findOneById($productId[$i]);
-                    $estimation = (int) $quantity[$i];
-
-                    if ($product && $estimation > 0) {
-                        $preorder = new Preorder();
-                        $preorder->setTitle($product->getTitle());
-                        $preorder->setQuantity($estimation);
-                        $preorder->setProduct($product);
-                        $manager->persist($preorder);
-                        $manager->flush();
-                    }
-                }
-            }
-
-            $this->addFlash(
-                'success',
-                "Les produits à commander ont été ajoutés !"
-            );
-        }
-
-        $products = $productRepo->findBy(['archive' => false], ['title' => "ASC"]);
-
-        foreach ($products as $product) {
-            if ($product->getAlert()) {
-                $stocks = $stockRepo->findStockInfAlert($product, $product->getAlert());
-
-                if ($stocks) {
-                    foreach ($stocks as $stock) {
-                        if ($stock->getQuantity() == 1) {
-                            $this->addFlash(
-                                'error',
-                                "{$product->getTitle()} dans le stock {$stock->getName()} est disponible en 1 exemplaire !"
-                            );
-                        } else {
-                            $this->addFlash(
-                                'error',
-                                "{$product->getTitle()} dans le stock {$stock->getName()} est disponible en {$stock->getQuantity()} exemplaires !"
-                            );
-                        }
-                    }
-                }
-            }
-        }
+    public function index(ProductRepository $repo)
+    {
+        $products = $repo->findAll();
 
         return $this->render('admin/product/index.html.twig', [
             'products' => $products

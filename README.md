@@ -48,13 +48,12 @@ Les paramètres principaux sont configurés dans `config/services.yaml` :
 
 ## Fonctionnalités
 
-- Gestion des utilisateurs et des rôles
-- Gestion des commandes
-- Gestion des stocks
 - Gestion des produits
 - Gestion des catégories
+- Gestion des stocks
+- Gestion des utilisateurs
+- Gestion des commandes
 - Gestion des statistiques
-- Gestion des précommandes
 - Système de notification
 
 ## Développement
