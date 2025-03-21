@@ -4,6 +4,8 @@ namespace App\Repository;
 
 use App\Entity\LineItem;
 use App\Entity\StockList;
+use App\Entity\Order;
+use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -31,7 +33,7 @@ class LineItemRepository extends ServiceEntityRepository
 
   public function totalAmountByStartAndEnd($start, $end){
     $query = $this->createQueryBuilder('l')
-    ->leftjoin('l.orderItem', 'o')
+    ->leftjoin('l.order', 'o')
     ->select('SUM(l.price) as total')
     ->andWhere('o.createdAt >= :start AND o.createdAt <= :end')
     ->setParameter('start', \DateTime::createFromFormat("Y-m-d",$start, new \DateTimeZone('Europe/Paris'))->setTime(00, 00, 00))
@@ -44,7 +46,7 @@ class LineItemRepository extends ServiceEntityRepository
 
   public function totalAmountByDay($day){
     $query = $this->createQueryBuilder('l')
-    ->leftjoin('l.orderItem', 'o')
+    ->leftjoin('l.order', 'o')
     ->select('SUM(l.price) as total')
     ->andWhere('o.createdAt >= :start AND o.createdAt <= :end')
     ->setParameter('start', \DateTime::createFromFormat("Y-m-d",$day, new \DateTimeZone('Europe/Paris'))->setTime(00, 00, 00))
@@ -56,6 +58,30 @@ class LineItemRepository extends ServiceEntityRepository
 
   public function findByStock(StockList $stock): array
   {
-    return $this->findBy(['stock' => $stock]);
+    return $this->createQueryBuilder('l')
+      ->andWhere('l.stock = :stock')
+      ->setParameter('stock', $stock)
+      ->getQuery()
+      ->getResult();
+  }
+
+  public function findByOrder(Order $order)
+  {
+    return $this->createQueryBuilder('l')
+      ->andWhere('l.order = :order')
+      ->setParameter('order', $order)
+      ->getQuery()
+      ->getResult();
+  }
+
+  public function findByOrderAndProduct(Order $order, Product $product)
+  {
+    return $this->createQueryBuilder('l')
+      ->andWhere('l.order = :order')
+      ->andWhere('l.product = :product')
+      ->setParameter('order', $order)
+      ->setParameter('product', $product)
+      ->getQuery()
+      ->getResult();
   }
 }

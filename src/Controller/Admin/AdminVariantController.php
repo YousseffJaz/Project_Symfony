@@ -27,19 +27,6 @@ class AdminVariantController extends AbstractController
         ]);
     }
 
-    #[Route('/print', name: 'admin_variant_print')]
-    #[IsGranted('ROLE_ADMIN')]
-    public function print(Request $request, VariantRepository $variantRepo): Response
-    {
-        $priceLists = $request->request->get('priceTitle');
-        $variants = $variantRepo->findBy(['archive' => false], ['title' => "ASC"]);
-
-        return $this->render('admin/variant/print.html.twig', [
-            'variants' => $variants,
-            'priceLists' => $priceLists,
-        ]);
-    }
-
     #[Route('/product/{id}/variants/new', name: 'admin_variant_new')]
     #[IsGranted('ROLE_ADMIN')]
     public function new(Product $product, Request $request, EntityManagerInterface $manager): Response

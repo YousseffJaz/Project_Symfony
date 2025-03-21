@@ -50,7 +50,6 @@
 
               <div class="row">
                 <div class="col-md-6"><br>
-                  {{ form_row(form.note, { 'label': 'Note' }) }}
                   <div class="form-group">
                     <label for="admin_order_stockList">Stock</label>
                     <select id="admin_order_stockList" name="stockList" class="form-control" required>
@@ -107,9 +106,6 @@
                   {{ form_row(form.discount, { 'label': "Réduction" }) }}
                   {{ form_row(form.paid, { 'label': 'Montant payé' }) }}
                   {{ form_row(form.paymentMethod, { 'label': 'Moyen de paiement' }) }}
-                  <div id="delivery-admin-wrapper" style="display: none;">
-                    {{ form_row(form.delivery, { 'label': 'Livraison' }) }}
-                  </div>
                 </div>
               </div>
 
@@ -277,7 +273,7 @@ $(function () {
   });
 
   function toggleDeliveryAdmin(value) {
-    if (value == '4') {
+    if (value == 4) {
       $('#delivery-admin-wrapper').show();
     } else {
       $('#delivery-admin-wrapper').hide();

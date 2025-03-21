@@ -35,8 +35,8 @@ class AdminAdminType extends AbstractType
         'autocomplete' => 'off'
       ],
       'choices'  => [
-        'ROLE_LIVREUR' => 'ROLE_LIVREUR',
         'ROLE_EMPLOYÉ' => 'ROLE_EMPLOYÉ',
+        'ROLE_ADMIN' => 'ROLE_ADMIN',
         'ROLE_SUPER_ADMIN' => 'ROLE_SUPER_ADMIN',
       ],
       'placeholder' => 'Selectionner un rôle'

@@ -23,40 +23,36 @@
 						<div class="card-header">
 							<h5>Liste des commandes</h5>
               {% set totalDiscount = 0 %}
-							{% if app.user.role != "ROLE_LIVREUR" %}
-								<a href="{{ path('admin_order_new') }}" class="btn btn-out-dashed waves-effect waves-light btn-primary btn-square text-right" style="float: right; padding: 5px 10px; margin: 0px 5px;">Ajouter</a>
-								<a id="print" href="#" class="btn btn-out-dashed waves-effect waves-light btn-danger btn-square text-right" style="float: right; padding: 5px 10px; margin: 0px 5px;">Imprimer</a>
-								<a id="search" href="#" class="btn btn-out-dashed waves-effect waves-light btn-danger btn-square text-right" style="float: right; padding: 5px 10px; margin: 0px 5px; background: #7f8c8d; border: 1px solid #7f8c8d;">Rechercher</a>
-								<i class="fas fa-arrow-right js-after" style="float: right; font-size: 18px; padding: 7px; cursor: pointer;"></i>
-								<input type="date" id="end" name="end" {% if end %} value="{{ end }}" {% endif %} style="float: right; padding: 5px 10px; margin: 0px 5px;">
-								<input type="date" id="start" name="start" {% if start %} value="{{ start }}" {% endif %} style="float: right; padding: 5px 10px; margin: 0px 5px;">
-								<i class="fas fa-arrow-left js-before" style="float: right; font-size: 18px; padding: 7px; cursor: pointer;"></i>
-								{% set totalDiscount = 0 %}
-								{% if orders %}
-									{% for order in orders %}
-										{% if app.user.role == "ROLE_SUPER_ADMIN" %}
-											{% set totalDiscount = totalDiscount + order.total %}
-										{% endif %}
-									{% endfor %}
+							<a href="{{ path('admin_order_new') }}" class="btn btn-out-dashed waves-effect waves-light btn-primary btn-square text-right" style="float: right; padding: 5px 10px; margin: 0px 5px;">Ajouter</a>
+							<a id="print" href="#" class="btn btn-out-dashed waves-effect waves-light btn-danger btn-square text-right" style="float: right; padding: 5px 10px; margin: 0px 5px;">Imprimer</a>
+							<a id="search" href="#" class="btn btn-out-dashed waves-effect waves-light btn-danger btn-square text-right" style="float: right; padding: 5px 10px; margin: 0px 5px; background: #7f8c8d; border: 1px solid #7f8c8d;">Rechercher</a>
+							<i class="fas fa-arrow-right js-after" style="float: right; font-size: 18px; padding: 7px; cursor: pointer;"></i>
+							<input type="date" id="end" name="end" {% if end %} value="{{ end }}" {% endif %} style="float: right; padding: 5px 10px; margin: 0px 5px;">
+							<input type="date" id="start" name="start" {% if start %} value="{{ start }}" {% endif %} style="float: right; padding: 5px 10px; margin: 0px 5px;">
+							<i class="fas fa-arrow-left js-before" style="float: right; font-size: 18px; padding: 7px; cursor: pointer;"></i>
+							{% set totalDiscount = 0 %}
+							{% if orders %}
+								{% for order in orders %}
 									{% if app.user.role == "ROLE_SUPER_ADMIN" %}
-										<div style="float: right;margin-top: 5px;font-size: 16px;margin-right: 12px;font-weight: bold;">Total :
-										{{ totalDiscount|number_format(2, ',', ' ') }}€</div>
+										{% set totalDiscount = totalDiscount + order.total %}
 									{% endif %}
+								{% endfor %}
+								{% if app.user.role == "ROLE_SUPER_ADMIN" %}
+									<div style="float: right;margin-top: 5px;font-size: 16px;margin-right: 12px;font-weight: bold;">Total :
+									{{ totalDiscount|number_format(2, ',', ' ') }}€</div>
 								{% endif %}
 							{% endif %}
 						</div>
 
 						<div class="card-block table-border-style" style="padding-top: 0px;">
-							{% if app.user.role != "ROLE_LIVREUR" %}
-								<a href="{{ path('admin_order_expedition') }}" class="btn btn-out-dashed waves-effect waves-light btn-primary btn-square text-right" style="padding: 5px 10px; margin: 0px 5px;">Commande à expédier</a>
-								<a href="{{ path('admin_order_livraison') }}" class="btn btn-out-dashed waves-effect waves-light btn-primary btn-square text-right" style="padding: 5px 10px; margin: 0px 5px; background: #7f8c8d; border: 1px solid #7f8c8d">Commande à livrer</a>
-								<a href="{{ path('admin_order_impayee') }}" class="btn btn-out-dashed waves-effect waves-light btn-danger btn-square text-right" style="padding: 5px 10px; margin: 0px 5px;">Commande impayée</a>
-								{% if app.user.role == "ROLE_SUPER_ADMIN" or app.user.role == "ROLE_EMPLOYÉ" %}
-									{% if orders %}
-										<div style="padding: 5px 10px; margin: 0px 5px; float: right; color: #2ecc71; font-weight: bold; font-size: 17px; border: 2px solid #2ecc71; border-radius: 8px; margin-bottom: 12px;">
-											<i class="fas fa-sack-dollar" style="color: #2ecc71; font-size: 20px; padding: 3px;"></i> {{ alreadyPaid|number_format(2, ',', ' ') }}€
-										</div>
-									{% endif %}
+							<a href="{{ path('admin_order_expedition') }}" class="btn btn-out-dashed waves-effect waves-light btn-primary btn-square text-right" style="padding: 5px 10px; margin: 0px 5px;">Commande à expédier</a>
+							<a href="{{ path('admin_order_livraison') }}" class="btn btn-out-dashed waves-effect waves-light btn-primary btn-square text-right" style="padding: 5px 10px; margin: 0px 5px; background: #7f8c8d; border: 1px solid #7f8c8d">Commande à livrer</a>
+							<a href="{{ path('admin_order_impayee') }}" class="btn btn-out-dashed waves-effect waves-light btn-danger btn-square text-right" style="padding: 5px 10px; margin: 0px 5px;">Commande impayée</a>
+							{% if app.user.role == "ROLE_SUPER_ADMIN" or app.user.role == "ROLE_EMPLOYÉ" %}
+								{% if orders %}
+									<div style="padding: 5px 10px; margin: 0px 5px; float: right; color: #2ecc71; font-weight: bold; font-size: 17px; border: 2px solid #2ecc71; border-radius: 8px; margin-bottom: 12px;">
+										<i class="fas fa-sack-dollar" style="color: #2ecc71; font-size: 20px; padding: 3px;"></i> {{ alreadyPaid|number_format(2, ',', ' ') }}€
+									</div>
 								{% endif %}
 							{% endif %}
 							{% if orders %}
@@ -71,12 +67,9 @@
 												<th>Statut</th>
 												<th>Paiement</th>
 												<th>Produits</th>
-                        {% if app.user.role != "ROLE_LIVREUR" %}
-													<th>Frais d'expédition</th>
-                          <th>Livreur</th>
-													<th>Vente</th>
-													<th>Restant (€)</th>
-                        {% endif %}
+												<th>Frais d'expédition</th>
+												<th>Vente</th>
+												<th>Restant (€)</th>
 												<th>Total (€)</th>
 												<th>Action</th>
 											</tr>
@@ -86,7 +79,7 @@
 												{% set total = 0 %}
 												<tr>
 													<td>{{ order.id }}</td>
-													<td>{{ order.admin.firstname|capitalize }}</td>
+													<td>{{ order.admin.firstName|capitalize }}</td>
 													<td>
                             {{order.createdAt|date_fr('EEE dd MMMM yyyy')|title }}
 														<br> à {{order.createdAt|date('H') }}h{{order.createdAt|date('i') }}
@@ -115,48 +108,45 @@
 															<span class="status" style="background-color: #3498db; color:  white;">Commande à expédier</span>
 														{% endif %}
 													</td>
-														<td>
-															{% if order.status == 0 %}
-																<span class="status" style="background-color: #3498db; color:  white;">En attente de paiement</span>
-															{% elseif order.status == 1 %}
-																<span class="status" style="background-color: rgba(228, 229, 231, 1);">Paiement partiel</span>
-															{% elseif order.status == 2 %}
-																<span class="status" style="background-color: #2ecc71; color: white;">Payé</span>
-															{% elseif order.status == 3 %}
-																<span class="status" style="background-color: #f7b731; color: white;">Trop-perçu</span>
-															{% endif %}
-														</td>
-														<td>
-															{% if order.lineItems.toArray %}
-																{% for lineItem in order.lineItems.toArray %}
-																	{% set total = total + lineItem.price %}
-																	<div class="flex justify-center items-center m-2 font-medium py-1 px-2 bg-white rounded bg-gray-100 border" style="max-width: fit-content; display: flex;">
-																		<div class="text-xs font-normal leading-none max-w-full flex-initial">{{ lineItem.quantity }}
-																			x ({{ lineItem.title }}) -
-																			{{ lineItem.price|number_format(2, ',', ' ') }}€</div>
-																	</div>
-																{% endfor %}
-															{% endif %}
-														</td>
-                          {% if app.user.role != "ROLE_LIVREUR" %}
-														<td>{{ order.shippingCost|number_format(2, ',', ' ') }}€</td>
-                            <td>{% if order.delivery %} {{ order.delivery.firstName|capitalize }} {% endif %}</td>
-														<td>
-															{% if order.paymentType == 0 %}
-																Internet
-															{% elseif order.paymentType == 1 %}
-																Physique
-                              {% elseif order.paymentType == 2 %}
-                                Livraison
-                              {% endif %}
-                            </td>
-                            {% set totalDiscount = totalDiscount - order.discount + order.shippingCost %}
-                            {% set remaining = order.total - order.paid %}
-                            <td>{{ remaining|number_format(2, ',', ' ') }}€</td>
-                          {% endif %}
+													<td>
+														{% if order.status == 0 %}
+															<span class="status" style="background-color: #3498db; color:  white;">En attente de paiement</span>
+														{% elseif order.status == 1 %}
+															<span class="status" style="background-color: rgba(228, 229, 231, 1);">Paiement partiel</span>
+														{% elseif order.status == 2 %}
+															<span class="status" style="background-color: #2ecc71; color: white;">Payé</span>
+														{% elseif order.status == 3 %}
+															<span class="status" style="background-color: #f7b731; color: white;">Trop-perçu</span>
+														{% endif %}
+													</td>
+													<td>
+														{% if order.lineItems.toArray %}
+															{% for lineItem in order.lineItems.toArray %}
+																{% set total = total + lineItem.price %}
+																<div class="flex justify-center items-center m-2 font-medium py-1 px-2 bg-white rounded bg-gray-100 border" style="max-width: fit-content; display: flex;">
+																	<div class="text-xs font-normal leading-none max-w-full flex-initial">{{ lineItem.quantity }}
+																		x ({{ lineItem.title }}) -
+																		{{ lineItem.price|number_format(2, ',', ' ') }}€</div>
+																</div>
+															{% endfor %}
+														{% endif %}
+													</td>
+													<td>{{ order.shippingCost|number_format(2, ',', ' ') }}€</td>
+													<td>
+														{% if order.paymentType == 0 %}
+															Internet
+														{% elseif order.paymentType == 1 %}
+															Physique
+														{% elseif order.paymentType == 2 %}
+															Livraison
+														{% endif %}
+													</td>
+													{% set totalDiscount = totalDiscount - order.discount + order.shippingCost %}
+													{% set remaining = order.total - order.paid %}
+													<td>{{ remaining|number_format(2, ',', ' ') }}€</td>
                            <td>{{ order.total|number_format(2, ',', ' ') }}€</td>
 													<td>
-														{% if order.orderHistories.toArray and app.user.role != "ROLE_LIVREUR" %}
+														{% if order.orderHistories.toArray  %}
 															<a href="{{ path('admin_order_history', { id: order.id }) }}">
 																<i class="fas fa-flag" style="color: #7f8c8d; font-size: 20px; padding: 3px;"></i>
 															</a>

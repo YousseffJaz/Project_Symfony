@@ -26,7 +26,7 @@ class LineItemFixtures extends Fixture implements DependentFixtureInterface
             
             // Assigner une commande aléatoire
             $order = $this->getReference('order_' . $faker->numberBetween(1, 3), Order::class);
-            $lineItem->setOrderItem($order);
+            $lineItem->setOrder($order);
             
             // Assigner un produit aléatoire
             $product = $this->getReference('product_' . $faker->randomElement([

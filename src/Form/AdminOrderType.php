@@ -120,6 +120,37 @@ class AdminOrderType extends AbstractType
                 ],
                 'choices' => $statusOptions
             ])
+            ->add('paymentType', ChoiceType::class, [
+                'placeholder' => 'Choisir un type de paiement',
+                'attr' => [
+                    'class' => 'form-control',
+                    'autocomplete' => 'off'
+                ],
+                'choices' => [
+                    'Internet' => 0,
+                    'Physique' => 1,
+                    'Livraison' => 2
+                ],
+                'required' => false
+            ])
+            ->add('paymentMethod', ChoiceType::class, [
+                'placeholder' => 'Choisir une méthode de paiement',
+                'attr' => [
+                    'class' => 'form-control',
+                    'autocomplete' => 'off'
+                ],
+                'choices' => [
+                    'Espèce' => 0,
+                    'Transcash' => 1,
+                    'Carte bancaire' => 2,
+                    'Paypal' => 3,
+                    'PCS' => 4,
+                    'Chèque' => 5,
+                    'Paysafecard' => 6,
+                    'Virement bancaire' => 7
+                ],
+                'required' => false
+            ])
             ->add('createdAt', DateTimeType::class, [
                 'attr' => [
                     'class' => 'form-control',
@@ -135,27 +166,6 @@ class AdminOrderType extends AbstractType
                 ],
                 'required' => false
             ]);
-
-        /** @var Admin */
-        $admin = $this->tokenStorage->getToken()->getUser();
-
-        if ($admin->getRole() === "ROLE_SUPER_ADMIN") {
-            $builder->add('delivery', EntityType::class, [
-                'class' => Admin::class,
-                'query_builder' => fn(EntityRepository $er) => $er->createQueryBuilder('a')
-                    ->where('a.role = :role')
-                    ->setParameter('role', 'ROLE_LIVREUR')
-                    ->orderBy('a.firstname', 'ASC'),
-                'choice_label' => function ($admin) {
-                    return $admin->getFirstname() . ' ' . $admin->getLastname();
-                },
-                'placeholder' => 'Sélectionnez un livreur',
-                'required' => false,
-                'attr' => [
-                    'class' => 'form-control'
-                ]
-            ]);
-        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void

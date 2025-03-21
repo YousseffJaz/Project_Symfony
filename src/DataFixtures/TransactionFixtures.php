@@ -3,7 +3,6 @@
 namespace App\DataFixtures;
 
 use App\Entity\Transaction;
-use App\Entity\Note;
 use App\Entity\Order;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -22,11 +21,6 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
             $transaction = new Transaction();
             $transaction->setAmount($faker->randomFloat(2, -1000, 1000));
             $transaction->setComment($faker->sentence());
-            $transaction->setUpdatedAt($faker->dateTimeBetween('-1 year', 'now'));
-            
-            // Assigner une note aléatoire
-            $note = $this->getReference('note_' . $faker->numberBetween(0, 14), Note::class);
-            $transaction->setNote($note);
             
             // Assigner une commande aléatoire (si disponible)
             if ($faker->boolean() && count($usedOrders) < 3) {
@@ -48,7 +42,6 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
     public function getDependencies(): array
     {
         return [
-            NoteFixtures::class,
             OrderFixtures::class,
         ];
     }

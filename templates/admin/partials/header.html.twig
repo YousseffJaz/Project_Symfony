@@ -34,7 +34,7 @@
                 <ul class="nav-right">
                     <li class="user-profile header-notification">
                         <a href="{{ path('admin_profile') }}">
-                            <span style="font-weight: bold; font-size: 16px;">{{ app.user.firstname|upper }}</span>
+                            <span style="font-weight: bold; font-size: 16px;">{{ app.user.firstName|upper }}</span>
                             <i class="fas fa-chevron-down"></i>
                         </a>
                     </li>
@@ -181,32 +181,7 @@
 </style>
 
 
-<div style="display:none;">
-  <p><audio src="{{ app.request.baseUrl }}/sounds/custom.mp3" controls id="player"></audio></p>
-</div>
-
 <script src="{{ app.request.getBaseURL() }}/js/jquery-admin.min.js"></script>
 <script src="{{ app.request.getBaseURL() }}/js/jquery.slimscroll.js"></script>
 <script src="{{ app.request.getBaseURL() }}/js/waves.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
-
-<script>
-// cacher la notification
-setTimeout(removeToast, 60000);
-function removeToast() {
-  $('.alert').fadeOut( "slow", function() {});
-};
-function initNotif(){
-  loopNotif();
-}
-initNotif();
-function loopNotif(){
-  setTimeout('loopNotif();', 60000);
-  axios.get('{{ path("admin_notif_all") }}').then(function (response) {
-    if (response.data == true) {
-      $("#player")[0].play();
-    }
-  });
-}
-  
-</script>

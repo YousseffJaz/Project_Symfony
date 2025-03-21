@@ -162,7 +162,7 @@ class AdminStatistiqueController extends AbstractController
 
        // Get payment type statistics
        $paymentTypeStats = [];
-       for ($i = 0; $i <= 2; $i++) {
+       for ($i = 0; $i <= 1; $i++) {
            $orders = $orderRepo->findByPaymentType($i);
            $amount = 0;
            foreach ($orders as $order) {
@@ -228,7 +228,6 @@ class AdminStatistiqueController extends AbstractController
            // Payment type statistics
            'online' => $paymentTypeStats[0],
            'local' => $paymentTypeStats[1],
-           'delivery' => $paymentTypeStats[2],
            // Order status statistics
            'waiting' => $orderStatusStats[0],
            'partial' => $orderStatusStats[1],

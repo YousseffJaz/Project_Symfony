@@ -5,12 +5,10 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: 'en'
-    uploads_directory: '%kernel.project_dir%/public/uploads'
     sounds_directory: '%kernel.project_dir%/public/sounds'
     root_directory: '%kernel.project_dir%/public'
     session_max_idle_time: 14400
     cookie_lifetime: 14400
-
 
 services:
     # default configuration for services in *this* file
@@ -52,8 +50,3 @@ services:
             $entityManager: '@doctrine.orm.entity_manager'
 
     App\Service\Order\OrderExportService: ~
-
-    App\Service\Order\OrderUploadService:
-        arguments:
-            $entityManager: '@doctrine.orm.entity_manager'
-            $uploadDir: '%kernel.project_dir%/public/uploads/orders'

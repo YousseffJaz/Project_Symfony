@@ -175,19 +175,6 @@ class OrderRepository extends ServiceEntityRepository
   }
 
 
-  public function findByDeliveryAndUser($user){
-    $query = $this->createQueryBuilder('o');
-
-    $query->andWhere('o.orderStatus = 4')
-    ->andWhere('o.delivery = :user')
-    ->setParameter('user', $user)
-    ->addOrderBy('o.createdAt', 'DESC');
-
-    return $query->getQuery()
-    ->getResult();
-  }
-
-
   public function findByExpedition(){
     $query = $this->createQueryBuilder('o');
 

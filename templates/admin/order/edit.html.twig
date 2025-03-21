@@ -58,40 +58,37 @@
 
               {{ form_row(form.address, { 'label': 'Adresse', 'attr': { 'rows' : '5'} }) }}
 
-              {% if app.user.role != "ROLE_LIVREUR" %}
-                <div class="row">
-                  <div class="col-md-6"><br>
-                    {{ form_row(form.note, { 'label': 'Commentaire', 'attr': { 'rows' : '5'} }) }}
-                    <div class="form-group">
-                      <label for="admin_order_stockList">Stock</label>
-                      <select id="admin_order_stockList" name="stockList" class="form-control" required>
-                        {# <option value="">Choisir un stock</option> #}
-                        {% set length = [] %}
-                        {% if products %}
-                          {% for product in products %}
-                            {% if product.stockLists.toArray %}
-                              {% for stockLists in product.stockLists.toArray %}
-                                {% if stockLists.name not in length %}
-                                  {% set length = length|merge([stockLists.name]) %}
-                                {% endif %}
-                              {% endfor %}
-                            {% endif %}
-                          {% endfor %}
-                        {% endif %}
-                        {% for stockName in length %}
-                          <option value="{{stockName}}" {% if order.lineItems.toArray %} {% for lineItem in order.lineItems.toArray %} {% if loop.last and lineItem.stock %} {% if stockName == lineItem.stock.name %} selected {% endif %} {% endif %} {% endfor %} {% endif %}>{{stockName}}</option>
+              <div class="row">
+                <div class="col-md-6"><br>
+                  <div class="form-group">
+                    <label for="admin_order_stockList">Stock</label>
+                    <select id="admin_order_stockList" name="stockList" class="form-control" required>
+                      {# <option value="">Choisir un stock</option> #}
+                      {% set length = [] %}
+                      {% if products %}
+                        {% for product in products %}
+                          {% if product.stockLists.toArray %}
+                            {% for stockLists in product.stockLists.toArray %}
+                              {% if stockLists.name not in length %}
+                                {% set length = length|merge([stockLists.name]) %}
+                              {% endif %}
+                            {% endfor %}
+                          {% endif %}
                         {% endfor %}
-                      </select>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    {% if app.user.role != "ROLE_SUPER_ADMIN" %}
-                      <br>
-                    {% endif %}
-                    {{ form_row(form.createdAt, { 'label': 'Date de création' }) }}
+                      {% endif %}
+                      {% for stockName in length %}
+                        <option value="{{stockName}}" {% if order.lineItems.toArray %} {% for lineItem in order.lineItems.toArray %} {% if loop.last and lineItem.stock %} {% if stockName == lineItem.stock.name %} selected {% endif %} {% endif %} {% endfor %} {% endif %}>{{stockName}}</option>
+                      {% endfor %}
+                    </select>
                   </div>
                 </div>
-              {% endif %}
+                <div class="col-md-6">
+                  {% if app.user.role != "ROLE_SUPER_ADMIN" %}
+                    <br>
+                  {% endif %}
+                  {{ form_row(form.createdAt, { 'label': 'Date de création' }) }}
+                </div>
+              </div>
 
               <br><label>Produits</label>
               <div class="search_content" style="max-width: 500px; margin-bottom: 15px;">
@@ -125,56 +122,11 @@
                   {{ form_row(form.discount, { 'label': "Réduction" }) }}
                   {{ form_row(form.paid, { 'label': 'Montant payé' }) }}
                   {{ form_row(form.paymentMethod, { 'label': 'Moyen de paiement' }) }}
-                  <div id="delivery-admin-wrapper" style="display: none;">
-                    {{ form_row(form.delivery, { 'label': 'Livraison' }) }}
-                  </div>
                 </div>
               </div>
               
               {{ form_row(form.note, { 'label': 'Commentaire', 'attr': { 'rows' : '5'} }) }}
 
-              {% if app.user.role != "ROLE_LIVREUR" %}
-                <section class="row p-6 md:p-8 md:flex md:flex-row md:rounded-xl">
-                  <div class="col-md-6 w-full md:px-0 md:mr-8 md:w-1/2">
-                  <label class="required" for="admin_order_orderStatus" style=" margin-top: 10px;">Ajouter des fichiers</label>
-                    <send-upload-area class="flex flex-col items-center justify-center border-2 border-dashed border-grey-transparent rounded px-6 py-16 h-full w-full dark:border-grey-60" style="max-height: 200px;" data-order="{{ order.id }}">
-                      <input id="file-upload" type="file" multiple="multiple" class="opacity-0 w-0 h-0 appearance-none absolute overflow-hidden" />
-                      <label role="button" for="file-upload" class="btn rounded-lg flex items-center mt-4" style="background-color: rgba(0, 96, 223, 1); color :white; padding: 12px 30px;">Ajouter un fichier</label>
-                    </send-upload-area>
-                  </div>
-                  <div class="col-md-6 mt-6 w-full md:w-1/2 md:-m-2">
-                    <send-intro class="flex flex-col items-center justify-center bg-white px-6 md:py-0 py-6 mb-0 h-full w-full dark:bg-grey-90">
-                      <div class="mt-2 flex flex-col h-full" style="width: 100%">
-                        <br> 
-                        <div id="show-files">
-                          {% if order.uploads %}
-                            {% for upload in order.uploads %}
-                              <li class="bg-white mt-2 mb-4 shadow-light rounded dark:bg-grey-90 dark:border dark:border-grey-80" style="list-style: none;">
-                                <div class="flex flex-row items-center p3 w-full" style="justify-content: space-between">
-                                  <div>
-                                    <h1 data-id="{{ upload.id }}" class="text-base font-medium word-break-all" style="margin-bottom: 5px;">{{ upload.name }}</h1>
-                                    <a href="{{ app.request.getBaseUrl() }}/uploads/{{ upload.filename }}" target="_blank" data-filename="{{ upload.filename }}" style="font-size: 13px; cursor: pointer; text-decoration: underline; color: #007bff;" download="{{ upload.filename }}">Télécharger</a>
-                                  </div>
-                                  {% if "pdf" in upload.filename %}
-                                    <object type="application/pdf" data="{{ app.request.getBaseUrl() }}/uploads/{{ upload.filename }}" height="200"></object>
-                                  {% else %}
-                                    <img src="{{ app.request.getBaseUrl() }}/uploads/{{ upload.filename }}" style="width: 300px; max-height: 200px;object-fit: cover;">
-                                  {% endif %}
-                                  </a>
-                                  {% if app.user.role == "ROLE_SUPER_ADMIN" %}
-                                    <a href="{{ app.request.getBaseUrl() }}/uploads/{{ upload.filename }}" class=" flex items-center js-delete-file" data-filename="{{ upload.filename }}" style=""><i class="fas fa-times" style="padding-right: 7px; color: red; font-size: 17px;"></i></a>
-                                  {% endif %}
-                                </div>
-                              </li>
-                            {% endfor %}
-                          {% endif %}
-                        </div>
-                      </div>
-                    </send-intro>
-                  </div>
-                </section>
-              {% endif %}
-              
               <div class="form-group row mt-2" style="float: right; margin-right: 20px;">
                 <button type="submit" class="btn btn-primary m-b-0">Enregistrer</button>
               </div>
@@ -199,21 +151,6 @@
   </script>
 {% endif %}
 
-
-{% if app.user.role == "ROLE_LIVREUR" %}
-  <script>
-    $('#admin_order_stockList').parent().hide();
-    $('#admin_order_trackingId').parent().hide();
-    $('#admin_order_discount').parent().hide();
-    $('#admin_order_shippingCost').parent().hide();
-    $('#admin_order_paymentType').parent().hide();
-    $('#admin_order_paymentMethod').parent().hide();
-    $('#admin_order_phone').parent().hide();
-    $('#admin_order_user option:not(:selected)').prop('disabled', true);
-    $('#admin_order_firstname').prop('readonly', true);
-    $('#admin_order_lastname').prop('readonly', true);
-  </script>
-{% endif %}
 
 <style type="text/css">
 
@@ -459,8 +396,6 @@
 
 
 <script>
-
-
 $(function () {
   toggleDeliveryAdmin($('#admin_order_orderStatus').val());
 
@@ -469,13 +404,12 @@ $(function () {
   });
 
   function toggleDeliveryAdmin(value) {
-    if (value == '4') {
+    if (value == 4) {
       $('#delivery-admin-wrapper').show();
     } else {
       $('#delivery-admin-wrapper').hide();
     }
   }
-
 
   $( document ).ready(function() {
     $('#admin_order_firstname').autocomplete({
@@ -582,76 +516,6 @@ $(function () {
     $(this).val();
   });
 
-
-
-  $("#file-upload").change(function() {
-    if (this.files && this.files[0]) {
-      saveFile(this);
-    }
-  });
-  function saveFile(input) {
-    var url = '{{ path("admin_order_upload") }}';
-    var order = $('div[data-order]').first().data('order');
-    var length = input.files.length;
-    $.each(input.files, function(index, value) {
-      let formData = new FormData();           
-      formData.append("file", value);
-      formData.append("order", order);
-      fetch(url, {method: "POST", body: formData})
-      .then(function(response) {
-        if (response.status == "200") {
-          response.json().then(function(upload) {
-            var preview = upload.filename.includes("pdf") 
-              ? `<object type="application/pdf" data="{{ app.request.getBaseUrl() }}/uploads/${upload.filename}" height="200"></object>`
-              : `<img src="{{ app.request.getBaseUrl() }}/uploads/${upload.filename}" style="width: 300px; max-height: 200px;object-fit: cover;">`;
-            
-            $('#show-files').append(`
-              <li class="bg-white mt-2 mb-4 shadow-light rounded dark:bg-grey-90 dark:border dark:border-grey-80" style="list-style: none;">
-                <div class="flex flex-row items-center p3 w-full" style="justify-content: space-between">
-                  <div>
-                    <h1 data-id="${upload.id}" class="text-base font-medium word-break-all" style="margin-bottom: 5px;">${upload.filename}</h1>
-                    <a href="{{ app.request.getBaseUrl() }}/uploads/${upload.filename}" target="_blank" data-filename="${upload.filename}" style="font-size: 13px; cursor: pointer; text-decoration: underline; color: #007bff;" download="${upload.filename}">Télécharger</a>
-                  </div>
-                  ${preview}
-                  <a href="{{ app.request.getBaseUrl() }}/uploads/${upload.filename}" class="flex items-center js-delete-file" data-filename="${upload.filename}">
-                    <i class="fas fa-times" style="padding-right: 7px; color: red; font-size: 17px;"></i>
-                  </a>
-                </div>
-              </li>
-            `);
-          });
-        } else {
-          response.json().then(function(error) { 
-            alert(error.message);
-          });
-        }
-      }).catch(function(error) {
-        alert(error);
-      });  
-    });  
-  }
-
-  $('body').on('click', '.js-delete-file', function (e) {
-    e.preventDefault();
-    var url = '{{ path("admin_order_upload_delete") }}';
-    var filename = $(this).data('filename');
-    console.log($(this).parent().parent());
-    $(this).parent().parent().remove();
-
-    $.ajax({
-     url : url,
-     type : 'GET',
-     data: { 
-      filename: filename, 
-    },
-     success : function(result){
-      console.log(result);
-     },
-     error : function(error){
-        console.log(error)
-     }
-   });
-  });
 
 
   $("body").on("click", ".js-delete-product", function (e) {

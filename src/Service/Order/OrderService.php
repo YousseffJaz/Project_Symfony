@@ -65,11 +65,6 @@ class OrderService
         return $this->calculateOrderTotals($orders);
     }
 
-    public function getOrdersByDeliveryAndUser(Admin $admin): array
-    {
-        return $this->orderRepository->findByDeliveryAndUser($admin);
-    }
-
     public function getWaitingOrders(): array
     {
         $orders = $this->orderRepository->findOrderNotComplete();

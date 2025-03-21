@@ -49,7 +49,7 @@
                           </td>
 													<td>{{history.createdAt|date_fr('dd MMMM yyyy')|title }} à
 														{{history.createdAt|date('H') }}h{{history.createdAt|date('i') }}</td>
-													<td>{{ history.admin.firstname|capitalize }}</td>
+													<td>{{ history.admin.firstName|capitalize }}</td>
 													<td>
 														{% if "Le montant payé" in history.title %}
 															<span style="color:#2ed8b6; font-weight: bold;">{{ history.title }}</span>

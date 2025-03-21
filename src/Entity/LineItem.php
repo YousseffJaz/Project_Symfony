@@ -28,7 +28,7 @@ class LineItem
 
     #[ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'lineItems')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Order $orderItem = null;
+    private ?Order $order = null;
 
     #[ORM\ManyToOne(targetEntity: Variant::class, inversedBy: 'lineItems')]
     private ?Variant $variant = null;
@@ -92,14 +92,14 @@ class LineItem
         return $this;
     }
 
-    public function getOrderItem(): ?Order
+    public function getOrder(): ?Order
     {
-        return $this->orderItem;
+        return $this->order;
     }
 
-    public function setOrderItem(?Order $orderItem): self
+    public function setOrder(?Order $order): self
     {
-        $this->orderItem = $orderItem;
+        $this->order = $order;
 
         return $this;
     }

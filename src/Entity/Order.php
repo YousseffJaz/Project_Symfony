@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\OrderRepository;
+use App\Entity\OrderHistory;
+use App\Entity\LineItem;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -16,29 +18,41 @@ class Order
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: 'string', length: 255)]
     private ?string $firstname = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: 'string', length: 255)]
     private ?string $lastname = null;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $email = null;
+
+    #[ORM\Column(type: 'text')]
+    private ?string $address = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $phone = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $email = null;
-
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $identifier = null;
-
     #[ORM\Column(type: 'datetime')]
     private \DateTimeInterface $createdAt;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private ?int $status = null;
+    #[ORM\Column(type: 'float')]
+    private float $total = 0;
 
     #[ORM\Column(type: 'float')]
-    private float $total = 0.0;
+    private float $paid = 0;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $paymentMethod = null;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $paymentType = null;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $orderStatus = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $note = null;
 
     #[ORM\Column(type: 'float', nullable: true)]
     private ?float $shippingCost = null;
@@ -46,82 +60,30 @@ class Order
     #[ORM\Column(type: 'float', nullable: true)]
     private ?float $discount = null;
 
-    #[ORM\Column(type: 'float')]
-    private float $paid = 0.0;
-
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private ?int $paymentType = null;
-
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private ?int $paymentMethod = null;
-
     #[ORM\ManyToOne(targetEntity: Admin::class, inversedBy: 'orders')]
-    #[ORM\JoinColumn(nullable: false)]
     private ?Admin $admin = null;
 
-    #[ORM\OneToMany(targetEntity: LineItem::class, mappedBy: 'orderItem', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: LineItem::class, mappedBy: 'order', orphanRemoval: true)]
     private Collection $lineItems;
 
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $note = null;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $trackingId = null;
 
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $shopifyNote = null;
-
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $address = null;
-
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private ?int $orderStatus = null;
-
-    #[ORM\OneToMany(targetEntity: Upload::class, mappedBy: 'order', orphanRemoval: true)]
-    private Collection $uploads;
-
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private ?bool $option1 = null;
-
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private ?bool $option2 = null;
-
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private ?bool $option3 = null;
-
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private ?bool $option4 = null;
-
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private ?bool $option5 = null;
-
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private ?bool $option6 = null;
+    #[ORM\Column(type: 'integer')]
+    private int $status = 0;
 
     #[ORM\OneToMany(targetEntity: OrderHistory::class, mappedBy: 'invoice')]
     #[ORM\OrderBy(['createdAt' => 'DESC'])]
     private Collection $orderHistories;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $shopifyId = null;
-
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $shopifyOrderId = null;
-
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $trackingId = null;
-
-    #[ORM\OneToMany(targetEntity: Notification::class, mappedBy: 'invoice')]
-    private Collection $notifications;
-
-    #[ORM\ManyToOne(targetEntity: Admin::class, inversedBy: 'deliveryOrders')]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?Admin $delivery = null;
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $note2 = null;
 
     public function __construct()
     {
-        $this->lineItems = new ArrayCollection();
         $this->createdAt = new \DateTime('now', timezone_open('Europe/Paris'));
-        $this->uploads = new ArrayCollection();
+        $this->lineItems = new ArrayCollection();
         $this->orderHistories = new ArrayCollection();
-        $this->notifications = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -177,18 +139,6 @@ class Order
         return $this;
     }
 
-    public function getIdentifier(): ?string
-    {
-        return $this->identifier;
-    }
-
-    public function setIdentifier(?string $identifier): self
-    {
-        $this->identifier = $identifier;
-
-        return $this;
-    }
-
     public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->createdAt;
@@ -197,18 +147,6 @@ class Order
     public function setCreatedAt(\DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getStatus(): ?int
-    {
-        return $this->status;
-    }
-
-    public function setStatus(?int $status): self
-    {
-        $this->status = $status;
 
         return $this;
     }
@@ -261,24 +199,24 @@ class Order
         return $this;
     }
 
-    public function getPaymentType(): ?int
+    public function getPaymentType(): ?string
     {
         return $this->paymentType;
     }
 
-    public function setPaymentType(?int $paymentType): self
+    public function setPaymentType(?string $paymentType): self
     {
         $this->paymentType = $paymentType;
 
         return $this;
     }
 
-    public function getPaymentMethod(): ?int
+    public function getPaymentMethod(): ?string
     {
         return $this->paymentMethod;
     }
 
-    public function setPaymentMethod(?int $paymentMethod): self
+    public function setPaymentMethod(?string $paymentMethod): self
     {
         $this->paymentMethod = $paymentMethod;
 
@@ -309,7 +247,7 @@ class Order
     {
         if (!$this->lineItems->contains($lineItem)) {
             $this->lineItems[] = $lineItem;
-            $lineItem->setOrderItem($this);
+            $lineItem->setOrder($this);
         }
 
         return $this;
@@ -319,8 +257,8 @@ class Order
     {
         if ($this->lineItems->removeElement($lineItem)) {
             // set the owning side to null (unless already changed)
-            if ($lineItem->getOrderItem() === $this) {
-                $lineItem->setOrderItem(null);
+            if ($lineItem->getOrder() === $this) {
+                $lineItem->setOrder(null);
             }
         }
 
@@ -339,18 +277,6 @@ class Order
         return $this;
     }
 
-    public function getShopifyNote(): ?string
-    {
-        return $this->shopifyNote;
-    }
-
-    public function setShopifyNote(?string $shopifyNote): self
-    {
-        $this->shopifyNote = $shopifyNote;
-
-        return $this;
-    }
-
     public function getAddress(): ?string
     {
         return $this->address;
@@ -363,117 +289,49 @@ class Order
         return $this;
     }
 
-    public function getOrderStatus(): ?int
+    public function getOrderStatus(): ?string
     {
         return $this->orderStatus;
     }
 
-    public function setOrderStatus(?int $orderStatus): self
+    public function setOrderStatus(?string $orderStatus): self
     {
         $this->orderStatus = $orderStatus;
 
         return $this;
     }
 
-    /**
-     * @return Collection|Upload[]
-     */
-    public function getUploads(): Collection
+    public function getTrackingId(): ?string
     {
-        return $this->uploads;
+        return $this->trackingId;
     }
 
-    public function addUpload(Upload $upload): self
+    public function setTrackingId(?string $trackingId): self
     {
-        if (!$this->uploads->contains($upload)) {
-            $this->uploads[] = $upload;
-            $upload->setOrder($this);
-        }
+        $this->trackingId = $trackingId;
 
         return $this;
     }
 
-    public function removeUpload(Upload $upload): self
+    public function getStatus(): ?int
     {
-        if ($this->uploads->removeElement($upload)) {
-            // set the owning side to null (unless already changed)
-            if ($upload->getOrder() === $this) {
-                $upload->setOrder(null);
-            }
-        }
+        return $this->status;
+    }
 
+    public function setStatus(int $status): self
+    {
+        $this->status = $status;
         return $this;
     }
 
-    public function getOption1(): ?bool
+    public function getNote2(): ?string
     {
-        return $this->option1;
+        return $this->note2;
     }
 
-    public function setOption1(?bool $option1): self
+    public function setNote2(?string $note2): self
     {
-        $this->option1 = $option1;
-
-        return $this;
-    }
-
-    public function getOption2(): ?bool
-    {
-        return $this->option2;
-    }
-
-    public function setOption2(?bool $option2): self
-    {
-        $this->option2 = $option2;
-
-        return $this;
-    }
-
-    public function getOption3(): ?bool
-    {
-        return $this->option3;
-    }
-
-    public function setOption3(?bool $option3): self
-    {
-        $this->option3 = $option3;
-
-        return $this;
-    }
-
-    public function getOption4(): ?bool
-    {
-        return $this->option4;
-    }
-
-    public function setOption4(?bool $option4): self
-    {
-        $this->option4 = $option4;
-
-        return $this;
-    }
-
-    public function getOption5(): ?bool
-    {
-        return $this->option5;
-    }
-
-    public function setOption5(?bool $option5): self
-    {
-        $this->option5 = $option5;
-
-        return $this;
-    }
-
-    public function getOption6(): ?bool
-    {
-        return $this->option6;
-    }
-
-    public function setOption6(?bool $option6): self
-    {
-        $this->option6 = $option6;
-
+        $this->note2 = $note2;
         return $this;
     }
 
@@ -491,97 +349,16 @@ class Order
             $this->orderHistories[] = $orderHistory;
             $orderHistory->setInvoice($this);
         }
-
         return $this;
     }
 
     public function removeOrderHistory(OrderHistory $orderHistory): self
     {
         if ($this->orderHistories->removeElement($orderHistory)) {
-            // set the owning side to null (unless already changed)
             if ($orderHistory->getInvoice() === $this) {
                 $orderHistory->setInvoice(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getShopifyId(): ?string
-    {
-        return $this->shopifyId;
-    }
-
-    public function setShopifyId(?string $shopifyId): self
-    {
-        $this->shopifyId = $shopifyId;
-
-        return $this;
-    }
-
-    public function getShopifyOrderId(): ?string
-    {
-        return $this->shopifyOrderId;
-    }
-
-    public function setShopifyOrderId(?string $shopifyOrderId): self
-    {
-        $this->shopifyOrderId = $shopifyOrderId;
-
-        return $this;
-    }
-
-    public function getTrackingId(): ?string
-    {
-        return $this->trackingId;
-    }
-
-    public function setTrackingId(?string $trackingId): self
-    {
-        $this->trackingId = $trackingId;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Notification[]
-     */
-    public function getNotifications(): Collection
-    {
-        return $this->notifications;
-    }
-
-    public function addNotification(Notification $notification): self
-    {
-        if (!$this->notifications->contains($notification)) {
-            $this->notifications[] = $notification;
-            $notification->setInvoice($this);
-        }
-
-        return $this;
-    }
-
-    public function removeNotification(Notification $notification): self
-    {
-        if ($this->notifications->removeElement($notification)) {
-            // set the owning side to null (unless already changed)
-            if ($notification->getInvoice() === $this) {
-                $notification->setInvoice(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function getDelivery(): ?Admin
-    {
-        return $this->delivery;
-    }
-
-    public function setDelivery(?Admin $delivery): self
-    {
-        $this->delivery = $delivery;
-
         return $this;
     }
 }

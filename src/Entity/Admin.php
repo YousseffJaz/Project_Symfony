@@ -71,12 +71,6 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $stockList = null;
 
-    #[ORM\OneToMany(mappedBy: 'admin', targetEntity: Notification::class)]
-    private Collection $notifications;
-
-    #[ORM\OneToMany(mappedBy: 'delivery', targetEntity: Order::class)]
-    private Collection $deliveryOrders;
-
     public function __construct()
     {
         $this->orders = new ArrayCollection();
@@ -87,8 +81,6 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
         $this->products = false;
         $this->accounting = false;
         $this->orderHistories = new ArrayCollection();
-        $this->notifications = new ArrayCollection();
-        $this->deliveryOrders = new ArrayCollection();
     }
 
     public function getClassName(): string {
@@ -275,36 +267,6 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection|Notification[]
-     */
-    public function getNotifications(): Collection
-    {
-        return $this->notifications;
-    }
-
-    public function addNotification(Notification $notification): self
-    {
-        if (!$this->notifications->contains($notification)) {
-            $this->notifications[] = $notification;
-            $notification->setAdmin($this);
-        }
-
-        return $this;
-    }
-
-    public function removeNotification(Notification $notification): self
-    {
-        if ($this->notifications->removeElement($notification)) {
-            // set the owning side to null (unless already changed)
-            if ($notification->getAdmin() === $this) {
-                $notification->setAdmin(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function isStatistics(): bool
     {
         return $this->statistics;
@@ -361,36 +323,6 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
     public function setAccounting(bool $accounting): self
     {
         $this->accounting = $accounting;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Order[]
-     */
-    public function getDeliveryOrders(): Collection
-    {
-        return $this->deliveryOrders;
-    }
-
-    public function addDeliveryOrder(Order $deliveryOrder): self
-    {
-        if (!$this->deliveryOrders->contains($deliveryOrder)) {
-            $this->deliveryOrders[] = $deliveryOrder;
-            $deliveryOrder->setDelivery($this);
-        }
-
-        return $this;
-    }
-
-    public function removeDeliveryOrder(Order $deliveryOrder): self
-    {
-        if ($this->deliveryOrders->removeElement($deliveryOrder)) {
-            // set the owning side to null (unless already changed)
-            if ($deliveryOrder->getDelivery() === $this) {
-                $deliveryOrder->setDelivery(null);
-            }
-        }
 
         return $this;
     }

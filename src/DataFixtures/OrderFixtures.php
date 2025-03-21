@@ -53,7 +53,6 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
             $order->setPhone($this->faker->phoneNumber());
             $order->setEmail($this->faker->email());
             $order->setAddress($this->faker->streetAddress() . ', ' . $this->faker->postcode() . ' ' . $this->faker->city());
-            $order->setIdentifier(sprintf('CMD-%s-%03d', $this->faker->dateTimeBetween('-1 year')->format('Y'), $i));
 
             // Date de création (répartie sur les 12 derniers mois)
             $createdAt = $this->faker->dateTimeBetween('-1 year');
@@ -81,7 +80,7 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
                 $lineItem->setTitle($productInfo['title']);
                 $lineItem->setQuantity($quantity);
                 $lineItem->setPrice($productInfo['price']);
-                $lineItem->setOrderItem($order);
+                $lineItem->setOrder($order);
                 
                 $total += $productInfo['price'] * $quantity;
                 $manager->persist($lineItem);
@@ -109,18 +108,6 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
             $order->setPaid($paid);
             $order->setPaymentType($paymentType);
             $order->setPaymentMethod($paymentType);
-
-            // Note
-            $notes = [
-                'Livraison standard',
-                'Commande urgente',
-                'Appeler avant livraison',
-                'Livraison à l\'étage',
-                'Client professionnel',
-                'Commande annulée - Rupture de stock',
-                'Instructions spéciales de livraison',
-            ];
-            $order->setNote($this->faker->randomElement($notes));
 
             // Historique de la commande
             $this->createOrderHistory($manager, $order, $status, $createdAt);
@@ -152,7 +139,7 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
             $history->setInvoice($order);
             $history->setAdmin($order->getAdmin());
             $manager->persist($history);
-        } else {
+        
             // Paiement
             if ($order->getPaid() > 0) {
                 $paymentDate = clone $createdAt;
