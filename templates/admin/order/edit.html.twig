@@ -56,12 +56,12 @@
                 </div>
               </div>
 
-              {{ form_row(form.address, { 'label': 'Adresse', 'attr': { 'rows' : '4'} }) }}
+              {{ form_row(form.address, { 'label': 'Adresse', 'attr': { 'rows' : '5'} }) }}
 
               {% if app.user.role != "ROLE_LIVREUR" %}
                 <div class="row">
                   <div class="col-md-6"><br>
-                    {{ form_row(form.note2, { 'label': 'Note' }) }}
+                    {{ form_row(form.note, { 'label': 'Commentaire', 'attr': { 'rows' : '5'} }) }}
                     <div class="form-group">
                       <label for="admin_order_stockList">Stock</label>
                       <select id="admin_order_stockList" name="stockList" class="form-control" required>
@@ -123,7 +123,7 @@
                 </div>
                 <div class="col-md-6">
                   {{ form_row(form.discount, { 'label': "Réduction" }) }}
-                  {{ form_row(form.paid, { 'label': 'Montant payé (€)' }) }}
+                  {{ form_row(form.paid, { 'label': 'Montant payé' }) }}
                   {{ form_row(form.paymentMethod, { 'label': 'Moyen de paiement' }) }}
                   <div id="delivery-admin-wrapper" style="display: none;">
                     {{ form_row(form.delivery, { 'label': 'Livraison' }) }}
@@ -196,7 +196,6 @@
 {% if app.user.role != "ROLE_SUPER_ADMIN" %}
   <script>
     $('#admin_order_createdAt').parent().hide();
-    $('#admin_order_note2').parent().hide();
   </script>
 {% endif %}
 

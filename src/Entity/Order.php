@@ -95,9 +95,6 @@ class Order
     #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $option6 = null;
 
-    #[ORM\ManyToOne(targetEntity: Note::class, inversedBy: 'invoice')]
-    private ?Note $note2 = null;
-
     #[ORM\OneToMany(targetEntity: OrderHistory::class, mappedBy: 'invoice')]
     #[ORM\OrderBy(['createdAt' => 'DESC'])]
     private Collection $orderHistories;
@@ -476,18 +473,6 @@ class Order
     public function setOption6(?bool $option6): self
     {
         $this->option6 = $option6;
-
-        return $this;
-    }
-
-    public function getNote2(): ?Note
-    {
-        return $this->note2;
-    }
-
-    public function setNote2(?Note $note2): self
-    {
-        $this->note2 = $note2;
 
         return $this;
     }

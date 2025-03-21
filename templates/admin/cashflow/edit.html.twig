@@ -1,6 +1,6 @@
 {% extends 'admin/base.html.twig' %}
 
-{% block title %}Edition d'un compte{% endblock %}
+{% block title %}Modifier un compte{% endblock %}
 
 {% form_theme form 'bootstrap_4_layout.html.twig' %}
 
@@ -23,7 +23,7 @@
           {% endfor %}
           <div class="card">
             <div class="card-header">
-              <h5>Edition d'un compte</h5>
+              <h5>Modifier un compte</h5>
             </div>
             <div class="card-block">
               {{ form_start(form) }}
@@ -44,13 +44,6 @@
 </div>
 </div>
 </div>
-
-<script>
-  $('#admin_note_amount').parent().hide();
-</script>
-
-
-
 
 {% endblock %}
 

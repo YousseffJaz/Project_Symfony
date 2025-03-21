@@ -130,29 +130,19 @@
                         {% endif %}
                         {% if app.user.role == "ROLE_SUPER_ADMIN" %}
                             <hr style="border-top: 1px solid rgba(0,0,0,0.1);margin: 0px;">
-                            <li class="pcoded-hasmenu {{ app.request.get('_route') == 'admin_note_index' ? 'pcoded-trigger' }} {{ app.request.get('_route') == 'admin_cashflow_index' ? 'pcoded-trigger' }} {{ app.request.get('_route') == 'admin_expense_index' ? 'pcoded-trigger' }}">
+                            <li class="pcoded-hasmenu {{ app.request.get('_route') == 'admin_cashflow_index' ? 'pcoded-trigger' }} {{ app.request.get('_route') == 'admin_expense_index' ? 'pcoded-trigger' }}">
                                 <a href="javascript:void(0)">
-                                    <span class="pcoded-micon">
-                                        <i class="fas fa-euro-sign"></i>
-                                    </span>
+                                    <span class="pcoded-micon"><i class="fas fa-money-bill-wave"></i></span>
                                     <span class="pcoded-mtext">Comptabilité</span>
                                 </a>
-                                <ul class="pcoded-submenu" style="{{ app.request.get('_route') == 'admin_note_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_cashflow_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_expense_index' ? 'display: block;' }}">
-                                    <li class="">
-                                        <a href="{{ path('admin_note_index') }}">
-                                            <i class="fas fa-chevron-right"></i> 
-                                            <span class="pcoded-mtext">Notes</span>
-                                        </a>
-                                    </li>
-                                    <li class="">
+                                <ul class="pcoded-submenu" style="{{ app.request.get('_route') == 'admin_cashflow_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_expense_index' ? 'display: block;' }}">
+                                    <li class="{{ app.request.get('_route') == 'admin_cashflow_index' ? 'active' }}">
                                         <a href="{{ path('admin_cashflow_index') }}">
-                                            <i class="fas fa-chevron-right"></i> 
-                                            <span class="pcoded-mtext">Trésorerie</span>
+                                            <span class="pcoded-mtext">Comptes</span>
                                         </a>
                                     </li>
-                                    <li class="">
+                                    <li class="{{ app.request.get('_route') == 'admin_expense_index' ? 'active' }}">
                                         <a href="{{ path('admin_expense_index') }}">
-                                            <i class="fas fa-chevron-right"></i> 
                                             <span class="pcoded-mtext">Dépenses</span>
                                         </a>
                                     </li>

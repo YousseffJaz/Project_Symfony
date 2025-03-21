@@ -6,7 +6,6 @@ use App\Entity\Flux;
 use App\Form\AdminCashflowType;
 use App\Repository\FluxRepository;
 use App\Repository\OrderRepository;
-use App\Repository\NoteRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,28 +20,11 @@ class AdminCashFlowController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function index(
         FluxRepository $cashflowRepo,
-        OrderRepository $orderRepo,
-        NoteRepository $noteRepo
+        OrderRepository $orderRepo
     ): Response {
         $cashflows = $cashflowRepo->findBy(['type' => 0], ['createdAt' => "DESC"]);
-        $notes = $noteRepo->findAll();
         $notPaid = 0;
         $orders = $orderRepo->findByNotNote();
-
-        if ($notes) {
-            foreach ($notes as $note) {
-                foreach ($note->getTransactions() as $key => $transaction) {
-                    if ($key === 0) {
-                        $notPaid = $notPaid + $transaction->getAmount();
-                    } elseif ($transaction->getInvoice()) {
-                        $remaining = $transaction->getInvoice()->getTotal() - $transaction->getInvoice()->getPaid();
-                        $notPaid = $notPaid + $remaining;
-                    } elseif ($transaction->getAmount() > 0) {
-                        $notPaid = $notPaid + $transaction->getAmount();
-                    }
-                }
-            }
-        }
 
         foreach ($orders as $item) {
             $notPaid = $notPaid + ($item->getTotal() - $item->getPaid());

@@ -15,7 +15,6 @@ use App\Service\Order\OrderExportService;
 use App\Service\Order\OrderUploadService;
 use App\Repository\AdminRepository;
 use App\Repository\VariantRepository;
-use App\Repository\NoteRepository;
 use App\Repository\OrderHistoryRepository;
 use App\Repository\UploadRepository;
 use App\Repository\LineItemRepository;

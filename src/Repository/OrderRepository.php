@@ -214,11 +214,9 @@ class OrderRepository extends ServiceEntityRepository
     $query = $this->createQueryBuilder('o');
 
     $query->andWhere('o.status = 0 OR o.status = 1')
-    ->andWhere('o.note2 is null')
     ->addOrderBy('o.createdAt', 'DESC');
 
-    return $query->getQuery()
-    ->getResult();
+    return $query->getQuery()->getResult();
   }
 
   public function groupByCustomers(){
