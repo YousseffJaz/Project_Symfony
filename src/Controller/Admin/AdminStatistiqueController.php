@@ -297,33 +297,37 @@ class AdminStatistiqueController extends AbstractController
    */
    #[Route('/admin/statistiques/stocks', name: 'admin_statistiques_stocks')]
    #[IsGranted('ROLE_ADMIN')]
-   public function stocks(OrderRepository $orderRepo, LineItemRepository $lineItemRepo, Request $request, ObjectManager $manager, FluxRepository $fluxRepo, ProductRepository $productRepo, PriceListRepository $priceRepo, StockListRepository $stockRepo, TransactionRepository $transactionRepo) {
-   	$products = $productRepo->findBy(['archive' => false, 'digital' => false ]);
-   	$stocks = $stockRepo->findStockName();
-   	$array = [];
+   public function stocks(
+       ProductRepository $productRepo,
+       PriceListRepository $priceRepo,
+       StockListRepository $stockRepo
+   ) {
+       $products = $productRepo->findBy(['archive' => false, 'digital' => false ]);
+       $stocks = $stockRepo->findStockName();
+       $array = [];
 
-   	foreach ($stocks as $key=>$stock) {
-   		$amount = 0;
-   		foreach ($products as $product) {
-   			$quantity = $stockRepo->findQuantityByProductAndStock($product, $stock);
-   			$listPrices = $priceRepo->findByProduct($product);
-   			if ($listPrices && $stocks) {
-   				foreach ($quantity as $items) {
-   					$price = 0;
-   					foreach ($listPrices as $list) {
-   						$price = $price + $list['price'];
-   					}
-   					$price = $price / sizeof($listPrices);
-   					$amount = $amount + ($items['quantity'] * round($price, 2));
-   				}
-   			}
-   		}
-   		$array[] = [ 'name' => $stock['name'], 'amount' => $amount ];
-   	}
+       foreach ($stocks as $key=>$stock) {
+           $amount = 0;
+           foreach ($products as $product) {
+               $quantity = $stockRepo->findQuantityByProductAndStock($product, $stock);
+               $listPrices = $priceRepo->findByProduct($product);
+               if ($listPrices && $stocks) {
+                   foreach ($quantity as $items) {
+                       $price = 0;
+                       foreach ($listPrices as $list) {
+                           $price = $price + $list['price'];
+                       }
+                       $price = $price / sizeof($listPrices);
+                       $amount = $amount + ($items['quantity'] * round($price, 2));
+                   }
+               }
+           }
+           $array[] = [ 'name' => $stock['name'], 'amount' => $amount ];
+       }
 
-   	return $this->render('admin/statistiques/stocks.html.twig', [
-   		'array' => $array,
-   	]);
+       return $this->render('admin/statistiques/stocks.html.twig', [
+           'array' => $array,
+       ]);
    }
 
    public static function dateToFrench($date) {

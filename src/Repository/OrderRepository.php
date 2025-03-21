@@ -291,12 +291,11 @@ class OrderRepository extends ServiceEntityRepository
   public function findBestProducts(){
     $query = $this->createQueryBuilder('o')
     ->leftjoin('o.lineItems', 'l')
-    ->leftjoin('l.variant', 'v')
-    ->leftjoin('v.product', 'p')
-    ->groupBy("v.product")
-      // ->andWhere('p.archive = false')
+    ->leftjoin('l.product', 'p')
+    ->groupBy('p.id')
     ->select('SUM(l.price) as total, SUM(l.quantity) as quantity, p.title as title')
-    ->orderBy("SUM(l.price)", "DESC");
+    ->orderBy('SUM(l.price)', 'DESC')
+    ->setMaxResults(10);
 
     return $query->getQuery()
     ->getResult();
@@ -322,13 +321,12 @@ class OrderRepository extends ServiceEntityRepository
   public function findBestCategories(){
     $query = $this->createQueryBuilder('o')
     ->leftjoin('o.lineItems', 'l')
-    ->leftjoin('l.variant', 'v')
-    ->leftjoin('v.product', 'p')
+    ->leftjoin('l.product', 'p')
     ->leftjoin('p.category', 'c')
-    ->groupBy("p.category")
-      // ->andWhere('p.archive = false')
+    ->groupBy('c.id')
     ->select('SUM(l.price) as total, SUM(l.quantity) as quantity, c.name as title')
-    ->orderBy("SUM(l.price)", "DESC");
+    ->orderBy('SUM(l.price)', 'DESC')
+    ->setMaxResults(10);
 
     return $query->getQuery()
     ->getResult();

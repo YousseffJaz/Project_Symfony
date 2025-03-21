@@ -220,15 +220,13 @@
                         </thead>
                         <tbody>
                           {% for product in bestProducts %}
-                            {% if product.total > 0 %}
-                              <tr>
-                                <td>{{ product.title|capitalize }}</td>
-                                <td>{{ product.quantity }}</td>
-                                <td>
-                                  <span style="color:  #2ed8b6;">{{ product.total|number_format(0, ',', '') }}€</span>
-                                </td>
-                              </tr>
-                            {% endif%}
+                            <tr>
+                              <td>{{ product.title|capitalize }}</td>
+                              <td>{{ product.quantity }}</td>
+                              <td>
+                                <span style="color: #2ed8b6;">{{ product.total|number_format(0, ',', '') }}€</span>
+                              </td>
+                            </tr>
                           {% endfor %}
                         </tbody>
                       </table>
@@ -255,15 +253,13 @@
                         </thead>
                         <tbody>
                           {% for category in bestCategories %}
-                            {% if category.total > 0 %}
-                              <tr>
-                                <td>{{ category.title|capitalize }}</td>
-                                <td>{{ category.quantity }}</td>
-                                <td>
-                                  <span style="color:  #2ed8b6;">{{ category.total|number_format(0, ',', '') }}€</span>
-                                </td>
-                              </tr>
-                            {% endif%}
+                            <tr>
+                              <td>{{ category.title|capitalize }}</td>
+                              <td>{{ category.quantity }}</td>
+                              <td>
+                                <span style="color: #2ed8b6;">{{ category.total|number_format(0, ',', '') }}€</span>
+                              </td>
+                            </tr>
                           {% endfor %}
                         </tbody>
                       </table>
