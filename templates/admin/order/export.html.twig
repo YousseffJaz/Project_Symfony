@@ -1,338 +1,326 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Exporter une commande</title>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <link href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,600,700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
-  <link rel="stylesheet" href="{{ app.request.getBaseURL() }}/css/invoice.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"/>
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  {{ embedded_styles|raw }}
-</head>
-<body>
+{% extends 'print_base.html.twig' %}
 
-  <div class="pcoded-content">
-    <div class="pcoded-inner-content">
-      <div class="main-body">
-        <div class="page-wrapper">
-          <div class="page-body">
-            <div class="card-block">
-              <section class="">
-                <div class="css-1qm6rmu">
-                  <div class="css-1tbjw1x">
-                    <div class="css-1j266sj">
-                      <table width="100%" class="css-adnbnt">
-                        <tr class="css-1tjvop5">
-                          <td width="70%" class="css-1oaifqe">
-                            <table class="css-1g3hyo4">
-                              <tr class="css-1tjvop5">
-                                <td width="auto" class="css-omoi4l">
-                                  <div data-selector="invoice-logo-wrapper">
-                                    <img src="https://res.cloudinary.com/invoice-simple/image/fetch/b_white,bo_1px_solid_white/e_trim:1/e_sharpen:15,q_auto,c_limit,w_400,h_300/https://invoicemaker2-prod.s3.amazonaws.com/account/FWQzdtLCIF/photo/a9321b20-ad9f-11ea-bd37-81534ed1c074.jpg" class="css-85hqc7"
-                                    />
-                                  </div>
-                                </td>
-                                <td class="css-7bx1s4">
-                                  <ul class="css-1wp1anf mt-4">
-                                    <li class="css-vfx11v"><h1 class="css-ksw96z">M Distribution</h1></li>
-                                  </ul>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                          <td width="30%" class="css-qja4fv">
-                            <div class="css-1tbjw1x">
-                              <ul data-selector="invoice-terms" class="css-1wp1anf">
-                                <li class="css-9it01c">
-                                  <div data-selector="invoice-number">
-                                    <div data-selector="invoice-number-label" class="css-1e6vnmf"><span class="css-1txis7m">Facture</span></div>
-                                    <span data-selector="invoice-number-value" class="css-1h1mkoa">
-                                        FAC{{order.id}}
-                                    </span>
-                                  </div>
-                                </li>
-                                <li class="css-9it01c">
-                                  <div data-selector="invoice-date">
-                                    <div data-selector="invoice-date-label" class="css-1e6vnmf"><span class="css-1txis7m">Date</span></div>
-                                    <span data-selector="invoice-date-value" class="css-1h1mkoa"><span data-selector="invoice-date-value">{{ order.createdAt|date('d/m/Y')}}</span></span>
-                                  </div>
-                                </li>
-                                <li class="css-9it01c">
-                                  <div data-selector="invoice-balance">
-                                    <div data-selector="invoice-balance-label" class="css-1e6vnmf"><span class="css-1txis7m">Solde dû</span></div>
-                                    <span data-selector="invoice-balance-value" class="css-1h1mkoa"><span data-selector="currency-amount">
-                                      {% set remaining = order.total - order.paid %}
-                                      {{ remaining|number_format(2, ',', ' ') }}€
-                                      </span></span>
-                                  </div>
-                                </li>
-                              </ul>
-                            </div>
-                          </td>
-                        </tr>
-                      </table>
-                      <hr class="css-blu5nf" />
-                      <table width="100%" class="css-adnbnt">
-                        <tr class="css-1tjvop5">
-                          <td class="css-7bx1s4">
-                            <ul data-selector="invoice-client-details" class="css-1wp1anf">
-                              <li class="css-vfx11v"><h4 data-selector="invoice-client-title" class="css-fql0m4">Adresse de facturation</h4></li>
-                              <li class="css-vfx11v"><h2 data-selector="invoice-client-name" class="css-1ekdy4v">{{order.firstname|capitalize }} {{ order.lastname|capitalize }}</h2></li>
-                              {% if order.address %}
-                                <li class="css-vfx11v"><p>{{ order.address }}</p></li>
-                              {% endif %}
-                            </ul>
-                          </td>
-                        </tr>
-                      </table>
-                    </div>
-                  </div>
-                  <div class="css-1tbjw1x">
-                    <table class="css-880ie2">
-                      <thead>
-                        <tr class="css-1azt77c">
-                          <th class="css-1hadtxw"><span class="css-1txis7m">Article</span></th>
-                          <th class="css-1hadtxw"><span class="css-1txis7m">Prix</span></th>
-                          <th class="css-1hadtxw"><span class="css-1txis7m">Quantité</span></th>
-                          <th class="css-1hadtxw"><span class="css-1txis7m">Montant</span></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {% if order.lineItems.toArray %}
-                          {% set totalDiscount = 0 %}
-                          {% for lineItem in order.lineItems.toArray %}
-                          {% set totalDiscount = totalDiscount + lineItem.price %}
-                            <tr class="css-1azt77c">
-                              <td width="54%" class="css-1grq8xf"><span class="css-1thp6wa">{{ lineItem.title }}</span></td>
-                              <td width="10%" class="css-9sqco9"><span data-selector="currency-amount">
-                                {% set totalLine =  lineItem.price / lineItem.quantity %}
-                                {{ totalLine|number_format(2, ',', ' ') }}€ </span></td>
-                              <td width="8%" class="css-1qy6ejf"><span data-selector="quantity">{{ lineItem.quantity }}</span></td>
-                              <td width="12%" class="css-831qf3"><span data-selector="currency-amount">
-                              {{ lineItem.price|number_format(2, ',', ' ') }}€
-                              </span></td>
-                            </tr>
-                          {% endfor %}
-                        {% endif %}
-                      </tbody>
-                    </table>
-                  </div>
-                  <div class="css-1tbjw1x" style="margin-top: 5px; padding-bottom: 100px;">
-                    <table width="100%" class="css-adnbnt">
-                      <tbody>
-                        <tr class="css-1tjvop5">
-                          <td width="50%" class="css-1ym6y7o">
-                            <div class="css-16h4l8a"></div>
-                          </td>
-                          <td width="50%" class="css-1ym6y7o">
-                            <table class="css-1z0iwfm">
-                              <tbody class="css-hhbnsk">
-                                {% if order.shippingCost %}
-                                  <tr data-selector="invoice-taxable-subtotal">
-                                    <td data-selector="invoice-taxable-subtotal-label" class="css-zoqlj"><span class="css-1txis7m">Frais d'expédition</span></td>
-                                    <td data-selector="invoice-taxable-subtotal-value" colspan="1" class="css-qewpne">
-                                      <span class="css-v4u37s"><span data-selector="currency-amount">{{ order.shippingCost|number_format(2, ',', ' ') }}€</span></span>
-                                    </td>
-                                  </tr>
-                                {% endif %}
-                                {% if order.discount %}
-                                  <tr data-selector="invoice-taxable-subtotal">
-                                    <td data-selector="invoice-taxable-subtotal-label" class="css-zoqlj"><span class="css-1txis7m">Remise HT</span></td>
-                                    <td data-selector="invoice-taxable-subtotal-value" colspan="1" class="css-qewpne">
-                                      <span class="css-v4u37s"><span data-selector="currency-amount">{{ order.discount|number_format(2, ',', ' ') }}€</span></span>
-                                    </td>
-                                  </tr>
-                                {% endif %}
-                                <tr data-selector="invoice-subtotal">
-                                  <td data-selector="invoice-subtotal-label" class="css-zoqlj"><span class="css-1txis7m">Sous-total</span></td>
-                                  <td data-selector="invoice-subtotal-value" colspan="1" class="css-qewpne">
-                                    <span class="css-v4u37s"><span data-selector="currency-amount">
-                                      {{ order.total|number_format(2, ',', ' ') }}€
-                                      </span></span>
-                                  </td>
-                                </tr>
-                                <tr data-selector="invoice-taxable-subtotal">
-                                  <td data-selector="invoice-taxable-subtotal-label" class="css-zoqlj"><span class="css-1txis7m">Total HT</span></td>
-                                  <td data-selector="invoice-taxable-subtotal-value" colspan="1" class="css-qewpne">
-                                    <span class="css-v4u37s"><span data-selector="currency-amount">
-                                      {% set totalHt = order.total * 0.8 %}
-                                      {% set tva = order.total - totalHt %}
-                                      {{ totalHt|number_format(2, ',', ' ') }}€
-                                      </span></span>
-                                  </td>
-                                </tr>
-                                <tr data-selector="invoice-tax">
-                                  <td data-selector="invoice-tax-label" class="css-zoqlj">
-                                    <span class="css-1txis7m">
-                                      <span>TVA (<span data-selector="rate">20</span>%)</span>
-                                    </span>
-                                  </td>
-                                  <td data-selector="invoice-tax-value" colspan="1" class="css-qewpne">
-                                    <span class="css-v4u37s"><span data-selector="currency-amount">
-                                      {{ tva|number_format(2, ',', ' ') }}€ </span></span>
-                                  </td>
-                                </tr>
-                              </tbody>
-                              <tbody class="css-hhbnsk">
-                                <tr data-selector="invoice-total">
-                                  <td data-selector="invoice-total-label" class="css-zoqlj"><span class="css-1txis7m">Total</span></td>
-                                  <td data-selector="invoice-total-value" colspan="1" font-size="medium" class="css-qewpne">
-                                    <span class="css-v4u37s">
-                                      <span data-selector="currency-amount">
-                                        {{ order.total|number_format(2, ',', ' ') }}€
-                                      </span></span>
-                                  </td>
-                                </tr>
-                              </tbody>
-                              <tbody class="css-3y78v1">
-                                <tr data-selector="invoice-balance">
-                                  <td data-selector="invoice-balance-label" class="css-1euzpax"><span class="css-1txis7m">Solde dû</span></td>
-                                  <td data-selector="invoice-balance-value" colspan="1" font-size="xLarge" class="css-teyi8j">
-                                    <span class="css-mu7w39"><span data-selector="currency-amount">
-                                        {{ remaining|number_format(2, ',', ' ') }}€</span></span>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </td>
-                        </tr>
-                        <tr class="css-zmdkh8">
-                          <td class="css-7bx1s4"></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-                <footer style="margin-top: 100Px;">
-                </footer>
-              </section>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div id="styleSelector">
-      </div>
-    </div>
-  </div>
+{% block title %}Exporter une commande{% endblock %}
+
+{% block additional_styles %}
+<link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
+<link rel="stylesheet" href="{{ app.request.getBaseURL() }}/css/invoice.css">
+{{ embedded_styles|raw }}
 
 <style type="text/css">
-
 body {
   background: #fff;
 }
 
-  .css-omoi4l {
-    width: auto;
-    margin: 0px;
-    vertical-align: inherit;
-    text-align: inherit;
-    padding: 0px 2.5rem 0px 0px;
+.css-omoi4l {
+  width: auto;
+  margin: 0px;
+  vertical-align: inherit;
+  text-align: inherit;
+  padding: 0px 2.5rem 0px 0px;
 }
 
 .css-85hqc7 {
-    max-width: 200px;
-    max-height: 150px;
+  max-width: 200px;
+  max-height: 150px;
 }
 
 .css-vfx11v {
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .css-1thp6wa {
-    word-break: break-word;
-    overflow-wrap: break-word;
-    display: inline;
-    color: inherit;
-    text-align: inherit;
-    white-space: pre-wrap;
-    line-height: 1.8rem;
-    font-weight: 400;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  display: inline;
+  color: inherit;
+  text-align: inherit;
+  white-space: pre-wrap;
+  line-height: 1.8rem;
+  font-weight: 400;
 }
 
 .css-1grq8xf:first-of-type {
-    text-align: left;
-    padding-left: 0px;
+  text-align: left;
+  padding-left: 0px;
 }
 
 .css-1grq8xf {
-    width: 45%;
-    vertical-align: top;
-    white-space: inherit;
-    text-align: right;
-    padding: 1rem 0px 1rem 1.5rem;
-    break-inside: avoid !important;
+  width: 45%;
+  vertical-align: top;
+  white-space: inherit;
+  text-align: right;
+  padding: 1rem 0px 1rem 1.5rem;
+  break-inside: avoid !important;
 }
 
 .css-1azt77c {
-    border-bottom: 1px dashed rgb(191, 191, 191);
+  border-bottom: 1px dashed rgb(191, 191, 191);
 }
+
 .css-1hadtxw:first-of-type {
-    text-align: left;
-    padding-left: 0px;
+  text-align: left;
+  padding-left: 0px;
 }
+
 .css-9sqco9 {
-    break-inside: auto;
-    width: 10%;
-    vertical-align: top;
-    white-space: nowrap;
-    text-align: right;
-    padding: 1rem 0px 1rem 1.5rem;
+  break-inside: auto;
+  width: 10%;
+  vertical-align: top;
+  white-space: nowrap;
+  text-align: right;
+  padding: 1rem 0px 1rem 1.5rem;
 }
 
 .css-1qy6ejf {
-    break-inside: auto;
-    width: 8%;
-    vertical-align: top;
-    white-space: nowrap;
-    text-align: right;
-    padding: 1rem 0px 1rem 1.5rem;
+  break-inside: auto;
+  width: 8%;
+  vertical-align: top;
+  white-space: nowrap;
+  text-align: right;
+  padding: 1rem 0px 1rem 1.5rem;
 }
 
 .css-1d7ieo {
-    break-inside: auto;
-    width: 10%;
-    vertical-align: top;
-    white-space: inherit;
-    text-align: right;
-    padding: 1rem 0px 1rem 1.5rem;
+  break-inside: auto;
+  width: 10%;
+  vertical-align: top;
+  white-space: inherit;
+  text-align: right;
+  padding: 1rem 0px 1rem 1.5rem;
 }
 
 .css-831qf3 {
-    break-inside: auto;
-    width: 12%;
-    vertical-align: top;
-    white-space: nowrap;
-    text-align: right;
-    padding: 1rem 0px 1rem 1.5rem;
+  break-inside: auto;
+  width: 12%;
+  vertical-align: top;
+  white-space: nowrap;
+  text-align: right;
+  padding: 1rem 0px 1rem 1.5rem;
 }
 
 .css-zoqlj {
-    padding: 1rem 1rem 1rem 0;
-    text-align: left;
-    vertical-align: middle;
-    width: 20%;
+  padding: 1rem 1rem 1rem 0;
+  text-align: left;
+  vertical-align: middle;
+  width: 20%;
 }
 
 .css-qja4fv {
-    padding: 3rem 0px 0px 0px;
+  padding: 3rem 0px 0px 0px;
 }
 
 .css-qewpne {
-    padding: 1rem 0px;
+  padding: 1rem 0px;
 }
-
 </style>
+{% endblock %}
 
-
-  <script>
-    window.print();
-  </script>
-</body>
-</html>
+{% block body %}
+<div class="pcoded-content">
+  <div class="pcoded-inner-content">
+    <div class="main-body">
+      <div class="page-wrapper">
+        <div class="page-body">
+          <div class="card-block">
+            <section class="">
+              <div class="css-1qm6rmu">
+                <div class="css-1tbjw1x">
+                  <div class="css-1j266sj">
+                    <table width="100%" class="css-adnbnt">
+                      <tr class="css-1tjvop5">
+                        <td width="70%" class="css-1oaifqe">
+                          <table class="css-1g3hyo4">
+                            <tr class="css-1tjvop5">
+                              <td width="auto" class="css-omoi4l">
+                                <div data-selector="invoice-logo-wrapper">
+                                  <img src="https://res.cloudinary.com/invoice-simple/image/fetch/b_white,bo_1px_solid_white/e_trim:1/e_sharpen:15,q_auto,c_limit,w_400,h_300/https://invoicemaker2-prod.s3.amazonaws.com/account/FWQzdtLCIF/photo/a9321b20-ad9f-11ea-bd37-81534ed1c074.jpg" class="css-85hqc7"
+                                  />
+                                </div>
+                              </td>
+                              <td class="css-7bx1s4">
+                                <ul class="css-1wp1anf mt-4">
+                                  <li class="css-vfx11v"><h1 class="css-ksw96z">M Distribution</h1></li>
+                                </ul>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td width="30%" class="css-qja4fv">
+                          <div class="css-1tbjw1x">
+                            <ul data-selector="invoice-terms" class="css-1wp1anf">
+                              <li class="css-9it01c">
+                                <div data-selector="invoice-number">
+                                  <div data-selector="invoice-number-label" class="css-1e6vnmf"><span class="css-1txis7m">Facture</span></div>
+                                  <span data-selector="invoice-number-value" class="css-1h1mkoa">
+                                      FAC{{order.id}}
+                                  </span>
+                                </div>
+                              </li>
+                              <li class="css-9it01c">
+                                <div data-selector="invoice-date">
+                                  <div data-selector="invoice-date-label" class="css-1e6vnmf"><span class="css-1txis7m">Date</span></div>
+                                  <span data-selector="invoice-date-value" class="css-1h1mkoa"><span data-selector="invoice-date-value">{{ order.createdAt|date('d/m/Y')}}</span></span>
+                                </div>
+                              </li>
+                              <li class="css-9it01c">
+                                <div data-selector="invoice-balance">
+                                  <div data-selector="invoice-balance-label" class="css-1e6vnmf"><span class="css-1txis7m">Solde dû</span></div>
+                                  <span data-selector="invoice-balance-value" class="css-1h1mkoa"><span data-selector="currency-amount">
+                                    {% set remaining = order.total - order.paid %}
+                                    {{ remaining|number_format(2, ',', ' ') }}€
+                                    </span></span>
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
+                    <hr class="css-blu5nf" />
+                    <table width="100%" class="css-adnbnt">
+                      <tr class="css-1tjvop5">
+                        <td class="css-7bx1s4">
+                          <ul data-selector="invoice-client-details" class="css-1wp1anf">
+                            <li class="css-vfx11v"><h4 data-selector="invoice-client-title" class="css-fql0m4">Adresse de facturation</h4></li>
+                            <li class="css-vfx11v"><h2 data-selector="invoice-client-name" class="css-1ekdy4v">{{order.firstname|capitalize }} {{ order.lastname|capitalize }}</h2></li>
+                            {% if order.address %}
+                              <li class="css-vfx11v"><p>{{ order.address }}</p></li>
+                            {% endif %}
+                          </ul>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="css-1tbjw1x">
+                  <table class="css-880ie2">
+                    <thead>
+                      <tr class="css-1azt77c">
+                        <th class="css-1hadtxw"><span class="css-1txis7m">Article</span></th>
+                        <th class="css-1hadtxw"><span class="css-1txis7m">Prix</span></th>
+                        <th class="css-1hadtxw"><span class="css-1txis7m">Quantité</span></th>
+                        <th class="css-1hadtxw"><span class="css-1txis7m">Montant</span></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% if order.lineItems.toArray %}
+                        {% set totalDiscount = 0 %}
+                        {% for lineItem in order.lineItems.toArray %}
+                        {% set totalDiscount = totalDiscount + lineItem.price %}
+                          <tr class="css-1azt77c">
+                            <td width="54%" class="css-1grq8xf"><span class="css-1thp6wa">{{ lineItem.title }}</span></td>
+                            <td width="10%" class="css-9sqco9"><span data-selector="currency-amount">
+                              {% set totalLine =  lineItem.price / lineItem.quantity %}
+                              {{ totalLine|number_format(2, ',', ' ') }}€ </span></td>
+                            <td width="8%" class="css-1qy6ejf"><span data-selector="quantity">{{ lineItem.quantity }}</span></td>
+                            <td width="12%" class="css-831qf3"><span data-selector="currency-amount">
+                            {{ lineItem.price|number_format(2, ',', ' ') }}€
+                            </span></td>
+                          </tr>
+                        {% endfor %}
+                      {% endif %}
+                    </tbody>
+                  </table>
+                </div>
+                <div class="css-1tbjw1x" style="margin-top: 5px; padding-bottom: 100px;">
+                  <table width="100%" class="css-adnbnt">
+                    <tbody>
+                      <tr class="css-1tjvop5">
+                        <td width="50%" class="css-1ym6y7o">
+                          <div class="css-16h4l8a"></div>
+                        </td>
+                        <td width="50%" class="css-1ym6y7o">
+                          <table class="css-1z0iwfm">
+                            <tbody class="css-hhbnsk">
+                              {% if order.shippingCost %}
+                                <tr data-selector="invoice-taxable-subtotal">
+                                  <td data-selector="invoice-taxable-subtotal-label" class="css-zoqlj"><span class="css-1txis7m">Frais d'expédition</span></td>
+                                  <td data-selector="invoice-taxable-subtotal-value" colspan="1" class="css-qewpne">
+                                    <span class="css-v4u37s"><span data-selector="currency-amount">{{ order.shippingCost|number_format(2, ',', ' ') }}€</span></span>
+                                  </td>
+                                </tr>
+                              {% endif %}
+                              {% if order.discount %}
+                                <tr data-selector="invoice-taxable-subtotal">
+                                  <td data-selector="invoice-taxable-subtotal-label" class="css-zoqlj"><span class="css-1txis7m">Remise HT</span></td>
+                                  <td data-selector="invoice-taxable-subtotal-value" colspan="1" class="css-qewpne">
+                                    <span class="css-v4u37s"><span data-selector="currency-amount">{{ order.discount|number_format(2, ',', ' ') }}€</span></span>
+                                  </td>
+                                </tr>
+                              {% endif %}
+                              <tr data-selector="invoice-subtotal">
+                                <td data-selector="invoice-subtotal-label" class="css-zoqlj"><span class="css-1txis7m">Sous-total</span></td>
+                                <td data-selector="invoice-subtotal-value" colspan="1" class="css-qewpne">
+                                  <span class="css-v4u37s"><span data-selector="currency-amount">
+                                    {{ order.total|number_format(2, ',', ' ') }}€
+                                    </span></span>
+                                </td>
+                              </tr>
+                              <tr data-selector="invoice-taxable-subtotal">
+                                <td data-selector="invoice-taxable-subtotal-label" class="css-zoqlj"><span class="css-1txis7m">Total HT</span></td>
+                                <td data-selector="invoice-taxable-subtotal-value" colspan="1" class="css-qewpne">
+                                  <span class="css-v4u37s"><span data-selector="currency-amount">
+                                    {% set totalHt = order.total * 0.8 %}
+                                    {% set tva = order.total - totalHt %}
+                                    {{ totalHt|number_format(2, ',', ' ') }}€
+                                    </span></span>
+                                </td>
+                              </tr>
+                              <tr data-selector="invoice-tax">
+                                <td data-selector="invoice-tax-label" class="css-zoqlj">
+                                  <span class="css-1txis7m">
+                                    <span>TVA (<span data-selector="rate">20</span>%)</span>
+                                  </span>
+                                </td>
+                                <td data-selector="invoice-tax-value" colspan="1" class="css-qewpne">
+                                  <span class="css-v4u37s"><span data-selector="currency-amount">
+                                    {{ tva|number_format(2, ',', ' ') }}€ </span></span>
+                                </td>
+                              </tr>
+                            </tbody>
+                            <tbody class="css-hhbnsk">
+                              <tr data-selector="invoice-total">
+                                <td data-selector="invoice-total-label" class="css-zoqlj"><span class="css-1txis7m">Total</span></td>
+                                <td data-selector="invoice-total-value" colspan="1" font-size="medium" class="css-qewpne">
+                                  <span class="css-v4u37s">
+                                    <span data-selector="currency-amount">
+                                      {{ order.total|number_format(2, ',', ' ') }}€
+                                    </span></span>
+                                </td>
+                              </tr>
+                            </tbody>
+                            <tbody class="css-3y78v1">
+                              <tr data-selector="invoice-balance">
+                                <td data-selector="invoice-balance-label" class="css-1euzpax"><span class="css-1txis7m">Solde dû</span></td>
+                                <td data-selector="invoice-balance-value" colspan="1" font-size="xLarge" class="css-teyi8j">
+                                  <span class="css-mu7w39"><span data-selector="currency-amount">
+                                      {{ remaining|number_format(2, ',', ' ') }}€</span></span>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr class="css-zmdkh8">
+                        <td class="css-7bx1s4"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <footer style="margin-top: 100Px;">
+              </footer>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="styleSelector">
+    </div>
+  </div>
+</div>
+{% endblock %}
 
 
 

@@ -1,144 +1,128 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Impression</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,600,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ app.request.getBaseURL() }}/css/bootstrap-admin.min.css">
-    <link rel="stylesheet" href="{{ app.request.getBaseURL() }}/css/style-admin.css">
-    <link rel="stylesheet" href="{{ app.request.getBaseURL() }}/css/style-admin2.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"/>
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  </head>
-  <body>
+{% extends 'print_base.html.twig' %}
 
-    <div class="pcoded-content">
-      <div class="pcoded-inner-content">
-        <div class="main-body">
-          <div class="page-wrapper">
-            <div class="page-body">
-              <div class="">
-                <div class="card-block">
-                  {% if orders %}
-                    <div>
-                      <table>
-                        <thead>
-                          <tr>
-                            <th>Création</th>
-                            <th>Client</th>
-                            <th>Produits</th>
-                            <th>Méthode</th>
-                            <th>Statut</th>
-                            <th>Restant</th>
-                            <th>Total</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {% for order in orders %}
-                            <tr>
-                              <td>{{order.createdAt|date('d/m/Y') }} <br>  à {{ order.createdAt|date('H:i') }}</td>
-                              <td>
-                                {{ order.firstname }} {{ order.lastname }}
-                                {% if order.phone %}
-                                  <br><i class="fas fa-phone"></i> {{ order.phone }}
-                                {% endif %}
-                                {% if order.email %}
-                                  <br><i class="fas fa-envelope"></i> {{ order.email }}
-                                {% endif %}
-                              </td>
-                              <td>
-                                {% set totalDiscount = 0 %}
-                                {% if order.lineItems.toArray %}
-                                  {% for lineItem in order.lineItems.toArray %}
-                                    {% set totalDiscount = totalDiscount + lineItem.price %}
-                                    <div style="max-width: fit-content; display: flex;"><div class="text-xs font-normal leading-none max-w-full flex-initial">{{ lineItem.quantity }} x ({{ lineItem.title }}) - {{ lineItem.price|number_format(2, ',', ' ') }}€</div></div>
-                                  {% endfor %}
-                                {% endif %}
-                              </td>
-                              <td>
-                                {% if order.paymentMethod == constant('App\\Enum\\PaymentMethod::CASH').value %}
-                                  {{ constant('App\\Enum\\PaymentMethod::CASH').getLabel() }}
-                                {% elseif order.paymentMethod == constant('App\\Enum\\PaymentMethod::TRANSCASH').value %}
-                                  {{ constant('App\\Enum\\PaymentMethod::TRANSCASH').getLabel() }}
-                                {% elseif order.paymentMethod == constant('App\\Enum\\PaymentMethod::CARD').value %}
-                                  {{ constant('App\\Enum\\PaymentMethod::CARD').getLabel() }}
-                                {% elseif order.paymentMethod == constant('App\\Enum\\PaymentMethod::PAYPAL').value %}
-                                  {{ constant('App\\Enum\\PaymentMethod::PAYPAL').getLabel() }}
-                                {% elseif order.paymentMethod == constant('App\\Enum\\PaymentMethod::PCS').value %}
-                                  {{ constant('App\\Enum\\PaymentMethod::PCS').getLabel() }}
-                                {% elseif order.paymentMethod == constant('App\\Enum\\PaymentMethod::CHECK').value %}
-                                  {{ constant('App\\Enum\\PaymentMethod::CHECK').getLabel() }}
-                                {% elseif order.paymentMethod == constant('App\\Enum\\PaymentMethod::PAYSAFECARD').value %}
-                                  {{ constant('App\\Enum\\PaymentMethod::PAYSAFECARD').getLabel() }}
-                                {% elseif order.paymentMethod == constant('App\\Enum\\PaymentMethod::BANK').value %}
-                                  {{ constant('App\\Enum\\PaymentMethod::BANK').getLabel() }}
-                                {% endif %}
-                              </td>
-                              <td>
-                                {% if order.status == constant('App\\Enum\\OrderStatus::WAITING').value %}
-                                  {{ constant('App\\Enum\\OrderStatus::WAITING').getLabel() }}
-                                {% elseif order.status == constant('App\\Enum\\OrderStatus::PARTIAL').value %}
-                                  {{ constant('App\\Enum\\OrderStatus::PARTIAL').getLabel() }}
-                                {% elseif order.status == constant('App\\Enum\\OrderStatus::PAID').value %}
-                                  {{ constant('App\\Enum\\OrderStatus::PAID').getLabel() }}
-                                {% elseif order.status == constant('App\\Enum\\OrderStatus::REFUND').value %}
-                                  {{ constant('App\\Enum\\OrderStatus::REFUND').getLabel() }}
-                                {% endif %}
-                              </td>
-                              {% set totalDiscount = totalDiscount - order.discount + order.shippingCost %}
-                              {% set remaining = order.total - order.paid %}
-                              <td>{{ remaining|number_format(2, ',', ' ') }}€</td>
-                              <td>{{ order.total|number_format(2, ',', ' ') }}€</td>
-                            </tr>
-                          {% endfor %}
-                        </tbody>
-                      </table>
-                    </div>
-                  {% else %}
-                    Aucune commande actuellement.
-                  {% endif %}
+{% block title %}Impression{% endblock %}
+
+{% block additional_styles %}
+<style>
+  .status {
+    display: inline-flex;
+    align-items: center;
+    padding: .3rem .8rem;
+    background-color: rgba(228, 229, 231, 1);
+    border: 0;
+    border-radius: 2rem;
+    line-height: 1.6rem;
+  }
+
+  .result_icon {
+    width: 32px;
+    height: 32px;
+    background-size: cover;
+    background-position: center;
+  }
+
+  th, td {
+    padding: 5px 10px;
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="pcoded-content">
+  <div class="pcoded-inner-content">
+    <div class="main-body">
+      <div class="page-wrapper">
+        <div class="page-body">
+          <div class="">
+            <div class="card-block">
+              {% if orders %}
+                <div>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Création</th>
+                        <th>Client</th>
+                        <th>Produits</th>
+                        <th>Méthode</th>
+                        <th>Statut</th>
+                        <th>Restant</th>
+                        <th>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for order in orders %}
+                        <tr>
+                          <td>{{order.createdAt|date('d/m/Y') }} <br>  à {{ order.createdAt|date('H:i') }}</td>
+                          <td>
+                            {{ order.firstname }} {{ order.lastname }}
+                            {% if order.phone %}
+                              <br><i class="fas fa-phone"></i> {{ order.phone }}
+                            {% endif %}
+                            {% if order.email %}
+                              <br><i class="fas fa-envelope"></i> {{ order.email }}
+                            {% endif %}
+                          </td>
+                          <td>
+                            {% set totalDiscount = 0 %}
+                            {% if order.lineItems.toArray %}
+                              {% for lineItem in order.lineItems.toArray %}
+                                {% set totalDiscount = totalDiscount + lineItem.price %}
+                                <div style="max-width: fit-content; display: flex;"><div class="text-xs font-normal leading-none max-w-full flex-initial">{{ lineItem.quantity }} x ({{ lineItem.title }}) - {{ lineItem.price|number_format(2, ',', ' ') }}€</div></div>
+                              {% endfor %}
+                            {% endif %}
+                          </td>
+                          <td>
+                            {% if order.paymentMethod == constant('App\\Enum\\PaymentMethod::CASH').value %}
+                              {{ constant('App\\Enum\\PaymentMethod::CASH').getLabel() }}
+                            {% elseif order.paymentMethod == constant('App\\Enum\\PaymentMethod::TRANSCASH').value %}
+                              {{ constant('App\\Enum\\PaymentMethod::TRANSCASH').getLabel() }}
+                            {% elseif order.paymentMethod == constant('App\\Enum\\PaymentMethod::CARD').value %}
+                              {{ constant('App\\Enum\\PaymentMethod::CARD').getLabel() }}
+                            {% elseif order.paymentMethod == constant('App\\Enum\\PaymentMethod::PAYPAL').value %}
+                              {{ constant('App\\Enum\\PaymentMethod::PAYPAL').getLabel() }}
+                            {% elseif order.paymentMethod == constant('App\\Enum\\PaymentMethod::PCS').value %}
+                              {{ constant('App\\Enum\\PaymentMethod::PCS').getLabel() }}
+                            {% elseif order.paymentMethod == constant('App\\Enum\\PaymentMethod::CHECK').value %}
+                              {{ constant('App\\Enum\\PaymentMethod::CHECK').getLabel() }}
+                            {% elseif order.paymentMethod == constant('App\\Enum\\PaymentMethod::PAYSAFECARD').value %}
+                              {{ constant('App\\Enum\\PaymentMethod::PAYSAFECARD').getLabel() }}
+                            {% elseif order.paymentMethod == constant('App\\Enum\\PaymentMethod::BANK').value %}
+                              {{ constant('App\\Enum\\PaymentMethod::BANK').getLabel() }}
+                            {% endif %}
+                          </td>
+                          <td>
+                            {% if order.status == constant('App\\Enum\\OrderStatus::WAITING').value %}
+                              {{ constant('App\\Enum\\OrderStatus::WAITING').getLabel() }}
+                            {% elseif order.status == constant('App\\Enum\\OrderStatus::PARTIAL').value %}
+                              {{ constant('App\\Enum\\OrderStatus::PARTIAL').getLabel() }}
+                            {% elseif order.status == constant('App\\Enum\\OrderStatus::PAID').value %}
+                              {{ constant('App\\Enum\\OrderStatus::PAID').getLabel() }}
+                            {% elseif order.status == constant('App\\Enum\\OrderStatus::REFUND').value %}
+                              {{ constant('App\\Enum\\OrderStatus::REFUND').getLabel() }}
+                            {% endif %}
+                          </td>
+                          {% set totalDiscount = totalDiscount - order.discount + order.shippingCost %}
+                          {% set remaining = order.total - order.paid %}
+                          <td>{{ remaining|number_format(2, ',', ' ') }}€</td>
+                          <td>{{ order.total|number_format(2, ',', ' ') }}€</td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
                 </div>
-              </div>
+              {% else %}
+                Aucune commande actuellement.
+              {% endif %}
             </div>
           </div>
         </div>
-        <div id="styleSelector">
-        </div>
       </div>
     </div>
-    
-    <style>
-      .status {
-        display: inline-flex;
-        align-items: center;
-        padding: .3rem .8rem;
-        background-color: rgba(228, 229, 231, 1);
-        border: 0;
-        border-radius: 2rem;
-        line-height: 1.6rem;
-      }
-
-      .result_icon {
-        width: 32px;
-        height: 32px;
-        background-size: cover;
-        background-position: center;
-      }
-
-      th, td {
-        padding: 5px 10px;
-      }
-    </style>
-
-
-    <script>
-      window.print();
-    </script>
-  </body>
-</html>
+    <div id="styleSelector">
+    </div>
+  </div>
+</div>
+{% endblock %}
 
       
 
