@@ -488,14 +488,14 @@
             show: false
         },
         data: [
-            {value: {{cash}}, name: 'Espèce', url: "/admin/orders/paymentMethod?paymentMethod=0"},
-            {value: {{transcash}}, name: 'Transcash', url: "/admin/orders/paymentMethod?paymentMethod=1"},
-            {value: {{card}}, name: 'Carte bancaire', url: "/admin/orders/paymentMethod?paymentMethod=2"},
-            {value: {{paypal}}, name: 'Paypal', url: "/admin/orders/paymentMethod?paymentMethod=3"},
-            {value: {{pcs}}, name: 'PCS', url: "/admin/orders/paymentMethod?paymentMethod=4"},
-            {value: {{check}}, name: 'Chèque', url: "/admin/orders/paymentMethod?paymentMethod=5"},
-            {value: {{paysafecard}}, name: 'Paysafecard', url: "/admin/orders/paymentMethod?paymentMethod=6"},
-            {value: {{bank}}, name: 'Virement bancaire', url: "/admin/orders/paymentMethod?paymentMethod=7"},
+            {value: {{cash}}, name: 'Espèce', url: "{{ path('admin_order_filter', {'type': 'payment_method', 'value': '0'}) }}"},
+            {value: {{transcash}}, name: 'Transcash', url: "{{ path('admin_order_filter', {'type': 'payment_method', 'value': '1'}) }}"},
+            {value: {{card}}, name: 'Carte bancaire', url: "{{ path('admin_order_filter', {'type': 'payment_method', 'value': '2'}) }}"},
+            {value: {{paypal}}, name: 'Paypal', url: "{{ path('admin_order_filter', {'type': 'payment_method', 'value': '3'}) }}"},
+            {value: {{pcs}}, name: 'PCS', url: "{{ path('admin_order_filter', {'type': 'payment_method', 'value': '4'}) }}"},
+            {value: {{check}}, name: 'Chèque', url: "{{ path('admin_order_filter', {'type': 'payment_method', 'value': '5'}) }}"},
+            {value: {{paysafecard}}, name: 'Paysafecard', url: "{{ path('admin_order_filter', {'type': 'payment_method', 'value': '6'}) }}"},
+            {value: {{bank}}, name: 'Virement bancaire', url: "{{ path('admin_order_filter', {'type': 'payment_method', 'value': '7'}) }}"}
         ]
       }
     ]
@@ -534,8 +534,8 @@
         show: false
       },
       data: [
-        {value: {{online}}, name: 'Internet', url: "/admin/orders/paymentType?paymentType=0"},
-        {value: {{local}}, name: 'Physique', url: "/admin/orders/paymentType?paymentType=1"}
+        {value: {{online}}, name: 'Internet', url: "{{ path('admin_order_filter', {'type': 'payment_type', 'value': '0'}) }}"},
+        {value: {{local}}, name: 'Physique', url: "{{ path('admin_order_filter', {'type': 'payment_type', 'value': '1'}) }}"}
       ]
     }
     ]
@@ -574,10 +574,10 @@
             show: false
         },
         data: [
-          {value: {{waiting}}, name: 'En attente de paiement', url: "/admin/orders/status?status=0"},
-          {value: {{partial}}, name: 'Paiement partiel', url: "/admin/orders/status?status=1"},
-          {value: {{paid}}, name: 'Payé', url: "/admin/orders/status?status=2"},
-          {value: {{refund}}, name: 'Trop-perçu', url: "/admin/orders/status?status=3"},
+          {value: {{waiting}}, name: 'En attente de paiement', url: "{{ path('admin_order_filter', {'type': 'status', 'value': '0'}) }}"},
+          {value: {{partial}}, name: 'Paiement partiel', url: "{{ path('admin_order_filter', {'type': 'status', 'value': '1'}) }}"},
+          {value: {{paid}}, name: 'Payé', url: "{{ path('admin_order_filter', {'type': 'status', 'value': '2'}) }}"},
+          {value: {{refund}}, name: 'Trop-perçu', url: "{{ path('admin_order_filter', {'type': 'status', 'value': '3'}) }}"}
         ]
       }
     ]

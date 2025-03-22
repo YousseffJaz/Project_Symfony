@@ -2,7 +2,6 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Transaction;
 use App\Entity\OrderHistory;
 use App\Entity\LineItem;
 use App\Entity\Order;
@@ -12,15 +11,9 @@ use App\Service\Order\OrderService;
 use App\Service\Order\OrderExportService;
 use App\Repository\AdminRepository;
 use App\Repository\VariantRepository;
-use App\Repository\OrderHistoryRepository;
-use App\Repository\LineItemRepository;
 use App\Repository\ProductRepository;
 use App\Repository\StockListRepository;
-use App\Repository\PriceListRepository;
-use App\Repository\TransactionRepository;
 use App\Repository\OrderRepository;
-use App\Enum\PaymentMethod;
-use App\Enum\PaymentType;
 use App\Enum\OrderStatus;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -54,11 +47,17 @@ class AdminOrderController extends AbstractController
         $end = $request->query->get('end');
 
         if (!$start || !$end) {
-            $start = new \DateTime('now', new \DateTimeZone('Europe/Paris'));
-            $end = new \DateTime('now', new \DateTimeZone('Europe/Paris'));
+            // Par défaut, on prend l'année en cours
+            $currentYear = (new \DateTime())->format('Y');
+            $start = new \DateTime($currentYear . '-01-01');
+            $start->setTime(0, 0, 0);
+            $end = new \DateTime($currentYear . '-12-31');
+            $end->setTime(23, 59, 59);
         } else {
             $start = new \DateTime($start);
+            $start->setTime(0, 0, 0);
             $end = new \DateTime($end);
+            $end->setTime(23, 59, 59);
         }
 
         $result = $this->orderService->getTotalsByDateRange($start, $end);
@@ -73,108 +72,23 @@ class AdminOrderController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/orders/status', name: 'admin_order_status')]
+    #[Route('/admin/orders/filter/{type}/{value}', name: 'admin_order_filter')]
     #[IsGranted('ROLE_ADMIN')]
-    public function status(Request $request): Response
+    public function filter(string $type, ?string $value = null): Response
     {
-        $statusValue = $request->query->get('status');
-        $status = OrderStatus::from((int)$statusValue);
-        $result = $this->orderService->getOrdersByStatus($status->value);
-        
-        return $this->render('admin/order/index.html.twig', [
-            'search' => '',
-            'orders' => $result['orders'],
-            'total' => $result['total'],
-            'alreadyPaid' => $result['alreadyPaid'],
-            'start' => (new \DateTime())->format('Y-m-d'),
-            'end' => (new \DateTime())->format('Y-m-d'),
-        ]);
-    }
-
-    #[Route('/admin/orders/waiting', name: 'admin_order_waiting')]
-    #[IsGranted('ROLE_ADMIN')]
-    public function waiting(): Response
-    {
-        $result = $this->orderService->getOrdersByStatus(OrderStatus::WAITING->value);
-        
-        return $this->render('admin/order/index.html.twig', [
-            'search' => '',
-            'orders' => $result['orders'],
-            'total' => $result['total'],
-            'alreadyPaid' => $result['alreadyPaid'],
-            'start' => (new \DateTime())->format('Y-m-d'),
-            'end' => (new \DateTime())->format('Y-m-d'),
-        ]);
-    }
-
-    #[Route('/admin/orders/paymentType', name: 'admin_order_paymentType')]
-    #[IsGranted('ROLE_ADMIN')]
-    public function paymentType(Request $request): Response
-    {
-        $typeValue = $request->query->get('paymentType');
-        $type = PaymentType::from((int)$typeValue);
-        $orders = $this->orderRepository->findByPaymentType($type->value);
+        $result = $this->orderService->getFilteredOrders($type, $value);
         
         return $this->render('admin/order/index.html.twig', 
-            $this->orderService->prepareIndexViewData($orders)
-        );
-    }
-
-    #[Route('/admin/orders/paymentMethod', name: 'admin_order_paymentMethod')]
-    #[IsGranted('ROLE_ADMIN')]
-    public function paymentMethod(Request $request): Response
-    {
-        $methodValue = $request->query->get('paymentMethod');
-        $method = PaymentMethod::from((int)$methodValue);
-        $orders = $this->orderRepository->findByPaymentMethod($method->value);
-        
-        return $this->render('admin/order/index.html.twig', 
-            $this->orderService->prepareIndexViewData($orders)
-        );
-    }
-
-    #[Route('/admin/orders/expedition', name: 'admin_order_expedition')]
-    #[IsGranted('ROLE_ADMIN')]
-    public function expedition(): Response
-    {
-        $orders = $this->orderRepository->findByExpedition();
-        
-        return $this->render('admin/order/index.html.twig', 
-            $this->orderService->prepareIndexViewData($orders)
-        );
-    }
-
-    #[Route('/admin/orders/impayee', name: 'admin_order_impayee')]
-    #[IsGranted('ROLE_ADMIN')]
-    public function impayee(): Response
-    {
-        $orders = $this->orderRepository->findByImpayee();
-        
-        return $this->render('admin/order/index.html.twig', 
-            $this->orderService->prepareIndexViewData($orders)
+            $this->orderService->prepareIndexViewData($result['orders'])
         );
     }
 
     #[Route('/admin/orders/customers', name: 'admin_order_customers')]
     #[IsGranted('ROLE_ADMIN')]
-    public function customers(Request $request, OrderRepository $orderRepo, LineItemRepository $lineItemRepo): Response
+    public function customers(): Response
     {
-        $customers = $orderRepo->groupByCustomers();
-        $array = [];
-
-        foreach ($customers as $customer) {
-            $orders = $orderRepo->findByFirstname($customer['firstname']);
-            $array[] = [
-                'firstname' => $customer['firstname'],
-                'lastname' => $customer['lastname'],
-                'number' => $customer['number'],
-                'email' => $customer['email'],
-                'orders' => $orders
-            ];
-        }
-
         return $this->render('admin/order/customers.html.twig', [
-            'array' => $array,
+            'array' => $this->orderService->getCustomerOrders(),
         ]);
     }
 
@@ -251,13 +165,13 @@ class AdminOrderController extends AbstractController
             }
 
             if ($order->getTotal() < $order->getPaid()) {
-                $order->setStatus(3);
+                $order->setStatus(OrderStatus::REFUND->value);
             } elseif ($order->getTotal() == $order->getPaid()) {
-                $order->setStatus(2);
+                $order->setStatus(OrderStatus::PAID->value);
             } elseif ($order->getPaid() != 0) {
-                $order->setStatus(1);
+                $order->setStatus(OrderStatus::PARTIAL->value);
             } else {
-                $order->setStatus(0);
+                $order->setStatus(OrderStatus::WAITING->value);
             }
 
             /** @var Admin */
@@ -310,18 +224,37 @@ class AdminOrderController extends AbstractController
 
     #[Route('/admin/orders/print', name: 'admin_order_print')]
     #[IsGranted('ROLE_ADMIN')]
-    public function print(OrderRepository $orderRepo, Request $request, EntityManagerInterface $manager): Response
+    public function print(Request $request): Response
     {
         $start = $request->query->get('start');
         $end = $request->query->get('end');
         $search = $request->query->get('search');
 
         if ($search) {
-            $orders = $orderRepo->search($search);
+            $orders = $this->orderRepository->search($search);
         } else if ($start && $end) {
-            $orders = $orderRepo->findByStartAndEnd($start, $end);
+            // Ajouter les heures pour avoir la journée complète
+            $startDate = new \DateTime($start);
+            $startDate->setTime(0, 0, 0);
+            $endDate = new \DateTime($end);
+            $endDate->setTime(23, 59, 59);
+            
+            $orders = $this->orderRepository->findByStartAndEnd(
+                $startDate->format('Y-m-d'),
+                $endDate->format('Y-m-d')
+            );
         } else {
-            $orders = $orderRepo->findBy([], ['createdAt' => "DESC"]);
+            // Default to current year if no dates specified
+            $currentYear = (new \DateTime())->format('Y');
+            $yearStart = new \DateTime($currentYear . '-01-01');
+            $yearStart->setTime(0, 0, 0);
+            $yearEnd = new \DateTime($currentYear . '-12-31');
+            $yearEnd->setTime(23, 59, 59);
+            
+            $orders = $this->orderRepository->findByStartAndEnd(
+                $yearStart->format('Y-m-d'),
+                $yearEnd->format('Y-m-d')
+            );
         }
 
         return $this->render('admin/order/print.html.twig', [
@@ -331,25 +264,9 @@ class AdminOrderController extends AbstractController
 
     #[Route('/admin/lineitem/delete/{id}', name: 'admin_lineitem_delete')]
     #[IsGranted('ROLE_ADMIN')]
-    public function deleteLineitem(LineItem $lineItem, StockListRepository $stockRepo, Request $request, EntityManagerInterface $manager): Response
+    public function deleteLineitem(LineItem $lineItem): Response
     {
-        $stock = $lineItem->getStock();
-        if ($stock) {
-            $quantity = $lineItem->getQuantity();
-            $stock->setQuantity($stock->getQuantity() + $quantity);
-            $order = $lineItem->getOrder();
-            $order->setTotal($order->getTotal() - $lineItem->getPrice());
-        }
-
-        $admin = $this->getAdmin();
-        $history = new OrderHistory();
-        $history->setTitle("Le produit '{$lineItem->getTitle()}' en '{$lineItem->getQuantity()}' exemplaire(s) pour '{$lineItem->getPrice()}€' a été supprimé");
-        $history->setInvoice($lineItem->getOrder());
-        $history->setAdmin($admin);
-        $manager->persist($history);
-
-        $manager->remove($lineItem);
-        $manager->flush();
+        $this->orderService->deleteLineItem($lineItem, $this->getAdmin());
 
         return new JsonResponse([
             'message' => 'success'
@@ -358,27 +275,9 @@ class AdminOrderController extends AbstractController
 
     #[Route('/admin/orders/delete/{id}', name: 'admin_order_delete')]
     #[IsGranted('ROLE_ADMIN')]
-    public function deleteOrder(Order $order, StockListRepository $stockRepo, EntityManagerInterface $manager, TransactionRepository $transactionRepo): Response
+    public function deleteOrder(Order $order): Response
     {
-        $lineItems = $order->getLineItems();
-        
-        if ($lineItems) {
-            foreach ($lineItems as $lineItem) {
-                $stock = $lineItem->getStock();
-                if ($stock) {
-                    $quantity = $lineItem->getQuantity();
-                    $stock->setQuantity($stock->getQuantity() + $quantity);
-                }
-            }
-        }
-
-        $transaction = $transactionRepo->findOneByInvoice($order);
-        if ($transaction) {
-            $manager->remove($transaction);
-        }
-
-        $manager->remove($order);
-        $manager->flush();
+        $this->orderService->deleteOrder($order);
 
         $this->addFlash(
             'success',
@@ -398,13 +297,14 @@ class AdminOrderController extends AbstractController
 
     #[Route('/admin/orders/customer/autocomplete', name: 'admin_order_customer')]
     #[IsGranted('ROLE_ADMIN')]
-    public function customer(Request $request, OrderRepository $orderRepo): Response
+    public function customer(Request $request): Response
     {
-        $keyword = $request->query->get('keyword'); $array = [];
-        $orders = $orderRepo->searchCustomer($keyword);
+        $keyword = $request->query->get('keyword');
+        $orders = $this->orderRepository->searchCustomer($keyword);
+        $array = [];
 
         if ($orders) {
-            foreach ($orders as $key => $order) {
+            foreach ($orders as $order) {
                 $array[] = $order['firtname'];
             }
         }
@@ -414,7 +314,7 @@ class AdminOrderController extends AbstractController
 
     #[Route('/admin/orders/history/{id}', name: 'admin_order_history')]
     #[IsGranted('ROLE_ADMIN')]
-    public function history(Order $order, Request $request, OrderRepository $orderRepo, LineItemRepository $lineItemRepo): Response
+    public function history(Order $order): Response
     {
         return $this->render('admin/order/history.html.twig', [
             'order' => $order,

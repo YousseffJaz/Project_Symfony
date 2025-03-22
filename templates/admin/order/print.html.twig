@@ -59,33 +59,33 @@
                                 {% endif %}
                               </td>
                               <td>
-                                {% if order.paymentMethod == 0 %}
-                                  Espèce
-                                {% elseif order.paymentMethod == 1 %}
-                                  Transcash
-                                {% elseif order.paymentMethod == 2 %}
-                                  Carte bancaire
-                                {% elseif order.paymentMethod == 3 %}
-                                  Paypal
-                                {% elseif order.paymentMethod == 4 %}
-                                  PCS
-                                {% elseif order.paymentMethod == 5 %}
-                                  Chèque
-                                {% elseif order.paymentMethod == 6 %}
-                                  Paysafecard
-                                {% elseif order.paymentMethod == 7 %}
-                                  Virement bancaire
+                                {% if order.paymentMethod == constant('App\\Enum\\PaymentMethod::CASH').value %}
+                                  {{ constant('App\\Enum\\PaymentMethod::CASH').getLabel() }}
+                                {% elseif order.paymentMethod == constant('App\\Enum\\PaymentMethod::TRANSCASH').value %}
+                                  {{ constant('App\\Enum\\PaymentMethod::TRANSCASH').getLabel() }}
+                                {% elseif order.paymentMethod == constant('App\\Enum\\PaymentMethod::CARD').value %}
+                                  {{ constant('App\\Enum\\PaymentMethod::CARD').getLabel() }}
+                                {% elseif order.paymentMethod == constant('App\\Enum\\PaymentMethod::PAYPAL').value %}
+                                  {{ constant('App\\Enum\\PaymentMethod::PAYPAL').getLabel() }}
+                                {% elseif order.paymentMethod == constant('App\\Enum\\PaymentMethod::PCS').value %}
+                                  {{ constant('App\\Enum\\PaymentMethod::PCS').getLabel() }}
+                                {% elseif order.paymentMethod == constant('App\\Enum\\PaymentMethod::CHECK').value %}
+                                  {{ constant('App\\Enum\\PaymentMethod::CHECK').getLabel() }}
+                                {% elseif order.paymentMethod == constant('App\\Enum\\PaymentMethod::PAYSAFECARD').value %}
+                                  {{ constant('App\\Enum\\PaymentMethod::PAYSAFECARD').getLabel() }}
+                                {% elseif order.paymentMethod == constant('App\\Enum\\PaymentMethod::BANK').value %}
+                                  {{ constant('App\\Enum\\PaymentMethod::BANK').getLabel() }}
                                 {% endif %}
                               </td>
                               <td>
-                                {% if order.status == 0 %}
-                                  En attente de paiement
-                                {% elseif order.status == 1 %}
-                                  Paiement partiel
-                                {% elseif order.status == 2 %}
-                                  Payé
-                                {% elseif order.status == 3 %}
-                                  Trop-perçu
+                                {% if order.status == constant('App\\Enum\\OrderStatus::WAITING').value %}
+                                  {{ constant('App\\Enum\\OrderStatus::WAITING').getLabel() }}
+                                {% elseif order.status == constant('App\\Enum\\OrderStatus::PARTIAL').value %}
+                                  {{ constant('App\\Enum\\OrderStatus::PARTIAL').getLabel() }}
+                                {% elseif order.status == constant('App\\Enum\\OrderStatus::PAID').value %}
+                                  {{ constant('App\\Enum\\OrderStatus::PAID').getLabel() }}
+                                {% elseif order.status == constant('App\\Enum\\OrderStatus::REFUND').value %}
+                                  {{ constant('App\\Enum\\OrderStatus::REFUND').getLabel() }}
                                 {% endif %}
                               </td>
                               {% set totalDiscount = totalDiscount - order.discount + order.shippingCost %}

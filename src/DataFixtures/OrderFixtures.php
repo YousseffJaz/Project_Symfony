@@ -7,6 +7,9 @@ use App\Entity\LineItem;
 use App\Entity\Product;
 use App\Entity\Admin;
 use App\Entity\OrderHistory;
+use App\Enum\OrderStatus;
+use App\Enum\PaymentType;
+use App\Enum\PaymentMethod;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -14,18 +17,21 @@ use Faker\Factory;
 
 class OrderFixtures extends Fixture implements DependentFixtureInterface
 {
-    private const ORDER_STATUSES = [
-        0 => 'En attente',
-        1 => 'En cours',
-        2 => 'Livré',
-        3 => 'Annulé'
-    ];
-
     private $faker;
 
     public function __construct()
     {
         $this->faker = Factory::create('fr_FR');
+    }
+
+    private function getOrderStatuses(): array
+    {
+        return [
+            OrderStatus::WAITING->value => 'En attente',
+            OrderStatus::PARTIAL->value => 'En cours',
+            OrderStatus::PAID->value => 'Livré',
+            OrderStatus::REFUND->value => 'Annulé'
+        ];
     }
 
     public function load(ObjectManager $manager): void
@@ -59,7 +65,7 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
             $order->setCreatedAt($createdAt);
 
             // Statut de la commande
-            $status = $this->faker->randomElement(array_keys(self::ORDER_STATUSES));
+            $status = $this->faker->randomElement(array_keys($this->getOrderStatuses()));
             $order->setStatus($status);
             $order->setOrderStatus($this->faker->numberBetween(0, 2));
 
@@ -97,17 +103,31 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
             $order->setDiscount($discount);
 
             // Paiement
-            if ($status !== 3) { // Si la commande n'est pas annulée
-                $paymentType = $this->faker->randomElement([1, 2, 3, 4]); // Exclure le type 0 (Non défini)
-                $paid = $status === 2 ? $finalTotal : ($this->faker->boolean(70) ? $finalTotal : 0);
+            if ($status !== OrderStatus::REFUND->value) { // Si la commande n'est pas annulée
+                $paymentType = $this->faker->randomElement([
+                    PaymentType::ONLINE->value,
+                    PaymentType::LOCAL->value
+                ]);
+                $paymentMethod = $this->faker->randomElement([
+                    PaymentMethod::CASH->value,
+                    PaymentMethod::TRANSCASH->value,
+                    PaymentMethod::CARD->value,
+                    PaymentMethod::PAYPAL->value,
+                    PaymentMethod::PCS->value,
+                    PaymentMethod::CHECK->value,
+                    PaymentMethod::PAYSAFECARD->value,
+                    PaymentMethod::BANK->value
+                ]);
+                $paid = $status === OrderStatus::PAID->value ? $finalTotal : ($this->faker->boolean(70) ? $finalTotal : 0);
             } else {
-                $paymentType = 0;
+                $paymentType = PaymentType::ONLINE->value;
+                $paymentMethod = PaymentMethod::CARD->value;
                 $paid = 0;
             }
             
             $order->setPaid($paid);
             $order->setPaymentType($paymentType);
-            $order->setPaymentMethod($paymentType);
+            $order->setPaymentMethod($paymentMethod);
 
             // Historique de la commande
             $this->createOrderHistory($manager, $order, $status, $createdAt);

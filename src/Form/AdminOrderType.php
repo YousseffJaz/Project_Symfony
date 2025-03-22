@@ -21,17 +21,28 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use App\Enum\OrderStatus;
+use App\Enum\PaymentType;
+use App\Enum\PaymentMethod;
 
 class AdminOrderType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $statusOptions = [
-            'En attente' => 0,
-            'En cours' => 1,
-            'Terminé' => 2,
-            'Annulé' => 3
-        ];
+        $statusOptions = [];
+        foreach (OrderStatus::cases() as $status) {
+            $statusOptions[$status->getLabel()] = $status->value;
+        }
+
+        $paymentTypeOptions = [];
+        foreach (PaymentType::cases() as $type) {
+            $paymentTypeOptions[$type->getLabel()] = $type->value;
+        }
+
+        $paymentMethodOptions = [];
+        foreach (PaymentMethod::cases() as $method) {
+            $paymentMethodOptions[$method->getLabel()] = $method->value;
+        }
 
         $builder
             ->add('firstname', TextType::class, [
@@ -116,11 +127,7 @@ class AdminOrderType extends AbstractType
                     'class' => 'form-control',
                     'autocomplete' => 'off'
                 ],
-                'choices' => [
-                    'Internet' => 0,
-                    'Physique' => 1,
-                    'Livraison' => 2
-                ],
+                'choices' => $paymentTypeOptions,
                 'required' => false
             ])
             ->add('paymentMethod', ChoiceType::class, [
@@ -129,16 +136,7 @@ class AdminOrderType extends AbstractType
                     'class' => 'form-control',
                     'autocomplete' => 'off'
                 ],
-                'choices' => [
-                    'Espèce' => 0,
-                    'Transcash' => 1,
-                    'Carte bancaire' => 2,
-                    'Paypal' => 3,
-                    'PCS' => 4,
-                    'Chèque' => 5,
-                    'Paysafecard' => 6,
-                    'Virement bancaire' => 7
-                ],
+                'choices' => $paymentMethodOptions,
                 'required' => false
             ])
             ->add('createdAt', DateTimeType::class, [

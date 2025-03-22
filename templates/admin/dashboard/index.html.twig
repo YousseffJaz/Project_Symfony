@@ -87,7 +87,7 @@
                         <div class="row">
                             {# Commandes en attente #}
                             <div class="col-xl-3 col-md-6">
-                                <a href="{{ path('admin_order_waiting') }}" class="text-decoration-none">
+                                <a href="{{ path('admin_order_filter', {'type': 'waiting'}) }}" class="text-decoration-none">
                                     <div class="card prod-p-card" style="background: #fff">
                                         <div class="card-body">
                                             <div class="row align-items-center">
@@ -107,7 +107,7 @@
 
                             {# Commandes en cours #}
                             <div class="col-xl-3 col-md-6">
-                                <a href="{{ path('admin_order_expedition') }}" class="text-decoration-none">
+                                <a href="{{ path('admin_order_filter', {'type': 'expedition'}) }}" class="text-decoration-none">
                                     <div class="card prod-p-card" style="background: #fff">
                                         <div class="card-body">
                                             <div class="row align-items-center">
@@ -147,7 +147,7 @@
 
                             {# Commandes impayées #}
                             <div class="col-xl-3 col-md-6">
-                                <a href="{{ path('admin_order_impayee') }}" class="text-decoration-none">
+                                <a href="{{ path('admin_order_filter', {'type': 'impayee'}) }}" class="text-decoration-none">
                                     <div class="card prod-p-card" style="background: #fff">
                                         <div class="card-body">
                                             <div class="row align-items-center">

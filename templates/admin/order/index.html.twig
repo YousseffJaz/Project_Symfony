@@ -45,8 +45,9 @@
 						</div>
 
 						<div class="card-block table-border-style" style="padding-top: 0px;">
-							<a href="{{ path('admin_order_expedition') }}" class="btn btn-out-dashed waves-effect waves-light btn-primary btn-square text-right" style="padding: 5px 10px; margin: 0px 5px;">Commande à expédier</a>
-							<a href="{{ path('admin_order_impayee') }}" class="btn btn-out-dashed waves-effect waves-light btn-danger btn-square text-right" style="padding: 5px 10px; margin: 0px 5px;">Commande impayée</a>
+							<a href="{{ path('admin_order_filter', {'type': 'expedition'}) }}" class="btn btn-out-dashed waves-effect waves-light btn-primary btn-square text-right" style="padding: 5px 10px; margin: 0px 5px;">Commande à expédier</a>
+							<a href="{{ path('admin_order_filter', {'type': 'impayee'}) }}" class="btn btn-out-dashed waves-effect waves-light btn-danger btn-square text-right" style="padding: 5px 10px; margin: 0px 5px;">Commande impayée</a>
+							<a id="today" href="#" class="btn btn-out-dashed waves-effect waves-light btn-info btn-square text-right" style="padding: 5px 10px; margin: 0px 5px;">Commandes du jour</a>
 							{% if app.user.role == "ROLE_SUPER_ADMIN" or app.user.role == "ROLE_EMPLOYÉ" %}
 								{% if orders %}
 									<div style="padding: 5px 10px; margin: 0px 5px; float: right; color: #2ecc71; font-weight: bold; font-size: 17px; border: 2px solid #2ecc71; border-radius: 8px; margin-bottom: 12px;">
@@ -293,10 +294,34 @@ $('#print').click(function (e) {
 		var url = "{{ path('admin_order_print') }}?start=" + start + "&end=" + end;
 		window.location = url;
 	} else {
-		window.location = "{{ path('admin_order_print') }}?orders="+ $orders;
+		// Get current year dates
+		var currentDate = new Date();
+		var currentYear = currentDate.getFullYear();
+		var yearStart = currentYear + "-01-01";
+		var yearEnd = currentYear + "-12-31";
+		var url = "{{ path('admin_order_print') }}?start=" + yearStart + "&end=" + yearEnd;
+		window.location = url;
 	}
 });
 
+$('#today').click(function (e) {
+	e.preventDefault();
+	var today = new Date();
+	var dd = today.getDate();
+	var mm = today.getMonth() + 1;
+	var yyyy = today.getFullYear();
+
+	if (dd < 10) {
+		dd = '0' + dd;
+	}
+	if (mm < 10) {
+		mm = '0' + mm;
+	}
+
+	var formattedDate = yyyy + '-' + mm + '-' + dd;
+	var url = "{{ path('admin_order_index') }}?start=" + formattedDate + "&end=" + formattedDate;
+	window.location = url;
+});
 
 $('.js-delete-element').click(function () {
 	event.preventDefault();

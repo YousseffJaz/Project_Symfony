@@ -37,7 +37,7 @@ class StatisticsService
             
             $dailyData[] = [
                 'total' => number_format($amount, 2, '.', ''),
-                'url' => '/admin/orders/day?day=' . sprintf('%04d-%02d-%02d', $year, $month, $i)
+                'url' => '/admin/orders/filter/day/' . sprintf('%04d-%02d-%02d', $year, $month, $i)
             ];
         }
         
@@ -95,7 +95,7 @@ class StatisticsService
         return [
             'data' => [
                 'total' => number_format($amount, 2, '.', ''),
-                'url' => '/admin/orders/month?month=' . $month . '&year=' . $year
+                'url' => '/admin/orders/filter/month/' . sprintf('%04d-%02d', $year, $month)
             ],
             'amount' => $amount
         ];

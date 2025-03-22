@@ -24,7 +24,6 @@ class AdminDashboardController extends AbstractController
 
     #[Route('/', name: 'app_admin_dashboard')]
     public function index(
-        Request $request,
         OrderRepository $orderRepo,
         ProductRepository $productRepo,
         AdminRepository $adminRepo

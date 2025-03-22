@@ -7,6 +7,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Twig\Environment;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use App\Enum\OrderStatus;
+use App\Enum\PaymentType;
+use App\Enum\PaymentMethod;
 
 class OrderExportService
 {
@@ -233,10 +236,10 @@ class OrderExportService
     private function getStatusLabel(?int $status): string
     {
         return match ($status) {
-            0 => 'En attente de paiement',
-            1 => 'Paiement partiel',
-            2 => 'Payé',
-            3 => 'Trop-perçu',
+            OrderStatus::WAITING->value => OrderStatus::WAITING->getLabel(),
+            OrderStatus::PARTIAL->value => OrderStatus::PARTIAL->getLabel(),
+            OrderStatus::PAID->value => OrderStatus::PAID->getLabel(),
+            OrderStatus::REFUND->value => OrderStatus::REFUND->getLabel(),
             default => 'Inconnu',
         };
     }
@@ -244,14 +247,14 @@ class OrderExportService
     private function getPaymentMethodLabel(?int $method): string
     {
         return match ($method) {
-            0 => 'Espèce',
-            1 => 'Transcash',
-            2 => 'Carte bancaire',
-            3 => 'Paypal',
-            4 => 'PCS',
-            5 => 'Chèque',
-            6 => 'Paysafecard',
-            7 => 'Virement bancaire',
+            PaymentMethod::CASH->value => PaymentMethod::CASH->getLabel(),
+            PaymentMethod::TRANSCASH->value => PaymentMethod::TRANSCASH->getLabel(),
+            PaymentMethod::CARD->value => PaymentMethod::CARD->getLabel(),
+            PaymentMethod::PAYPAL->value => PaymentMethod::PAYPAL->getLabel(),
+            PaymentMethod::PCS->value => PaymentMethod::PCS->getLabel(),
+            PaymentMethod::CHECK->value => PaymentMethod::CHECK->getLabel(),
+            PaymentMethod::PAYSAFECARD->value => PaymentMethod::PAYSAFECARD->getLabel(),
+            PaymentMethod::BANK->value => PaymentMethod::BANK->getLabel(),
             default => 'Inconnu',
         };
     }
@@ -259,8 +262,8 @@ class OrderExportService
     private function getPaymentTypeLabel(?int $type): string
     {
         return match ($type) {
-            0 => 'Internet',
-            1 => 'Physique',
+            PaymentType::ONLINE->value => PaymentType::ONLINE->getLabel(),
+            PaymentType::LOCAL->value => PaymentType::LOCAL->getLabel(),
             default => 'Inconnu',
         };
     }
