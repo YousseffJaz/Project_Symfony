@@ -144,7 +144,8 @@ class AdminOrderType extends AbstractType
                     'class' => 'form-control',
                     'autocomplete' => 'off'
                 ],
-                'date_format' => 'dd/MM/yyyy',
+                'widget' => 'single_text',
+                'html5' => true,
                 'required' => false
             ])
             ->add('trackingId', TextType::class, [

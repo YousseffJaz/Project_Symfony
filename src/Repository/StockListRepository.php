@@ -90,5 +90,17 @@ class StockListRepository extends ServiceEntityRepository
     $stock->setQuantity($stock->getQuantity() + $quantity);
     $this->getEntityManager()->flush();
   }
+
+  public function calculateStockValue(): array
+  {
+    return $this->createQueryBuilder('s')
+        ->select('s.name, SUM(s.quantity * p.price) as value')
+        ->leftJoin('s.product', 'p')
+        ->where('p.archive = false')
+        ->andWhere('p.digital = false')
+        ->groupBy('s.name')
+        ->getQuery()
+        ->getResult();
+  }
 }
 

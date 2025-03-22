@@ -261,17 +261,18 @@ class OrderRepository extends ServiceEntityRepository
     ->getResult();
   }
 
-  public function findBestProducts(){
-    $query = $this->createQueryBuilder('o')
-    ->leftjoin('o.lineItems', 'l')
-    ->leftjoin('l.product', 'p')
-    ->groupBy('p.id')
-    ->select('SUM(l.price) as total, SUM(l.quantity) as quantity, p.title as title')
-    ->orderBy('SUM(l.price)', 'DESC')
-    ->setMaxResults(10);
-
-    return $query->getQuery()
-    ->getResult();
+  public function findBestProducts(): array
+  {
+    return $this->createQueryBuilder('o')
+        ->select('p.title, SUM(l.quantity) as quantity, SUM(l.price * l.quantity) as total')
+        ->join('o.lineItems', 'l')
+        ->join('l.product', 'p')
+        ->where('p.archive = false')
+        ->groupBy('p.id')
+        ->orderBy('total', 'DESC')
+        ->setMaxResults(10)
+        ->getQuery()
+        ->getResult();
   }
 
   public function findBestProductsStartAndEnd($start, $end){
@@ -291,18 +292,19 @@ class OrderRepository extends ServiceEntityRepository
     ->getResult();
   }
 
-  public function findBestCategories(){
-    $query = $this->createQueryBuilder('o')
-    ->leftjoin('o.lineItems', 'l')
-    ->leftjoin('l.product', 'p')
-    ->leftjoin('p.category', 'c')
-    ->groupBy('c.id')
-    ->select('SUM(l.price) as total, SUM(l.quantity) as quantity, c.name as title')
-    ->orderBy('SUM(l.price)', 'DESC')
-    ->setMaxResults(10);
-
-    return $query->getQuery()
-    ->getResult();
+  public function findBestCategories(): array
+  {
+    return $this->createQueryBuilder('o')
+        ->select('c.name as title, SUM(l.quantity) as quantity, SUM(l.price * l.quantity) as total')
+        ->join('o.lineItems', 'l')
+        ->join('l.product', 'p')
+        ->join('p.category', 'c')
+        ->where('p.archive = false')
+        ->groupBy('c.id')
+        ->orderBy('total', 'DESC')
+        ->setMaxResults(10)
+        ->getQuery()
+        ->getResult();
   }
 
   public function findBestCategoriesStartAndEnd($start, $end){
@@ -323,18 +325,15 @@ class OrderRepository extends ServiceEntityRepository
     ->getResult();
   }
 
-  public function findBestCustomers(){
-    $query = $this->createQueryBuilder('o')
-    ->leftjoin('o.lineItems', 'l')
-    ->leftjoin('l.variant', 'v')
-    ->groupBy("o.firstname")
-      // ->andWhere('p.archive = false')
-    ->select('SUM(l.price) as total, SUM(l.quantity) as quantity, o.firstname as name')
-    ->orderBy("SUM(l.price)", "DESC")
-    ->setMaxResults(100);
-
-    return $query->getQuery()
-    ->getResult();
+  public function findBestCustomers(): array
+  {
+    return $this->createQueryBuilder('o')
+        ->select('CONCAT(o.firstname, \' \', o.lastname) as name, COUNT(DISTINCT o.id) as orders, SUM(o.total) as total')
+        ->groupBy('o.firstname', 'o.lastname')
+        ->orderBy('total', 'DESC')
+        ->setMaxResults(100)
+        ->getQuery()
+        ->getResult();
   }
 
   public function findBestCustomersStartAndEnd($start, $end){
@@ -421,6 +420,24 @@ class OrderRepository extends ServiceEntityRepository
       ->setParameter('startDate', $startDate)
       ->setParameter('endDate', $endDate)
       ->orderBy('o.createdAt', 'DESC');
+
+    return $qb->getQuery()->getResult();
+  }
+
+  public function findDailyStatsByMonth(int $month, int $year): array
+  {
+    $startDate = new \DateTime(sprintf('%d-%d-01', $year, $month));
+    $endDate = clone $startDate;
+    $endDate->modify('last day of this month');
+    
+    $qb = $this->createQueryBuilder('o')
+        ->select('SUBSTRING(o.createdAt, 9, 2) as day, SUM(o.total) as total')
+        ->where('o.createdAt >= :startDate')
+        ->andWhere('o.createdAt <= :endDate')
+        ->setParameter('startDate', $startDate)
+        ->setParameter('endDate', $endDate)
+        ->groupBy('day')
+        ->orderBy('day', 'ASC');
 
     return $qb->getQuery()->getResult();
   }

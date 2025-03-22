@@ -25,18 +25,21 @@ class StatisticsService
         $dailyData = [];
         $currentMonthDays = cal_days_in_month(CAL_GREGORIAN, $month, $year);
         
+        // Récupérer toutes les statistiques en une seule requête
+        $stats = $this->orderRepository->findDailyStatsByMonth($month, $year);
+        
+        // Créer un tableau associatif pour un accès facile
+        $dailyStats = [];
+        foreach ($stats as $stat) {
+            // Convertir le jour en entier pour enlever les zéros au début
+            $day = (int)$stat['day'];
+            $dailyStats[$day] = $stat['total'];
+        }
+        
+        // Remplir les données pour chaque jour
         for ($i = 1; $i <= $currentMonthDays; $i++) {
-            $orders = $this->orderRepository->findByDay($i, $month, $year);
-            $amount = 0;
-            
-            if ($orders) {
-                foreach ($orders as $order) {
-                    $amount += (float)$order->getTotal();
-                }
-            }
-            
             $dailyData[] = [
-                'total' => number_format($amount, 2, '.', ''),
+                'total' => number_format($dailyStats[$i] ?? 0, 2, '.', ''),
                 'url' => '/admin/orders/filter/day/' . sprintf('%04d-%02d-%02d', $year, $month, $i)
             ];
         }
@@ -146,28 +149,8 @@ class StatisticsService
 
     public function calculateStockValue(): float
     {
-        $products = $this->productRepository->findBy(['archive' => false, 'digital' => false]);
-        $stocks = $this->stockListRepository->findStockName();
-        $stockValue = 0;
-
-        foreach ($stocks as $stock) {
-            foreach ($products as $product) {
-                $quantity = $this->stockListRepository->findQuantityByProductAndStock($product, $stock);
-                $listPrices = $this->priceListRepository->findByProduct($product);
-                if ($listPrices && $stocks) {
-                    foreach ($quantity as $items) {
-                        $price = 0;
-                        foreach ($listPrices as $list) {
-                            $price = $price + $list['price'];
-                        }
-                        $price = $price / sizeof($listPrices);
-                        $stockValue = $stockValue + ($items['quantity'] * round($price, 2));
-                    }
-                }
-            }
-        }
-
-        return $stockValue;
+        $stockValues = $this->stockListRepository->calculateStockValue();
+        return array_sum(array_column($stockValues, 'value'));
     }
 
     public function getBestSellers(): array
