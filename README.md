@@ -7,7 +7,7 @@ Ce projet est une application de gestion développée avec Symfony 7.
 - PHP 8.2 ou supérieur
 - Composer
 - Symfony CLI
-- MySQL/MariaDB
+- PostgreSQL 14 ou supérieur
 
 ## Installation
 
@@ -26,7 +26,7 @@ composer install
 - Créer un fichier `.env.local` à la racine du projet
 - Configurer les variables d'environnement :
 ```env
-DATABASE_URL="mysql://user:password@127.0.0.1:3306/dbname?serverVersion=8.0.32&charset=utf8mb4"
+DATABASE_URL="postgresql://user:password@127.0.0.1:5432/dbname?serverVersion=14&charset=utf8"
 ```
 
 4. Créer la base de données :

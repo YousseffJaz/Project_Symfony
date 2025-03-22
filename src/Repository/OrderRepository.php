@@ -434,7 +434,7 @@ class OrderRepository extends ServiceEntityRepository
     $endDate->modify('last day of this month');
     
     $qb = $this->createQueryBuilder('o')
-        ->select('SUBSTRING(o.createdAt, 9, 2) as day, SUM(o.total) as total')
+        ->select('EXTRACT(DAY FROM o.createdAt) as day, SUM(o.total) as total')
         ->where('o.createdAt >= :startDate')
         ->andWhere('o.createdAt <= :endDate')
         ->setParameter('startDate', $startDate)
