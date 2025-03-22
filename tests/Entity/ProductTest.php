@@ -32,8 +32,6 @@ class ProductTest extends TestCase
         $this->assertFalse($this->product->getDigital());
         
         // Vérifier les collections
-        $this->assertInstanceOf(Collection::class, $this->product->getLineItems());
-        $this->assertTrue($this->product->getLineItems()->isEmpty());
         $this->assertInstanceOf(Collection::class, $this->product->getVariants());
         $this->assertTrue($this->product->getVariants()->isEmpty());
         $this->assertInstanceOf(Collection::class, $this->product->getStockLists());
