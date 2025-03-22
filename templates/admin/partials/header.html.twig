@@ -85,15 +85,6 @@
                                     <span class="pcoded-mtext">Clients</span>
                                 </a>
                             </li>
-                            <hr style="border-top: 1px solid rgba(0,0,0,0.1);margin: 0px;">
-                            <li class="{{ app.request.get('_route') == 'admin_order_histories' ? 'active' }}">
-                                <a href="{{ path('admin_order_histories') }}">
-                                    <span class="pcoded-micon">
-                                        <i class="fas fa-flag"></i>
-                                    </span>
-                                    <span class="pcoded-mtext">Historique</span>
-                                </a>
-                            </li>
                         {% endif %}
                         {% if app.user.role == "ROLE_SUPER_ADMIN" %}
                             <hr style="border-top: 1px solid rgba(0,0,0,0.1);margin: 0px;">

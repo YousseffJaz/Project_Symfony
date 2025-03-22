@@ -485,28 +485,6 @@ class AdminOrderController extends AbstractController
         return $this->json($array, 200);
     }
 
-    #[Route('/admin/orders/histories', name: 'admin_order_histories')]
-    #[IsGranted('ROLE_ADMIN')]
-    public function histories(Request $request, OrderHistoryRepository $orderHistoryRepo, LineItemRepository $lineItemRepo): Response
-    {
-        $histories = $orderHistoryRepo->findBy([], ['createdAt' => "DESC" ]);
-
-        return $this->render('admin/order/histories.html.twig', [
-            'histories' => $histories,
-        ]);
-    }
-
-    #[Route('/admin/orders/histories/filter', name: 'admin_order_filter_histories')]
-    #[IsGranted('ROLE_ADMIN')]
-    public function historiesFilter(Request $request, OrderHistoryRepository $orderHistoryRepo, LineItemRepository $lineItemRepo): Response
-    {
-        $histories = $orderHistoryRepo->filter("Le montant payé");
-
-        return $this->render('admin/order/histories.html.twig', [
-            'histories' => $histories,
-        ]);
-    }
-    
     #[Route('/admin/orders/history/{id}', name: 'admin_order_history')]
     #[IsGranted('ROLE_ADMIN')]
     public function history(Order $order, Request $request, OrderRepository $orderRepo, LineItemRepository $lineItemRepo): Response

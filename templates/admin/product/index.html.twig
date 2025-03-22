@@ -47,7 +47,6 @@
                           <th>Variants</th>
                           <th>Prix de revient</th>
                           <th>Digital</th>
-                          <th>Á commander</th>
                           {% for stockName in length %}
                             <th>{{stockName}}</th>
                           {% endfor %}
@@ -89,10 +88,6 @@
                               {% if product.digital %}
                                 <i class="fas fa-check" style="color: #2ecc71; font-size: 20px; padding: 3px;"></i>
                               {% endif %}
-                            </td>
-                            <td>
-                              <input type="number" name="quantity[]">
-                              <input type="hidden" name="productId[]" value="{{product.id}}">
                             </td>
                             {% for stockName in length %}
                               {% if product.stockLists.toArray %}
