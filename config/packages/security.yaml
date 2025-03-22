@@ -5,8 +5,7 @@ security:
 
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
-        in_memory: { memory: null }
-        in_admin:
+        admin_provider:
             entity:
                 class: App\Entity\Admin
                 property: email
@@ -17,18 +16,13 @@ security:
         admin:
             pattern: ^/
             lazy: true
-            provider: in_admin
+            provider: admin_provider
             custom_authenticator: App\Security\AdminAuthenticator
             logout:
                 path: admin_account_logout
-                target: admin_account_login   
-            # activate different ways to authenticate
-
-            # http_basic: true
-            # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
-
-            # form_login: true
-            # https://symfony.com/doc/current/security/form_login_setup.html
+                target: admin_account_login
+                csrf_parameter: _csrf_token
+                csrf_token_id: logout
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
