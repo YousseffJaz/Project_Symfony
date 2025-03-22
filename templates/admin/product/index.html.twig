@@ -24,7 +24,14 @@
             <div class="card">
               <div class="card-header">
                 <h5>Liste des produits</h5>
-                <a href="{{ path('admin_product_new') }}" class="btn btn-out-dashed waves-effect waves-light btn-primary btn-square text-right" style="float: right; padding: 5px 10px; margin: 0px 5px;">Ajouter un produit</a>
+                <div style="float: right;">
+                  <a href="{{ path('admin_variant_index') }}" class="btn btn-out-dashed waves-effect waves-light btn-info btn-square" style="padding: 5px 10px; margin: 0px 5px;">
+                    <i class="fas fa-tags"></i> Voir la grille tarifaire
+                  </a>
+                  <a href="{{ path('admin_product_new') }}" class="btn btn-out-dashed waves-effect waves-light btn-primary btn-square" style="padding: 5px 10px; margin: 0px 5px;">
+                    <i class="fas fa-plus"></i> Ajouter un produit
+                  </a>
+                </div>
               </div>
               <div class="card-block table-border-style">
                 {% set length = [] %}
@@ -68,10 +75,13 @@
                               {% if product.variants.toArray %}
                                 {% for variant in product.variants.toArray %}
                                   {% if not variant.archive %}
-                                    <div class="flex justify-center items-center m-2 font-medium py-1 px-2 bg-white rounded bg-gray-100 border" style="max-width: fit-content; display: flex;">
+                                    <div class="flex justify-center items-center m-2 font-medium py-1 px-2 bg-white rounded bg-gray-100 border" style="max-width: fit-content; display: flex; align-items: center; margin-bottom: 5px;">
                                       <div class="text-xs font-normal leading-none max-w-full flex-initial">
                                         <a href="{{ path('admin_variant_edit', { id: variant.id }) }}" style="color: #007bff;" target="_blank">
                                           {{ variant.title }}
+                                        </a>
+                                        <a href="{{ path('admin_variant_index') }}#variant-{{ variant.id }}" class="ml-2" title="Voir dans la grille tarifaire" style="color: #17a2b8;">
+                                          <i class="fas fa-tags"></i>
                                         </a>
                                       </div>
                                     </div>

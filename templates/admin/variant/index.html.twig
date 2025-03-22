@@ -22,7 +22,10 @@
           {% endfor %}
           <div class="card">
             <div class="card-header">
-              <h5>Liste des variants</h5>
+              <h5>Grille tarifaire des variants</h5>
+              <a href="{{ path('admin_product_index') }}" class="btn btn-out-dashed waves-effect waves-light btn-info btn-square" style="float: right; padding: 5px 10px; margin: 0px 5px;">
+                <i class="fas fa-boxes"></i> Voir les produits et stocks
+              </a>
             </div>
             <div class="card-block table-border-style">
               {% set length = [] %}
@@ -50,7 +53,7 @@
                     </thead>
                     <tbody>
                       {% for variant in variants %}
-                        <tr>
+                        <tr id="variant-{{ variant.id }}">
                           <td>{{ variant.title }}</td>
                           <td>
                             {% if variant.product %}

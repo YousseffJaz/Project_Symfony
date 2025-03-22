@@ -93,25 +93,25 @@
                                     <span class="pcoded-micon">
                                         <i class="fas fa-cube"></i>
                                     </span>
-                                    <span class="pcoded-mtext">Produits</span>
+                                    <span class="pcoded-mtext">Catalogue</span>
                                 </a>
-                                <ul class="pcoded-submenu" style="{{ app.request.get('_route') == 'admin_product_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_category_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_stock_index' ? 'display: block;' }}">
+                                <ul class="pcoded-submenu" style="{{ app.request.get('_route') == 'admin_variant_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_product_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_category_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_stock_index' ? 'display: block;' }}">
                                     {% if app.user.role == "ROLE_SUPER_ADMIN" %}
-                                        <li class="">
-                                            <a href="{{ path('admin_variant_index') }}">
-                                                <i class="fas fa-chevron-right"></i> 
-                                                <span class="pcoded-mtext">Grille tarifaire</span>
-                                            </a>
-                                        </li>
                                         <li class="{{ app.request.get('_route') == 'admin_product_index' ? 'active' }}">
                                             <a href="{{ path('admin_product_index') }}">
-                                                <i class="fas fa-chevron-right"></i> 
-                                                <span class="pcoded-mtext">Stocks</span>
+                                                <i class="fas fa-boxes"></i> 
+                                                <span class="pcoded-mtext">Produits</span>
+                                            </a>
+                                        </li>
+                                        <li class="">
+                                            <a href="{{ path('admin_variant_index') }}">
+                                                <i class="fas fa-tags"></i> 
+                                                <span class="pcoded-mtext">Tarification</span>
                                             </a>
                                         </li>
                                         <li class="">
                                             <a href="{{ path('admin_category_index') }}">
-                                                <i class="fas fa-chevron-right"></i> 
+                                                <i class="fas fa-folder"></i> 
                                                 <span class="pcoded-mtext">Catégories</span>
                                             </a>
                                         </li>
@@ -129,11 +129,13 @@
                                 <ul class="pcoded-submenu" style="{{ app.request.get('_route') == 'admin_cashflow_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_expense_index' ? 'display: block;' }}">
                                     <li class="{{ app.request.get('_route') == 'admin_cashflow_index' ? 'active' }}">
                                         <a href="{{ path('admin_cashflow_index') }}">
+                                            <i class="fas fa-wallet"></i>
                                             <span class="pcoded-mtext">Comptes</span>
                                         </a>
                                     </li>
                                     <li class="{{ app.request.get('_route') == 'admin_expense_index' ? 'active' }}">
                                         <a href="{{ path('admin_expense_index') }}">
+                                            <i class="fas fa-receipt"></i>
                                             <span class="pcoded-mtext">Dépenses</span>
                                         </a>
                                     </li>
