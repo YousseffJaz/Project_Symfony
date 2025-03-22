@@ -3,9 +3,7 @@
 namespace App\Service\Statistics;
 
 use App\Repository\OrderRepository;
-use App\Repository\ProductRepository;
 use App\Repository\StockListRepository;
-use App\Repository\PriceListRepository;
 use App\Enum\PaymentMethod;
 use App\Enum\PaymentType;
 use App\Enum\OrderStatus;
@@ -14,9 +12,7 @@ class StatisticsService
 {
     public function __construct(
         private OrderRepository $orderRepository,
-        private ProductRepository $productRepository,
-        private StockListRepository $stockListRepository,
-        private PriceListRepository $priceListRepository
+        private StockListRepository $stockListRepository
     ) {
     }
 
