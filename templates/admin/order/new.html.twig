@@ -266,21 +266,6 @@ li.result::before {
 <script>
 $(function () {
 
-  toggleDeliveryAdmin($('#admin_order_orderStatus').val());
-
-  $('#admin_order_orderStatus').change(function() {
-    toggleDeliveryAdmin($(this).val());
-  });
-
-  function toggleDeliveryAdmin(value) {
-    if (value == 4) {
-      $('#delivery-admin-wrapper').show();
-    } else {
-      $('#delivery-admin-wrapper').hide();
-    }
-  }
-
-
   $( document ).ready(function() {
     $('#admin_order_firstname').autocomplete({
       minLength: 0,

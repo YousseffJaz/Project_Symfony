@@ -133,13 +133,7 @@
 													</td>
 													<td>{{ order.shippingCost|number_format(2, ',', ' ') }}€</td>
 													<td>
-														{% if order.paymentType == 0 %}
-															Internet
-														{% elseif order.paymentType == 1 %}
-															Physique
-														{% elseif order.paymentType == 2 %}
-															Livraison
-														{% endif %}
+														{{ order.paymentType|payment_type_label }}
 													</td>
 													{% set totalDiscount = totalDiscount - order.discount + order.shippingCost %}
 													{% set remaining = order.total - order.paid %}

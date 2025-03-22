@@ -172,7 +172,7 @@ class OrderService
                 $stock = $lineItem->getStock();
                 if ($stock) {
                     $quantity = $lineItem->getQuantity();
-                    $stock->setQuantity($stock->getQuantity() + $quantity);
+                    $this->stockListRepository->incrementStock($stock, $quantity);
                 }
             }
         }
@@ -194,7 +194,7 @@ class OrderService
         $stock = $lineItem->getStock();
         if ($stock) {
             $quantity = $lineItem->getQuantity();
-            $stock->setQuantity($stock->getQuantity() + $quantity);
+            $this->stockListRepository->incrementStock($stock, $quantity);
             $order = $lineItem->getOrder();
             $order->setTotal($order->getTotal() - $lineItem->getPrice());
         }

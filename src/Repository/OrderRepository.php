@@ -164,17 +164,6 @@ class OrderRepository extends ServiceEntityRepository
     return $qb->getQuery()->getResult();
   }
 
-  public function findByLivraison(){
-    $query = $this->createQueryBuilder('o');
-
-    $query->andWhere('o.orderStatus = 4')
-    ->addOrderBy('o.createdAt', 'DESC');
-
-    return $query->getQuery()
-    ->getResult();
-  }
-
-
   public function findByExpedition(){
     $query = $this->createQueryBuilder('o');
 
@@ -184,7 +173,6 @@ class OrderRepository extends ServiceEntityRepository
     return $query->getQuery()
     ->getResult();
   }
-
 
   public function findByImpayee(){
     $query = $this->createQueryBuilder('o');

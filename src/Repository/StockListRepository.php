@@ -84,5 +84,11 @@ class StockListRepository extends ServiceEntityRepository
   {
     return $this->findBy(['product' => $product]);
   }
+
+  public function incrementStock(StockList $stock, int $quantity): void
+  {
+    $stock->setQuantity($stock->getQuantity() + $quantity);
+    $this->getEntityManager()->flush();
+  }
 }
 
