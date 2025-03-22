@@ -85,18 +85,16 @@
 														<br> à {{order.createdAt|date('H') }}h{{order.createdAt|date('i') }}
                           </td>
 													<td>
-														{% if order.lastname and order.firstname %}
-															{{ order.firstname|capitalize }} {{ order.lastname|capitalize }}
-														{% elseif order.firstname %}
-															{{ order.firstname|capitalize }}
+														{% if order.customer %}
+															{{ order.customer.firstname|capitalize }} {{ order.customer.lastname|capitalize }}
+															{% if order.customer.phone %}
+																<br><i class="fas fa-phone"></i> {{ order.customer.phone }}
+															{% endif %}
+															{% if order.customer.email %}
+																<br><i class="fas fa-envelope"></i> {{ order.customer.email }}
+															{% endif %}
 														{% else %}
-															Anonyme
-														{% endif %}
-														{% if order.phone %}
-															<br><i class="fas fa-phone"></i> {{ order.phone }}
-														{% endif %}
-														{% if order.email %}
-															<br><i class="fas fa-envelope"></i> {{ order.email }}
+															Client supprimé
 														{% endif %}
 													</td>
 													<td>

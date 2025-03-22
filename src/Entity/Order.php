@@ -18,20 +18,9 @@ class Order
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private ?string $firstname = null;
-
-    #[ORM\Column(type: 'string', length: 255)]
-    private ?string $lastname = null;
-
-    #[ORM\Column(type: 'string', length: 255)]
-    private ?string $email = null;
-
-    #[ORM\Column(type: 'text')]
-    private ?string $address = null;
-
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $phone = null;
+    #[ORM\ManyToOne(targetEntity: Customer::class, inversedBy: 'orders')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Customer $customer = null;
 
     #[ORM\Column(type: 'datetime')]
     private \DateTimeInterface $createdAt;
@@ -72,7 +61,7 @@ class Order
     #[ORM\Column(type: 'integer')]
     private int $status = 0;
 
-    #[ORM\OneToMany(targetEntity: OrderHistory::class, mappedBy: 'invoice')]
+    #[ORM\OneToMany(targetEntity: OrderHistory::class, mappedBy: 'invoice', cascade: ['persist'])]
     #[ORM\OrderBy(['createdAt' => 'DESC'])]
     private Collection $orderHistories;
 
@@ -91,51 +80,14 @@ class Order
         return $this->id;
     }
 
-    public function getFirstname(): ?string
+    public function getCustomer(): ?Customer
     {
-        return $this->firstname;
+        return $this->customer;
     }
 
-    public function setFirstname(?string $firstname): self
+    public function setCustomer(?Customer $customer): self
     {
-        $this->firstname = $firstname;
-
-        return $this;
-    }
-
-    public function getLastname(): ?string
-    {
-        return $this->lastname;
-    }
-
-    public function setLastname(?string $lastname): self
-    {
-        $this->lastname = $lastname;
-
-        return $this;
-    }
-
-    public function getPhone(): ?string
-    {
-        return $this->phone;
-    }
-
-    public function setPhone(?string $phone): self
-    {
-        $this->phone = $phone;
-
-        return $this;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(?string $email): self
-    {
-        $this->email = $email;
-
+        $this->customer = $customer;
         return $this;
     }
 
@@ -147,7 +99,6 @@ class Order
     public function setCreatedAt(\DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
-
         return $this;
     }
 
@@ -159,31 +110,6 @@ class Order
     public function setTotal(float $total): self
     {
         $this->total = $total;
-
-        return $this;
-    }
-
-    public function getShippingCost(): ?float
-    {
-        return $this->shippingCost;
-    }
-
-    public function setShippingCost(?float $shippingCost): self
-    {
-        $this->shippingCost = $shippingCost;
-
-        return $this;
-    }
-
-    public function getDiscount(): ?float
-    {
-        return $this->discount;
-    }
-
-    public function setDiscount(?float $discount): self
-    {
-        $this->discount = $discount;
-
         return $this;
     }
 
@@ -195,19 +121,6 @@ class Order
     public function setPaid(float $paid): self
     {
         $this->paid = $paid;
-
-        return $this;
-    }
-
-    public function getPaymentType(): ?string
-    {
-        return $this->paymentType;
-    }
-
-    public function setPaymentType(?string $paymentType): self
-    {
-        $this->paymentType = $paymentType;
-
         return $this;
     }
 
@@ -219,7 +132,61 @@ class Order
     public function setPaymentMethod(?string $paymentMethod): self
     {
         $this->paymentMethod = $paymentMethod;
+        return $this;
+    }
 
+    public function getPaymentType(): ?string
+    {
+        return $this->paymentType;
+    }
+
+    public function setPaymentType(?string $paymentType): self
+    {
+        $this->paymentType = $paymentType;
+        return $this;
+    }
+
+    public function getOrderStatus(): ?string
+    {
+        return $this->orderStatus;
+    }
+
+    public function setOrderStatus(?string $orderStatus): self
+    {
+        $this->orderStatus = $orderStatus;
+        return $this;
+    }
+
+    public function getNote(): ?string
+    {
+        return $this->note;
+    }
+
+    public function setNote(?string $note): self
+    {
+        $this->note = $note;
+        return $this;
+    }
+
+    public function getShippingCost(): ?float
+    {
+        return $this->shippingCost;
+    }
+
+    public function setShippingCost(?float $shippingCost): self
+    {
+        $this->shippingCost = $shippingCost;
+        return $this;
+    }
+
+    public function getDiscount(): ?float
+    {
+        return $this->discount;
+    }
+
+    public function setDiscount(?float $discount): self
+    {
+        $this->discount = $discount;
         return $this;
     }
 
@@ -231,7 +198,6 @@ class Order
     public function setAdmin(?Admin $admin): self
     {
         $this->admin = $admin;
-
         return $this;
     }
 
@@ -249,55 +215,16 @@ class Order
             $this->lineItems[] = $lineItem;
             $lineItem->setOrder($this);
         }
-
         return $this;
     }
 
     public function removeLineItem(LineItem $lineItem): self
     {
         if ($this->lineItems->removeElement($lineItem)) {
-            // set the owning side to null (unless already changed)
             if ($lineItem->getOrder() === $this) {
                 $lineItem->setOrder(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getNote(): ?string
-    {
-        return $this->note;
-    }
-
-    public function setNote(?string $note): self
-    {
-        $this->note = $note;
-
-        return $this;
-    }
-
-    public function getAddress(): ?string
-    {
-        return $this->address;
-    }
-
-    public function setAddress(?string $address): self
-    {
-        $this->address = $address;
-
-        return $this;
-    }
-
-    public function getOrderStatus(): ?string
-    {
-        return $this->orderStatus;
-    }
-
-    public function setOrderStatus(?string $orderStatus): self
-    {
-        $this->orderStatus = $orderStatus;
-
         return $this;
     }
 
@@ -309,7 +236,6 @@ class Order
     public function setTrackingId(?string $trackingId): self
     {
         $this->trackingId = $trackingId;
-
         return $this;
     }
 
@@ -321,17 +247,6 @@ class Order
     public function setStatus(int $status): self
     {
         $this->status = $status;
-        return $this;
-    }
-
-    public function getNote2(): ?string
-    {
-        return $this->note2;
-    }
-
-    public function setNote2(?string $note2): self
-    {
-        $this->note2 = $note2;
         return $this;
     }
 
@@ -360,5 +275,41 @@ class Order
             }
         }
         return $this;
+    }
+
+    public function getNote2(): ?string
+    {
+        return $this->note2;
+    }
+
+    public function setNote2(?string $note2): self
+    {
+        $this->note2 = $note2;
+        return $this;
+    }
+
+    public function getFirstname(): ?string
+    {
+        return $this->customer ? $this->customer->getFirstname() : null;
+    }
+
+    public function getLastname(): ?string
+    {
+        return $this->customer ? $this->customer->getLastname() : null;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->customer ? $this->customer->getEmail() : null;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->customer ? $this->customer->getPhone() : null;
+    }
+
+    public function getAddress(): ?string
+    {
+        return $this->customer ? $this->customer->getAddress() : null;
     }
 }

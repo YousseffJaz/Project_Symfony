@@ -6,6 +6,7 @@ use App\Entity\Order;
 use App\Entity\LineItem;
 use App\Entity\Product;
 use App\Entity\Admin;
+use App\Entity\Customer;
 use App\Entity\OrderHistory;
 use App\Enum\OrderStatus;
 use App\Enum\PaymentType;
@@ -42,6 +43,14 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
             'product_smartphone_premium' => ['title' => 'Smartphone Premium', 'price' => 899.99],
             'product_cable_usb_type-c' => ['title' => 'Cable USB Type-C', 'price' => 19.99],
             'product_processeur_intel_i7' => ['title' => 'Processeur Intel i7', 'price' => 399.99],
+            'product_carte_graphique_rtx_4070' => ['title' => 'Carte Graphique RTX 4070', 'price' => 799.99],
+            'product_ssd_1to_nvme' => ['title' => 'SSD 1To NVMe', 'price' => 129.99],
+            'product_ecran_27_4k' => ['title' => 'Ecran 27 4K', 'price' => 449.99],
+            'product_souris_gaming_pro' => ['title' => 'Souris Gaming Pro', 'price' => 79.99],
+            'product_clavier_mecanique_rgb' => ['title' => 'Clavier Mecanique RGB', 'price' => 149.99],
+            'product_casque_audio_sans_fil' => ['title' => 'Casque Audio Sans Fil', 'price' => 199.99],
+            'product_webcam_hd' => ['title' => 'Webcam HD', 'price' => 69.99],
+            'product_tablette_graphique' => ['title' => 'Tablette Graphique', 'price' => 299.99]
         ];
 
         // Liste des admins disponibles
@@ -51,14 +60,31 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
         for ($i = 1; $i <= 100; $i++) {
             $order = new Order();
             
+            // Associer un client existant
+            $customerRefs = [
+                'customer_jean_dupont',
+                'customer_marie_martin',
+                'customer_pierre_bernard',
+                'customer_sophie_dubois',
+                'customer_lucas_petit',
+                'customer_emma_leroy',
+                'customer_thomas_moreau',
+                'customer_lea_roux',
+                'customer_hugo_simon',
+                'customer_chloe_michel',
+                'customer_antoine_laurent',
+                'customer_julie_garcia',
+                'customer_nicolas_david',
+                'customer_sarah_bertrand',
+                'customer_maxime_robert'
+            ];
+            $customerRef = $this->faker->randomElement($customerRefs);
+            $customer = $this->getReference($customerRef, Customer::class);
+            $order->setCustomer($customer);
+            
             // Informations de base
             $adminRef = $this->faker->randomElement($admins);
             $order->setAdmin($this->getReference($adminRef, Admin::class));
-            $order->setFirstname($this->faker->firstName());
-            $order->setLastname($this->faker->lastName());
-            $order->setPhone($this->faker->phoneNumber());
-            $order->setEmail($this->faker->email());
-            $order->setAddress($this->faker->streetAddress() . ', ' . $this->faker->postcode() . ' ' . $this->faker->city());
 
             // Date de création (répartie sur les 12 derniers mois)
             $createdAt = $this->faker->dateTimeBetween('-1 year');
@@ -206,6 +232,7 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
         return [
             AdminFixtures::class,
             ProductFixtures::class,
+            CustomerFixtures::class,
         ];
     }
 } 

@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Order;
 use App\Entity\User;
 use App\Entity\Admin;
+use App\Entity\Customer;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -45,33 +46,17 @@ class AdminOrderType extends AbstractType
         }
 
         $builder
-            ->add('firstname', TextType::class, [
+            ->add('customer', EntityType::class, [
+                'class' => Customer::class,
+                'choice_label' => function (Customer $customer) {
+                    return $customer->getFirstname() . ' ' . $customer->getLastname() . ' (' . $customer->getEmail() . ')';
+                },
                 'attr' => [
                     'class' => 'form-control',
                     'autocomplete' => 'off'
                 ],
-                'required' => false
-            ])
-            ->add('lastname', TextType::class, [
-                'attr' => [
-                    'class' => 'form-control',
-                    'autocomplete' => 'off'
-                ],
-                'required' => false
-            ])
-            ->add('phone', TextType::class, [
-                'attr' => [
-                    'class' => 'form-control',
-                    'autocomplete' => 'off'
-                ],
-                'required' => false
-            ])
-            ->add('email', EmailType::class, [
-                'attr' => [
-                    'class' => 'form-control',
-                    'autocomplete' => 'off'
-                ],
-                'required' => false
+                'required' => true,
+                'placeholder' => 'Choisir un client'
             ])
             ->add('total', NumberType::class, [
                 'attr' => [
@@ -100,13 +85,6 @@ class AdminOrderType extends AbstractType
                 ]
             ])
             ->add('note', TextareaType::class, [
-                'attr' => [
-                    'class' => 'form-control',
-                    'autocomplete' => 'off'
-                ],
-                'required' => false
-            ])
-            ->add('address', TextareaType::class, [
                 'attr' => [
                     'class' => 'form-control',
                     'autocomplete' => 'off'

@@ -54,12 +54,16 @@
                         <tr>
                           <td>{{order.createdAt|date('d/m/Y') }} <br>  à {{ order.createdAt|date('H:i') }}</td>
                           <td>
-                            {{ order.firstname }} {{ order.lastname }}
-                            {% if order.phone %}
-                              <br><i class="fas fa-phone"></i> {{ order.phone }}
-                            {% endif %}
-                            {% if order.email %}
-                              <br><i class="fas fa-envelope"></i> {{ order.email }}
+                            {% if order.customer %}
+                              {{ order.customer.firstname|capitalize }} {{ order.customer.lastname|capitalize }}
+                              {% if order.customer.phone %}
+                                <br><i class="fas fa-phone"></i> {{ order.customer.phone }}
+                              {% endif %}
+                              {% if order.customer.email %}
+                                <br><i class="fas fa-envelope"></i> {{ order.customer.email }}
+                              {% endif %}
+                            {% else %}
+                              Client supprimé
                             {% endif %}
                           </td>
                           <td>

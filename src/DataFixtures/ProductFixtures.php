@@ -41,6 +41,62 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
                 'purchasePrice' => 299.99,
                 'alert' => 3,
             ],
+            [
+                'title' => 'Carte Graphique RTX 4070',
+                'price' => 799.99,
+                'category' => 'category_composants',
+                'purchasePrice' => 599.99,
+                'alert' => 2,
+            ],
+            [
+                'title' => 'SSD 1To NVMe',
+                'price' => 129.99,
+                'category' => 'category_composants',
+                'purchasePrice' => 89.99,
+                'alert' => 10,
+            ],
+            [
+                'title' => 'Ecran 27 4K',
+                'price' => 449.99,
+                'category' => 'category_informatique',
+                'purchasePrice' => 349.99,
+                'alert' => 4,
+            ],
+            [
+                'title' => 'Souris Gaming Pro',
+                'price' => 79.99,
+                'category' => 'category_accessoires',
+                'purchasePrice' => 39.99,
+                'alert' => 15,
+            ],
+            [
+                'title' => 'Clavier Mecanique RGB',
+                'price' => 149.99,
+                'category' => 'category_accessoires',
+                'purchasePrice' => 89.99,
+                'alert' => 12,
+            ],
+            [
+                'title' => 'Casque Audio Sans Fil',
+                'price' => 199.99,
+                'category' => 'category_electronique',
+                'purchasePrice' => 129.99,
+                'alert' => 6,
+            ],
+            [
+                'title' => 'Webcam HD',
+                'price' => 69.99,
+                'category' => 'category_accessoires',
+                'purchasePrice' => 39.99,
+                'alert' => 10,
+            ],
+            [
+                'title' => 'Tablette Graphique',
+                'price' => 299.99,
+                'category' => 'category_informatique',
+                'purchasePrice' => 199.99,
+                'alert' => 5,
+            ]
         ];
 
         foreach ($products as $productData) {

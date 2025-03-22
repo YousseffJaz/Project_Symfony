@@ -77,8 +77,8 @@
                         </li>
                         {% if app.user.role == "ROLE_SUPER_ADMIN" %}
                             <hr style="border-top: 1px solid rgba(0,0,0,0.1);margin: 0px;">
-                            <li class="{{ app.request.get('_route') == 'admin_order_customers' ? 'active' }}">
-                                <a href="{{ path('admin_order_customers') }}">
+                            <li class="{{ app.request.get('_route') == 'admin_customer_index' ? 'active' }}">
+                                <a href="{{ path('admin_customer_index') }}">
                                     <span class="pcoded-micon">
                                         <i class="fas fa-users"></i>
                                     </span>

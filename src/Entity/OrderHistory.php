@@ -19,7 +19,7 @@ class OrderHistory
     #[ORM\Column(type: 'datetime')]
     private \DateTimeInterface $createdAt;
 
-    #[ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'orderHistories')]
+    #[ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'orderHistories', cascade: ['persist'])]
     private ?Order $invoice = null;
 
     #[ORM\ManyToOne(targetEntity: Admin::class, inversedBy: 'orderHistories')]
@@ -30,6 +30,10 @@ class OrderHistory
         $this->createdAt = new \DateTime('now', timezone_open('Europe/Paris'));
     }
 
+    public function __toString(): string
+    {
+        return $this->title ?? '';
+    }
 
     public function getId(): ?int
     {

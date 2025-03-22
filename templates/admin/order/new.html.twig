@@ -29,24 +29,19 @@
               {{ form_start(form) }}
               
               <div class="row">
-                <div class="col-md-4">
-                  {{ form_row(form.firstname, { 'label': 'Prénom' }) }}
-                </div>
-                <div class="col-md-4">
-                  {{ form_row(form.lastname, { 'label': 'Nom' }) }}
-                </div>
-                <div class="col-md-4">
-                  {{ form_row(form.phone, { 'label': 'Téléphone' }) }}
-                </div>
-              </div>
-
-              <div class="row">
                 <div class="col-md-12">
-                  {{ form_row(form.email, { 'label': 'Email' }) }}
+                  <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                      {{ form_row(form.customer, { 'label': 'Client' }) }}
+                    </div>
+                    <div class="ml-2" style="margin-top: 32px;">
+                      <a href="{{ path('admin_customer_new') }}" class="btn btn-success" target="_blank">
+                        <i class="fas fa-plus"></i> Nouveau client
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </div>
-
-              {{ form_row(form.address, { 'label': 'Adresse', 'attr': { 'rows' : '5'} }) }}
 
               <div class="row">
                 <div class="col-md-6"><br>
@@ -260,36 +255,10 @@ li.result::before {
   display: flex;
 }
 
-
 </style>
 
 <script>
 $(function () {
-
-  $( document ).ready(function() {
-    $('#admin_order_firstname').autocomplete({
-      minLength: 0,
-      source : function(request, response){ 
-        $.ajax({
-          url : '{{ path("admin_order_customer") }}',
-          dataType : 'json', 
-          data : {
-            keyword : request.term, 
-            maxRows : 5
-          },
-          success : function(donnee){
-            response(donnee); 
-          }
-        });
-      },
-      select: function(event, ui) {
-        $('#admin_order_firstname').val('');
-      },
-      create: function () {
-      }
-    });
-  });
-
 
   $("body").on("focusout", "#admin_order_shippingCost", function (e) {
     var total = $('#admin_order_total').val();

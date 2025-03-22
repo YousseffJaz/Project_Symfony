@@ -196,11 +196,12 @@ class OrderRepository extends ServiceEntityRepository
 
   public function groupByCustomers(){
     $query = $this->createQueryBuilder('o')
-    ->select('o.firstname as firstname, o.lastname as lastname, COUNT(o.id) as number, o.email as email')
-    ->groupBy('o.firstname')
-    ->addGroupBy('o.lastname')
-    ->addGroupBy('o.email')
-    ->orderBy('o.firstname', 'ASC');
+    ->select('c.firstname as firstname, c.lastname as lastname, COUNT(o.id) as number, c.email as email')
+    ->join('o.customer', 'c')
+    ->groupBy('c.firstname')
+    ->addGroupBy('c.lastname')
+    ->addGroupBy('c.email')
+    ->orderBy('c.firstname', 'ASC');
 
     return $query->getQuery()->getResult();
   }
@@ -208,7 +209,8 @@ class OrderRepository extends ServiceEntityRepository
   public function search($search){
     $query = $this->createQueryBuilder('o')
     ->leftjoin('o.lineItems', 'l')
-    ->andWhere('o.firstname LIKE :search OR o.lastname LIKE :search OR o.note LIKE :search OR o.id LIKE :search OR l.title LIKE :search')
+    ->leftjoin('o.customer', 'c')
+    ->andWhere('c.firstname LIKE :search OR c.lastname LIKE :search OR o.note LIKE :search OR o.id LIKE :search OR l.title LIKE :search')
     ->setParameter('search', '%'.$search.'%')
     ->orderBy('o.createdAt', 'DESC');
 
@@ -217,11 +219,10 @@ class OrderRepository extends ServiceEntityRepository
   
   public function searchCustomer($keyword){
     $query = $this->createQueryBuilder('o')
-    ->leftjoin('o.lineItems', 'l')
-    ->groupBy("o.firstname")
-    ->select('o.firstname as firtname')
-    ->andWhere('o.firstname LIKE :keyword')
-          // ->andWhere('o.firstname LIKE :keyword OR o.lastname LIKE :keyword')
+    ->join('o.customer', 'c')
+    ->groupBy("c.firstname")
+    ->select('c.firstname as firstname')
+    ->andWhere('c.firstname LIKE :keyword')
     ->setMaxResults(10)
     ->setParameter('keyword', '%'.$keyword.'%');
 
@@ -328,24 +329,26 @@ class OrderRepository extends ServiceEntityRepository
   public function findBestCustomers(): array
   {
     return $this->createQueryBuilder('o')
-        ->select('CONCAT(o.firstname, \' \', o.lastname) as name, COUNT(DISTINCT o.id) as orders, SUM(o.total) as total')
-        ->groupBy('o.firstname', 'o.lastname')
+        ->select('CONCAT(c.firstname, \' \', c.lastname) as name, COUNT(DISTINCT o.id) as orders, SUM(o.total) as total')
+        ->join('o.customer', 'c')
+        ->groupBy('c.firstname', 'c.lastname')
         ->orderBy('total', 'DESC')
         ->setMaxResults(100)
         ->getQuery()
         ->getResult();
   }
 
-  public function findBestCustomersStartAndEnd($start, $end){
+  public function findBestCustomersStartAndEnd($start, $end): array
+  {
     $query = $this->createQueryBuilder('o')
     ->leftjoin('o.lineItems', 'l')
     ->leftjoin('l.variant', 'v')
     ->leftjoin('v.product', 'p')
     ->leftjoin('p.category', 'c')
-    ->groupBy("o.firstname")
-    ->select('SUM(l.price) as total, SUM(l.quantity) as quantity, o.firstname as name')
+    ->join('o.customer', 'cust')
+    ->groupBy("cust.firstname")
+    ->select('SUM(l.price) as total, SUM(l.quantity) as quantity, CONCAT(cust.firstname, \' \', cust.lastname) as name')
     ->andWhere('o.createdAt >= :start AND o.createdAt <= :end')
-      // ->andWhere('p.archive = false')
     ->setParameter('start', \DateTime::createFromFormat("Y-m-d",$start, new \DateTimeZone('Europe/Paris'))->setTime(00, 00, 00))
     ->setParameter('end', \DateTime::createFromFormat("Y-m-d",$end, new \DateTimeZone('Europe/Paris'))->setTime(23, 59, 59))
     ->orderBy("SUM(l.price)", "DESC")

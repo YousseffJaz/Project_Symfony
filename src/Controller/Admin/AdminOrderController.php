@@ -6,6 +6,7 @@ use App\Entity\OrderHistory;
 use App\Entity\LineItem;
 use App\Entity\Order;
 use App\Entity\Admin;
+use App\Entity\Customer;
 use App\Form\AdminOrderType;
 use App\Service\Order\OrderService;
 use App\Service\Order\OrderExportService;
@@ -83,13 +84,32 @@ class AdminOrderController extends AbstractController
         );
     }
 
-    #[Route('/admin/orders/customers', name: 'admin_order_customers')]
+    #[Route('/admin/orders/customer/autocomplete', name: 'admin_order_customer')]
     #[IsGranted('ROLE_ADMIN')]
-    public function customers(): Response
+    public function customer(Request $request): Response
     {
-        return $this->render('admin/order/customers.html.twig', [
-            'array' => $this->orderService->getCustomerOrders(),
-        ]);
+        $search = $request->query->get('term');
+        $customers = $this->entityManager->getRepository(Customer::class)->createQueryBuilder('c')
+            ->where('c.firstname LIKE :search OR c.lastname LIKE :search OR c.email LIKE :search')
+            ->setParameter('search', '%'.$search.'%')
+            ->getQuery()
+            ->getResult();
+
+        $data = [];
+        foreach ($customers as $customer) {
+            $data[] = [
+                'id' => $customer->getId(),
+                'firstname' => $customer->getFirstname(),
+                'lastname' => $customer->getLastname(),
+                'email' => $customer->getEmail(),
+                'address' => $customer->getAddress(),
+                'phone' => $customer->getPhone(),
+                'label' => $customer->getFirstname().' '.$customer->getLastname().' ('.$customer->getEmail().')',
+                'value' => $customer->getFirstname().' '.$customer->getLastname().' ('.$customer->getEmail().')'
+            ];
+        }
+
+        return new JsonResponse($data);
     }
 
     #[Route('/admin/orders/new', name: 'admin_order_new')]
@@ -293,23 +313,6 @@ class AdminOrderController extends AbstractController
     {
         $format = $request->query->get('format', 'pdf');
         return $this->orderExportService->exportOrder($order, $format);
-    }
-
-    #[Route('/admin/orders/customer/autocomplete', name: 'admin_order_customer')]
-    #[IsGranted('ROLE_ADMIN')]
-    public function customer(Request $request): Response
-    {
-        $keyword = $request->query->get('keyword');
-        $orders = $this->orderRepository->searchCustomer($keyword);
-        $array = [];
-
-        if ($orders) {
-            foreach ($orders as $order) {
-                $array[] = $order['firtname'];
-            }
-        }
-
-        return $this->json($array, 200);
     }
 
     #[Route('/admin/orders/history/{id}', name: 'admin_order_history')]

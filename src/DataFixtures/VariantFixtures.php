@@ -53,6 +53,81 @@ class VariantFixtures extends Fixture implements DependentFixtureInterface
                 'title' => 'Overclocked',
                 'archive' => false,
             ],
+            [
+                'product' => 'product_carte_graphique_rtx_4070',
+                'title' => 'Standard',
+                'archive' => false,
+            ],
+            [
+                'product' => 'product_carte_graphique_rtx_4070',
+                'title' => 'OC Edition',
+                'archive' => false,
+            ],
+            [
+                'product' => 'product_ssd_1to_nvme',
+                'title' => 'Standard',
+                'archive' => false,
+            ],
+            [
+                'product' => 'product_ecran_27_4k',
+                'title' => 'Noir',
+                'archive' => false,
+            ],
+            [
+                'product' => 'product_ecran_27_4k',
+                'title' => 'Blanc',
+                'archive' => false,
+            ],
+            [
+                'product' => 'product_souris_gaming_pro',
+                'title' => 'Noir',
+                'archive' => false,
+            ],
+            [
+                'product' => 'product_souris_gaming_pro',
+                'title' => 'Blanc',
+                'archive' => false,
+            ],
+            [
+                'product' => 'product_clavier_mecanique_rgb',
+                'title' => 'AZERTY',
+                'archive' => false,
+            ],
+            [
+                'product' => 'product_clavier_mecanique_rgb',
+                'title' => 'QWERTY',
+                'archive' => false,
+            ],
+            [
+                'product' => 'product_casque_audio_sans_fil',
+                'title' => 'Noir',
+                'archive' => false,
+            ],
+            [
+                'product' => 'product_casque_audio_sans_fil',
+                'title' => 'Blanc',
+                'archive' => false,
+            ],
+            [
+                'product' => 'product_webcam_hd',
+                'title' => 'Standard',
+                'archive' => false,
+            ],
+            [
+                'product' => 'product_tablette_graphique',
+                'title' => 'Small',
+                'archive' => false,
+            ],
+            [
+                'product' => 'product_tablette_graphique',
+                'title' => 'Medium',
+                'archive' => false,
+            ],
+            [
+                'product' => 'product_tablette_graphique',
+                'title' => 'Large',
+                'archive' => false,
+            ]
         ];
 
         foreach ($variants as $variantData) {

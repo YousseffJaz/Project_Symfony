@@ -183,9 +183,13 @@ body {
                         <td class="css-7bx1s4">
                           <ul data-selector="invoice-client-details" class="css-1wp1anf">
                             <li class="css-vfx11v"><h4 data-selector="invoice-client-title" class="css-fql0m4">Adresse de facturation</h4></li>
-                            <li class="css-vfx11v"><h2 data-selector="invoice-client-name" class="css-1ekdy4v">{{order.firstname|capitalize }} {{ order.lastname|capitalize }}</h2></li>
-                            {% if order.address %}
-                              <li class="css-vfx11v"><p>{{ order.address }}</p></li>
+                            {% if order.customer %}
+                              <li class="css-vfx11v"><h2 data-selector="invoice-client-name" class="css-1ekdy4v">{{ order.customer.firstname|capitalize }} {{ order.customer.lastname|capitalize }}</h2></li>
+                              {% if order.customer.address %}
+                                <li class="css-vfx11v"><p>{{ order.customer.address }}</p></li>
+                              {% endif %}
+                            {% else %}
+                              <li class="css-vfx11v"><h2 data-selector="invoice-client-name" class="css-1ekdy4v">Client supprimé</h2></li>
                             {% endif %}
                           </ul>
                         </td>
