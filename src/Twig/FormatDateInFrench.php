@@ -8,7 +8,7 @@ use Twig\TwigFilter;
 
 class FormatDateInFrench extends AbstractExtension
 {
-  public function getFilters()
+  public function getFilters(): array
   {
     return [
       new TwigFilter('date_fr', [$this, 'formatDateInFrench']),

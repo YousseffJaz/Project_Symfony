@@ -7,7 +7,7 @@ use Twig\TwigFilter;
 
 class DateFilter extends AbstractExtension
 {
-  public function getFilters() {
+  public function getFilters(): array {
     return [
       new TwigFilter('date_diff', [$this, 'dateFilter']),
     ];

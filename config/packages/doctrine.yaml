@@ -9,7 +9,7 @@ doctrine:
     dbal:
         # configure these for your database server
         driver: 'pdo_mysql'
-        server_version: '5.7'
+        server_version: '5.7.40'
         charset: utf8mb4
         default_table_options:
             charset: utf8mb4
@@ -23,6 +23,7 @@ doctrine:
         controller_resolver:
             auto_mapping: false
         auto_mapping: true
+        report_fields_where_declared: true
         mappings:
             App:
                 is_bundle: false
