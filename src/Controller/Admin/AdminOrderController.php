@@ -19,6 +19,9 @@ use App\Repository\StockListRepository;
 use App\Repository\PriceListRepository;
 use App\Repository\TransactionRepository;
 use App\Repository\OrderRepository;
+use App\Enum\PaymentMethod;
+use App\Enum\PaymentType;
+use App\Enum\OrderStatus;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityManagerInterface;
@@ -32,7 +35,8 @@ class AdminOrderController extends AbstractController
     public function __construct(
         private EntityManagerInterface $entityManager,
         private OrderService $orderService,
-        private OrderExportService $orderExportService
+        private OrderExportService $orderExportService,
+        private OrderRepository $orderRepository
     ) {
     }
 
@@ -73,8 +77,9 @@ class AdminOrderController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function status(Request $request): Response
     {
-        $status = $request->query->get('status');
-        $result = $this->orderService->getOrdersByStatus($status);
+        $statusValue = $request->query->get('status');
+        $status = OrderStatus::from((int)$statusValue);
+        $result = $this->orderService->getOrdersByStatus($status->value);
         
         return $this->render('admin/order/index.html.twig', [
             'search' => '',
@@ -86,11 +91,11 @@ class AdminOrderController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/orders/waitting', name: 'admin_order_waitting')]
+    #[Route('/admin/orders/waiting', name: 'admin_order_waiting')]
     #[IsGranted('ROLE_ADMIN')]
-    public function waitting(): Response
+    public function waiting(): Response
     {
-        $result = $this->orderService->getWaitingOrders();
+        $result = $this->orderService->getOrdersByStatus(OrderStatus::WAITING->value);
         
         return $this->render('admin/order/index.html.twig', [
             'search' => '',
@@ -104,10 +109,11 @@ class AdminOrderController extends AbstractController
 
     #[Route('/admin/orders/paymentType', name: 'admin_order_paymentType')]
     #[IsGranted('ROLE_ADMIN')]
-    public function paymentType(Request $request, OrderRepository $orderRepo): Response
+    public function paymentType(Request $request): Response
     {
-        $paymentType = $request->query->get('paymentType');
-        $orders = $orderRepo->findByPaymentType($paymentType);
+        $typeValue = $request->query->get('paymentType');
+        $type = PaymentType::from((int)$typeValue);
+        $orders = $this->orderRepository->findByPaymentType($type->value);
         $total = 0;
         $alreadyPaid = 0;
 
@@ -118,27 +124,23 @@ class AdminOrderController extends AbstractController
             }   
         }
 
-        $start = new \DateTime('now', timezone_open('Europe/Paris'));
-        $end = new \DateTime('now', timezone_open('Europe/Paris'));
-        $start = $start->format('Y-m-d');
-        $end = $end->format('Y-m-d');
-
         return $this->render('admin/order/index.html.twig', [
             'search' => '',
             'orders' => $orders,
             'total' => $total,
             'alreadyPaid' => $alreadyPaid,
-            'start' => $start,
-            'end' => $end,
+            'start' => (new \DateTime())->format('Y-m-d'),
+            'end' => (new \DateTime())->format('Y-m-d'),
         ]);
     }
 
     #[Route('/admin/orders/paymentMethod', name: 'admin_order_paymentMethod')]
     #[IsGranted('ROLE_ADMIN')]
-    public function paymentMethod(Request $request, OrderRepository $orderRepo): Response
+    public function paymentMethod(Request $request): Response
     {
-        $paymentMethod = $request->query->get('paymentMethod');
-        $orders = $orderRepo->findByPaymentMethod($paymentMethod);
+        $methodValue = $request->query->get('paymentMethod');
+        $method = PaymentMethod::from((int)$methodValue);
+        $orders = $this->orderRepository->findByPaymentMethod($method->value);
         $total = 0;
         $alreadyPaid = 0;
 
@@ -149,18 +151,13 @@ class AdminOrderController extends AbstractController
             }   
         }
 
-        $start = new \DateTime('now', timezone_open('Europe/Paris'));
-        $end = new \DateTime('now', timezone_open('Europe/Paris'));
-        $start = $start->format('Y-m-d');
-        $end = $end->format('Y-m-d');
-
         return $this->render('admin/order/index.html.twig', [
             'search' => '',
             'orders' => $orders,
             'total' => $total,
             'alreadyPaid' => $alreadyPaid,
-            'start' => $start,
-            'end' => $end,
+            'start' => (new \DateTime())->format('Y-m-d'),
+            'end' => (new \DateTime())->format('Y-m-d'),
         ]);
     }
 
