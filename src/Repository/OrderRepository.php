@@ -210,7 +210,7 @@ class OrderRepository extends ServiceEntityRepository
     $query = $this->createQueryBuilder('o')
     ->leftjoin('o.lineItems', 'l')
     ->leftjoin('o.customer', 'c')
-    ->andWhere('c.firstname LIKE :search OR c.lastname LIKE :search OR o.note LIKE :search OR o.id LIKE :search OR l.title LIKE :search')
+    ->andWhere('c.firstname LIKE :search OR c.lastname LIKE :search OR o.note LIKE :search OR CONCAT(o.id, \'\') LIKE :search OR l.title LIKE :search')
     ->setParameter('search', '%'.$search.'%')
     ->orderBy('o.createdAt', 'DESC');
 
