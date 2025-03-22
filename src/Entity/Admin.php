@@ -71,6 +71,18 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $stockList = null;
 
+    #[ORM\Column(type: 'boolean', options: ['default' => true])]
+    private bool $isActive = true;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $archivedAt = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $lastName = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $phone = null;
+
     public function __construct()
     {
         $this->orders = new ArrayCollection();
@@ -152,7 +164,12 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->email;
     }
 
-    public function eraseCredentials(): void {}
+    public function eraseCredentials(): void
+    {
+        if ($this->archivedAt !== null) {
+            $this->isActive = false;
+        }
+    }
 
     public function getUserIdentifier(): string
     {
@@ -324,6 +341,50 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->accounting = $accounting;
 
+        return $this;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): self
+    {
+        $this->isActive = $isActive;
+        return $this;
+    }
+
+    public function getArchivedAt(): ?\DateTimeImmutable
+    {
+        return $this->archivedAt;
+    }
+
+    public function setArchivedAt(?\DateTimeImmutable $archivedAt): self
+    {
+        $this->archivedAt = $archivedAt;
+        return $this;
+    }
+
+    public function getLastName(): ?string
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName(?string $lastName): self
+    {
+        $this->lastName = $lastName;
+        return $this;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): self
+    {
+        $this->phone = $phone;
         return $this;
     }
 }

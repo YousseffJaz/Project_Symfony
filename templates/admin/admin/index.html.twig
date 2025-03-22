@@ -31,8 +31,10 @@
                             <table class="table table-striped table-bordered datatable display">
                               <thead>
                                 <tr>
-                                  <th>Contact</th>
+                                  <th>Prénom</th>
+                                  <th>Nom</th>
                                   <th>Email</th>
+                                  <th>Téléphone</th>
                                   <th>Rôle</th>
                                   <th>Grille tarifaire</th>
                                   <th>Stock</th>
@@ -50,7 +52,9 @@
                                   {% for admin in admins %}
                                   <tr>
                                     <td>{{ admin.firstName|title }}</td>
+                                    <td>{{ admin.lastName|title|default('-') }}</td>
                                     <td>{{ admin.email }}</td>
+                                    <td>{{ admin.phone|default('-') }}</td>
                                     <td>{{ admin.role }}</td>
                                     <td>{{ admin.priceList }}</td>
                                     <td>{{ admin.stockList }}</td>

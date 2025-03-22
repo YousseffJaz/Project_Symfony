@@ -15,6 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Service\Admin\AdminArchiveService;
 
 class AdminAdminController extends AbstractController
 {
@@ -111,28 +112,22 @@ class AdminAdminController extends AbstractController
 
     #[Route('/admin/admin/archive/{id}', name: 'admin_admin_archive')]
     #[IsGranted('ROLE_SUPER_ADMIN', message: "Vous n'avez pas le droit d'accéder à cette page")]
-    public function archive(Admin $admin, Request $request, EntityManagerInterface $manager): Response
-    {
-        $admin->setArchive(true);
-        $email = $this->randomString(10) . "@gmail.com";
+    public function archive(
+        Admin $admin,
+        AdminArchiveService $archiveService
+    ): Response {
+        try {
+            if (!$archiveService->canBeArchived($admin)) {
+                throw new \RuntimeException("Cet administrateur ne peut pas être archivé actuellement.");
+            }
 
-        $admin->setEmail($email);
-        $admin->setHash("$2y$13$9LylwaPvvQbbrggFEZ3thgvdfaDgeoEIgd7TPpPJbrVghyKeBvgly");
-        $manager->flush();
+            $archiveService->archiveAdmin($admin);
 
-        $this->addFlash('success', "L'administrateur a été supprimé !");
+            $this->addFlash('success', "L'administrateur a été archivé avec succès.");
+        } catch (\RuntimeException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
 
         return $this->redirectToRoute('admin_admin_index');
-    }
-
-    private function randomString(int $length): string
-    {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $charactersLength = strlen($characters);
-        $randomString = '';
-        for ($i = 0; $i < $length; $i++) {
-            $randomString .= $characters[random_int(0, $charactersLength - 1)];
-        }
-        return $randomString;
     }
 }

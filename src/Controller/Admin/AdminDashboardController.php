@@ -6,6 +6,7 @@ use App\Repository\OrderRepository;
 use App\Repository\ProductRepository;
 use App\Repository\NotificationRepository;
 use App\Repository\AdminRepository;
+use App\Service\Order\OrderService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,6 +17,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/admin')]
 class AdminDashboardController extends AbstractController
 {
+    public function __construct(
+        private OrderService $orderService
+    ) {
+    }
+
     #[Route('/', name: 'app_admin_dashboard')]
     public function index(
         Request $request,
@@ -35,11 +41,8 @@ class AdminDashboardController extends AbstractController
             $todayStart->format('Y-m-d'),
             $todayEnd->format('Y-m-d')
         );
+        $todayStats = $this->orderService->calculateTotals($todayOrders);
         $todayOrdersCount = count($todayOrders);
-        $todayOrdersTotal = 0;
-        foreach ($todayOrders as $order) {
-            $todayOrdersTotal += $order->getTotal();
-        }
 
         // Commandes en attente
         $pendingOrders = count($orderRepo->findBy(['status' => 0]));
@@ -60,10 +63,8 @@ class AdminDashboardController extends AbstractController
             $monthStart->format('Y-m-d'),
             $monthEnd->format('Y-m-d')
         );
-        $monthlyRevenue = 0;
-        foreach ($monthOrders as $order) {
-            $monthlyRevenue += $order->getTotal();
-        }
+        $monthStats = $this->orderService->calculateTotals($monthOrders);
+        $monthlyRevenue = $monthStats['total'];
 
         // Produits en rupture de stock
         $lowStockProducts = count($productRepo->findProductAlmostSoldOut());
@@ -74,7 +75,7 @@ class AdminDashboardController extends AbstractController
 
         return $this->render('admin/dashboard/index.html.twig', [
             'todayOrdersCount' => $todayOrdersCount,
-            'todayOrdersTotal' => $todayOrdersTotal,
+            'todayOrdersTotal' => $todayStats['total'],
             'pendingOrders' => $pendingOrders,
             'processingOrders' => $processingOrders,
             'deliveredOrders' => $deliveredOrders,
@@ -92,30 +93,10 @@ class AdminDashboardController extends AbstractController
     public function search(Request $request, OrderRepository $orderRepo): Response
     {
         $search = $request->request->get('search');
-        $array = [];
         $orders = $orderRepo->search($search);
-        $total = 0;
-        $alreadyPaid = 0;
-
-        if ($orders) {
-            foreach ($orders as $order) {
-                $total = $total + $order->getTotal();
-                $alreadyPaid = $alreadyPaid + $order->getPaid();
-            }
-        }
-
-        $start = new \DateTime('now', timezone_open('Europe/Paris'));
-        $end = new \DateTime('now', timezone_open('Europe/Paris'));
-        $start = $start->format('Y-m-d');
-        $end = $end->format('Y-m-d');
-
-        return $this->render('admin/order/index.html.twig', [
-            'search' => $search,
-            'orders' => $orders,
-            'total' => $total,
-            'alreadyPaid' => $alreadyPaid,
-            'start' => $start,
-            'end' => $end,
-        ]);
+        
+        return $this->render('admin/order/index.html.twig',
+            $this->orderService->prepareIndexViewData($orders)
+        );
     }
 }

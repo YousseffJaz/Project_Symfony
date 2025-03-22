@@ -114,24 +114,10 @@ class AdminOrderController extends AbstractController
         $typeValue = $request->query->get('paymentType');
         $type = PaymentType::from((int)$typeValue);
         $orders = $this->orderRepository->findByPaymentType($type->value);
-        $total = 0;
-        $alreadyPaid = 0;
-
-        if ($orders) {
-            foreach ($orders as $order) {
-                $total = $total + $order->getTotal();
-                $alreadyPaid = $alreadyPaid + $order->getPaid();
-            }   
-        }
-
-        return $this->render('admin/order/index.html.twig', [
-            'search' => '',
-            'orders' => $orders,
-            'total' => $total,
-            'alreadyPaid' => $alreadyPaid,
-            'start' => (new \DateTime())->format('Y-m-d'),
-            'end' => (new \DateTime())->format('Y-m-d'),
-        ]);
+        
+        return $this->render('admin/order/index.html.twig', 
+            $this->orderService->prepareIndexViewData($orders)
+        );
     }
 
     #[Route('/admin/orders/paymentMethod', name: 'admin_order_paymentMethod')]
@@ -141,86 +127,32 @@ class AdminOrderController extends AbstractController
         $methodValue = $request->query->get('paymentMethod');
         $method = PaymentMethod::from((int)$methodValue);
         $orders = $this->orderRepository->findByPaymentMethod($method->value);
-        $total = 0;
-        $alreadyPaid = 0;
-
-        if ($orders) {
-            foreach ($orders as $order) {
-                $total = $total + $order->getTotal();
-                $alreadyPaid = $alreadyPaid + $order->getPaid();
-            }   
-        }
-
-        return $this->render('admin/order/index.html.twig', [
-            'search' => '',
-            'orders' => $orders,
-            'total' => $total,
-            'alreadyPaid' => $alreadyPaid,
-            'start' => (new \DateTime())->format('Y-m-d'),
-            'end' => (new \DateTime())->format('Y-m-d'),
-        ]);
+        
+        return $this->render('admin/order/index.html.twig', 
+            $this->orderService->prepareIndexViewData($orders)
+        );
     }
 
     #[Route('/admin/orders/expedition', name: 'admin_order_expedition')]
     #[IsGranted('ROLE_ADMIN')]
-    public function expedition(Request $request, OrderRepository $orderRepo): Response
+    public function expedition(): Response
     {
-        $orders = $orderRepo->findByExpedition();
-        $total = 0;
-        $alreadyPaid = 0;
-
-        if ($orders) {
-            foreach ($orders as $order) {
-                $total = $total + $order->getTotal();
-                $alreadyPaid = $alreadyPaid + $order->getPaid();
-            }   
-        }
-
-        $start = new \DateTime('now', timezone_open('Europe/Paris'));
-        $end = new \DateTime('now', timezone_open('Europe/Paris'));
-        $start = $start->format('Y-m-d');
-        $end = $end->format('Y-m-d');
-
-        return $this->render('admin/order/index.html.twig', [
-            'search' => '',
-            'orders' => $orders,
-            'total' => $total,
-            'alreadyPaid' => $alreadyPaid,
-            'start' => $start,
-            'end' => $end,
-        ]);
+        $orders = $this->orderRepository->findByExpedition();
+        
+        return $this->render('admin/order/index.html.twig', 
+            $this->orderService->prepareIndexViewData($orders)
+        );
     }
 
     #[Route('/admin/orders/impayee', name: 'admin_order_impayee')]
     #[IsGranted('ROLE_ADMIN')]
-    public function impayee(Request $request, OrderRepository $orderRepo): Response
+    public function impayee(): Response
     {
-        $orders = $orderRepo->findByImpayee();
-        $total = 0;
-        $alreadyPaid = 0;
-        $remaining = 0;
-
-        if ($orders) {
-            foreach ($orders as $order) {
-                $remaining = $remaining + ($order->getTotal() - $order->getPaid());
-                $total = $total + $order->getTotal();
-                $alreadyPaid = $alreadyPaid + $order->getPaid();
-            }   
-        }
-
-        $start = new \DateTime('now', timezone_open('Europe/Paris'));
-        $end = new \DateTime('now', timezone_open('Europe/Paris'));
-        $start = $start->format('Y-m-d');
-        $end = $end->format('Y-m-d');
-
-        return $this->render('admin/order/index.html.twig', [
-            'search' => '',
-            'orders' => $orders,
-            'total' => $total,
-            'start' => $start,
-            'alreadyPaid' => $alreadyPaid,
-            'end' => $end,
-        ]);
+        $orders = $this->orderRepository->findByImpayee();
+        
+        return $this->render('admin/order/index.html.twig', 
+            $this->orderService->prepareIndexViewData($orders)
+        );
     }
 
     #[Route('/admin/orders/customers', name: 'admin_order_customers')]

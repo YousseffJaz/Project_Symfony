@@ -13,6 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TelType;
 
 class AdminAdminType extends AbstractType
 {
@@ -24,11 +25,23 @@ class AdminAdminType extends AbstractType
         'class' => 'form-control',
         'autocomplete' => 'off'
       ]])
+    ->add('lastName', TextType::class, [
+      'attr' => [
+        'class' => 'form-control',
+        'autocomplete' => 'off'
+      ]])
     ->add('email', EmailType::class, [
       'attr' => [
         'class' => 'form-control',
         'autocomplete' => 'off'
       ]])
+    ->add('phone', TelType::class, [
+      'attr' => [
+        'class' => 'form-control',
+        'autocomplete' => 'off'
+      ],
+      'required' => false
+    ])
     ->add('role', ChoiceType::class, [
       'attr' => [
         'class' => 'form-control',

@@ -69,7 +69,10 @@ class OrderService
         return $this->calculateOrderTotals($orders);
     }
 
-    private function calculateOrderTotals(array $orders): array
+    /**
+     * Calcule les totaux pour une liste de commandes
+     */
+    public function calculateTotals(array $orders): array
     {
         $total = 0;
         $alreadyPaid = 0;
@@ -80,9 +83,42 @@ class OrderService
         }
 
         return [
-            'orders' => $orders,
             'total' => $total,
             'alreadyPaid' => $alreadyPaid
+        ];
+    }
+
+    private function calculateOrderTotals(array $orders): array
+    {
+        $totals = $this->calculateTotals($orders);
+        return [
+            'orders' => $orders,
+            'total' => $totals['total'],
+            'alreadyPaid' => $totals['alreadyPaid']
+        ];
+    }
+
+    /**
+     * Prépare les données communes pour le rendu du template index
+     */
+    public function prepareIndexViewData(array $orders, ?\DateTime $start = null, ?\DateTime $end = null): array
+    {
+        $totals = $this->calculateTotals($orders);
+        
+        if (!$start) {
+            $start = new \DateTime('now');
+        }
+        if (!$end) {
+            $end = new \DateTime('now');
+        }
+
+        return [
+            'search' => '',
+            'orders' => $orders,
+            'total' => $totals['total'],
+            'alreadyPaid' => $totals['alreadyPaid'],
+            'start' => $start->format('Y-m-d'),
+            'end' => $end->format('Y-m-d'),
         ];
     }
 } 
