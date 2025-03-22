@@ -139,45 +139,45 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
             $history->setInvoice($order);
             $history->setAdmin($order->getAdmin());
             $manager->persist($history);
+        }
         
-            // Paiement
-            if ($order->getPaid() > 0) {
-                $paymentDate = clone $createdAt;
-                $paymentDate->modify('+' . rand(5, 60) . ' minutes');
-                
-                $history = new OrderHistory();
-                $history->setTitle('Paiement validé');
-                $history->setCreatedAt($paymentDate);
-                $history->setInvoice($order);
-                $history->setAdmin($order->getAdmin());
-                $manager->persist($history);
-            }
+        // Paiement
+        if ($order->getPaid() > 0) {
+            $paymentDate = clone $createdAt;
+            $paymentDate->modify('+' . rand(5, 60) . ' minutes');
+            
+            $history = new OrderHistory();
+            $history->setTitle('Paiement validé');
+            $history->setCreatedAt($paymentDate);
+            $history->setInvoice($order);
+            $history->setAdmin($order->getAdmin());
+            $manager->persist($history);
+        }
 
-            // Si la commande est en cours ou livrée
-            if ($status >= 1) {
-                $prepDate = clone $createdAt;
-                $prepDate->modify('+' . rand(1, 24) . ' hours');
-                
-                $history = new OrderHistory();
-                $history->setTitle('En préparation');
-                $history->setCreatedAt($prepDate);
-                $history->setInvoice($order);
-                $history->setAdmin($order->getAdmin());
-                $manager->persist($history);
-            }
+        // Si la commande est en cours ou livrée
+        if ($status >= 1 && $status <= 2) {
+            $prepDate = clone $createdAt;
+            $prepDate->modify('+' . rand(1, 24) . ' hours');
+            
+            $history = new OrderHistory();
+            $history->setTitle('En préparation');
+            $history->setCreatedAt($prepDate);
+            $history->setInvoice($order);
+            $history->setAdmin($order->getAdmin());
+            $manager->persist($history);
+        }
 
-            // Si la commande est livrée
-            if ($status === 2) {
-                $deliveryDate = clone $createdAt;
-                $deliveryDate->modify('+' . rand(2, 5) . ' days');
-                
-                $history = new OrderHistory();
-                $history->setTitle('Commande livrée');
-                $history->setCreatedAt($deliveryDate);
-                $history->setInvoice($order);
-                $history->setAdmin($order->getAdmin());
-                $manager->persist($history);
-            }
+        // Si la commande est livrée
+        if ($status === 2) {
+            $deliveryDate = clone $createdAt;
+            $deliveryDate->modify('+' . rand(2, 5) . ' days');
+            
+            $history = new OrderHistory();
+            $history->setTitle('Commande livrée');
+            $history->setCreatedAt($deliveryDate);
+            $history->setInvoice($order);
+            $history->setAdmin($order->getAdmin());
+            $manager->persist($history);
         }
     }
 

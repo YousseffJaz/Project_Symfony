@@ -203,8 +203,8 @@ class OrderExportService
             'Client' => $order->getFirstname() . ' ' . $order->getLastname(),
             'Total' => number_format($order->getTotal(), 2, ',', ' ') . '€',
             'Statut' => $this->getStatusLabel($order->getStatus()),
-            'Mode de paiement' => $this->getPaymentMethodLabel($order->getPaymentMethod()),
-            'Type de paiement' => $this->getPaymentTypeLabel($order->getPaymentType()),
+            'Mode de paiement' => $this->getPaymentMethodLabel($order->getPaymentMethod() !== null ? (int) $order->getPaymentMethod() : null),
+            'Type de paiement' => $this->getPaymentTypeLabel($order->getPaymentType() !== null ? (int) $order->getPaymentType() : null),
         ];
 
         $csv = '';

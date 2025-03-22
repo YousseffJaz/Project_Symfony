@@ -47,6 +47,5 @@ services:
         arguments:
             $orderRepository: '@App\Repository\OrderRepository'
             $lineItemRepository: '@App\Repository\LineItemRepository'
-            $entityManager: '@doctrine.orm.entity_manager'
 
     App\Service\Order\OrderExportService: ~

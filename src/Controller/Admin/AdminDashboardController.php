@@ -118,31 +118,4 @@ class AdminDashboardController extends AbstractController
             'end' => $end,
         ]);
     }
-
-    #[Route('/notification/all', name: 'admin_notif_all')]
-    public function notification(
-        Request $request,
-        EntityManagerInterface $manager,
-        NotificationRepository $notifRepo
-    ): Response {
-        $sound = false;
-        
-        if (!$this->getUser()) {
-            return $this->json($sound, 200);
-        }
-
-        $notifs = $notifRepo->findBy(['admin' => $this->getUser(), 'seen' => false]);
-
-        if ($notifs) {
-            foreach ($notifs as $notif) {
-                if (!$notif->getSeen()) {
-                    $sound = true;
-                    $notif->setSeen(true);
-                    $manager->flush();
-                }
-            }
-        }
-
-        return $this->json($sound, 200);
-    }
 }

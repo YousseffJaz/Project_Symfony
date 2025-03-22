@@ -6,14 +6,12 @@ use App\Entity\Order;
 use App\Entity\Admin;
 use App\Repository\OrderRepository;
 use App\Repository\LineItemRepository;
-use Doctrine\ORM\EntityManagerInterface;
 
 class OrderService
 {
     public function __construct(
         private OrderRepository $orderRepository,
-        private LineItemRepository $lineItemRepository,
-        private EntityManagerInterface $entityManager
+        private LineItemRepository $lineItemRepository
     ) {
     }
 
