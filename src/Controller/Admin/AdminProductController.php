@@ -34,8 +34,7 @@ class AdminProductController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function new(
         Request $request,
-        EntityManagerInterface $manager,
-        UserPasswordHasherInterface $hasher
+        EntityManagerInterface $manager
     ): Response {
         $product = new Product();
         $form = $this->createForm(AdminProductType::class, $product);
@@ -78,7 +77,6 @@ class AdminProductController extends AbstractController
         Product $product,
         Request $request,
         EntityManagerInterface $manager,
-        UserPasswordHasherInterface $hasher,
         VariantRepository $variantRepo,
         StockListRepository $stockListRepo,
         LineItemRepository $lineItemRepo

@@ -228,36 +228,6 @@ class AdminOrderController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/orders/livraison', name: 'admin_order_livraison')]
-    #[IsGranted('ROLE_ADMIN')]
-    public function livraison(Request $request, OrderRepository $orderRepo): Response
-    {
-        $orders = $orderRepo->findByLivraison();
-        $total = 0;
-        $alreadyPaid = 0;
-
-        if ($orders) {
-            foreach ($orders as $order) {
-                $total = $total + $order->getTotal();
-                $alreadyPaid = $alreadyPaid + $order->getPaid();
-            }   
-        }
-
-        $start = new \DateTime('now', timezone_open('Europe/Paris'));
-        $end = new \DateTime('now', timezone_open('Europe/Paris'));
-        $start = $start->format('Y-m-d');
-        $end = $end->format('Y-m-d');
-
-        return $this->render('admin/order/index.html.twig', [
-            'search' => '',
-            'orders' => $orders,
-            'total' => $total,
-            'alreadyPaid' => $alreadyPaid,
-            'start' => $start,
-            'end' => $end,
-        ]);
-    }
-
     #[Route('/admin/orders/customers', name: 'admin_order_customers')]
     #[IsGranted('ROLE_ADMIN')]
     public function customers(Request $request, OrderRepository $orderRepo, LineItemRepository $lineItemRepo): Response

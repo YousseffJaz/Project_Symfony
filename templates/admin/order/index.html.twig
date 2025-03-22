@@ -46,7 +46,6 @@
 
 						<div class="card-block table-border-style" style="padding-top: 0px;">
 							<a href="{{ path('admin_order_expedition') }}" class="btn btn-out-dashed waves-effect waves-light btn-primary btn-square text-right" style="padding: 5px 10px; margin: 0px 5px;">Commande à expédier</a>
-							<a href="{{ path('admin_order_livraison') }}" class="btn btn-out-dashed waves-effect waves-light btn-primary btn-square text-right" style="padding: 5px 10px; margin: 0px 5px; background: #7f8c8d; border: 1px solid #7f8c8d">Commande à livrer</a>
 							<a href="{{ path('admin_order_impayee') }}" class="btn btn-out-dashed waves-effect waves-light btn-danger btn-square text-right" style="padding: 5px 10px; margin: 0px 5px;">Commande impayée</a>
 							{% if app.user.role == "ROLE_SUPER_ADMIN" or app.user.role == "ROLE_EMPLOYÉ" %}
 								{% if orders %}

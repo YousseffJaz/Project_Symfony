@@ -38,9 +38,7 @@ class AdminOrderType extends AbstractType
             'En attente' => 0,
             'En cours' => 1,
             'Terminé' => 2,
-            'Annulé' => 3,
-            'En livraison' => 4,
-            'Livré' => 5,
+            'Annulé' => 3
         ];
 
         $builder
