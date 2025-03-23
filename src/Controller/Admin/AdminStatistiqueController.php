@@ -68,24 +68,26 @@ class AdminStatistiqueController extends AbstractController
         // Get best sellers
         $bestSellers = $this->statisticsService->getBestSellers();
         
-        // Get total stats
-        $totalStats = $this->orderRepository->totalAmount();
+        // Get total stats with cache
+        $totalStats = $this->cacheService->getTotalAmount(fn() => $this->orderRepository->totalAmount());
         
-        // Get current month stats
-        $monthStats = $this->orderRepository->totalAmountByStartAndEnd(
+        // Get current month stats with cache
+        $monthStats = $this->cacheService->getMonthlyAmount(
             date('Y-m-01'),
-            date('Y-m-t')
+            date('Y-m-t'),
+            fn() => $this->orderRepository->totalAmountByStartAndEnd(date('Y-m-01'), date('Y-m-t'))
         );
 
-        // Get expenses for the period
-        $expenses = $this->fluxRepository->totalAmountStartAndEnd(1, $startDate->format('Y-m-d'), $endDate->format('Y-m-d'));
+        // Get expenses for the period with cache
+        $expenses = $this->cacheService->getExpenses(
+            1,
+            $startDate->format('Y-m-d'),
+            $endDate->format('Y-m-d'),
+            fn() => $this->fluxRepository->totalAmountStartAndEnd(1, $startDate->format('Y-m-d'), $endDate->format('Y-m-d'))
+        );
 
         // Get unpaid amount for the period
-        $orders = $this->orderRepository->findByStartAndEnd($startDate->format('Y-m-d'), $endDate->format('Y-m-d'));
-        $notPaid = 0;
-        foreach ($orders as $order) {
-            $notPaid += $order->getTotal() - $order->getPaid();
-        }
+        $notPaid = $this->statisticsService->getUnpaidAmount($startDate, $endDate);
 
         // Structure data for charts
         $array = [

@@ -10,6 +10,7 @@ services:
     depends_on:
       - database
       - redis
+      - elasticsearch
 
   nginx:
     image: nginx:alpine
@@ -39,6 +40,18 @@ services:
     volumes:
       - redis-data:/data
 
+  elasticsearch:
+    image: elasticsearch:8.12.1
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    
 volumes:
   db-data:
-  redis-data: 
+  redis-data:
+  elasticsearch-data:

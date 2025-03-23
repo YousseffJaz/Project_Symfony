@@ -58,7 +58,7 @@ services:
         class: Redis
         factory: ['Symfony\Component\Cache\Adapter\RedisAdapter', 'createConnection']
         arguments:
-            $dsn: 'redis://redis:6379'
+            $dsn: '%env(REDIS_URL)%'
             $options:
                 lazy: true
                 persistent: 0
@@ -66,13 +66,17 @@ services:
                 read_timeout: 30
                 retry_interval: 0
 
-    redis.cache:
+    redis.marshaller:
+        class: Symfony\Component\Cache\Marshaller\DefaultMarshaller
+
+    stats.cache:
         class: Symfony\Component\Cache\Adapter\RedisAdapter
         arguments:
             $redis: '@redis.connection'
+            $marshaller: '@redis.marshaller'
             $namespace: 'stats'
             $defaultLifetime: 3600
 
     App\Service\Cache\StatisticsCacheService:
         arguments:
-            $cache: '@redis.cache'
+            $cache: '@stats.cache'

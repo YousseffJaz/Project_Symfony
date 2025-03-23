@@ -141,6 +141,25 @@ class StatisticsService
         });
     }
 
+    public function getUnpaidAmount(\DateTime $startDate, \DateTime $endDate): float
+    {
+        return $this->cacheService->getUnpaidAmount(
+            $startDate->format('Y-m-d'),
+            $endDate->format('Y-m-d'),
+            function() use ($startDate, $endDate) {
+                $orders = $this->orderRepository->findByStartAndEnd(
+                    $startDate->format('Y-m-d'),
+                    $endDate->format('Y-m-d')
+                );
+                $notPaid = 0;
+                foreach ($orders as $order) {
+                    $notPaid += $order->getTotal() - $order->getPaid();
+                }
+                return $notPaid;
+            }
+        );
+    }
+
     private function getMonthName(int $month): string
     {
         $months = [
