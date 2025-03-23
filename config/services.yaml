@@ -22,8 +22,11 @@ services:
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     App\:
-        resource: '../src/*'
-        exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
 
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
@@ -49,3 +52,27 @@ services:
             $lineItemRepository: '@App\Repository\LineItemRepository'
 
     App\Service\Order\OrderExportService: ~
+
+    # Configuration du cache Redis pour les statistiques
+    redis.connection:
+        class: Redis
+        factory: ['Symfony\Component\Cache\Adapter\RedisAdapter', 'createConnection']
+        arguments:
+            $dsn: 'redis://redis:6379'
+            $options:
+                lazy: true
+                persistent: 0
+                timeout: 30
+                read_timeout: 30
+                retry_interval: 0
+
+    redis.cache:
+        class: Symfony\Component\Cache\Adapter\RedisAdapter
+        arguments:
+            $redis: '@redis.connection'
+            $namespace: 'stats'
+            $defaultLifetime: 3600
+
+    App\Service\Cache\StatisticsCacheService:
+        arguments:
+            $cache: '@redis.cache'

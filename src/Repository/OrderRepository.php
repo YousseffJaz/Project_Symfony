@@ -429,18 +429,28 @@ class OrderRepository extends ServiceEntityRepository
 
   public function findDailyStatsByMonth(int $month, int $year): array
   {
-    $startDate = new \DateTime(sprintf('%d-%d-01', $year, $month));
-    $endDate = clone $startDate;
-    $endDate->modify('last day of this month');
-    
     $qb = $this->createQueryBuilder('o')
         ->select('EXTRACT(DAY FROM o.createdAt) as day, SUM(o.total) as total')
-        ->where('o.createdAt >= :startDate')
-        ->andWhere('o.createdAt <= :endDate')
-        ->setParameter('startDate', $startDate)
-        ->setParameter('endDate', $endDate)
+        ->where('EXTRACT(MONTH FROM o.createdAt) = :month')
+        ->andWhere('EXTRACT(YEAR FROM o.createdAt) = :year')
+        ->setParameter('month', $month)
+        ->setParameter('year', $year)
         ->groupBy('day')
         ->orderBy('day', 'ASC');
+
+    return $qb->getQuery()->getResult();
+  }
+
+  public function getMonthlyStats(\DateTime $startDate, \DateTime $endDate): array
+  {
+    $qb = $this->createQueryBuilder('o')
+        ->select('EXTRACT(YEAR FROM o.createdAt) as year, EXTRACT(MONTH FROM o.createdAt) as month, SUM(o.total) as total')
+        ->where('o.createdAt BETWEEN :start AND :end')
+        ->setParameter('start', $startDate)
+        ->setParameter('end', $endDate)
+        ->groupBy('year, month')
+        ->orderBy('year', 'ASC')
+        ->addOrderBy('month', 'ASC');
 
     return $qb->getQuery()->getResult();
   }

@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Service\Statistics\StatisticsService;
+use App\Service\Cache\StatisticsCacheService;
 use App\Repository\OrderRepository;
 use App\Repository\ProductRepository;
 use App\Repository\PriceListRepository;
@@ -22,7 +23,8 @@ class AdminStatistiqueController extends AbstractController
     public function __construct(
         private StatisticsService $statisticsService,
         private OrderRepository $orderRepository,
-        private FluxRepository $fluxRepository
+        private FluxRepository $fluxRepository,
+        private StatisticsCacheService $cacheService
     ) {
     }
 
@@ -233,5 +235,17 @@ class AdminStatistiqueController extends AbstractController
         $english_months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
         return str_replace($english_months, $french_months, $date);
+    }
+
+    /**
+     * Permet de vider le cache des statistiques
+     */
+    #[Route('/admin/statistiques/clear-cache', name: 'admin_statistique_clear_cache')]
+    #[IsGranted('ROLE_ADMIN')]
+    public function clearCache(): Response
+    {
+        $this->cacheService->clearCache();
+        $this->addFlash('success', 'Le cache des statistiques a été vidé avec succès.');
+        return $this->redirectToRoute('admin_statistique_index');
     }
 }

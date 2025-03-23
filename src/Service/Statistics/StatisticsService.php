@@ -4,6 +4,7 @@ namespace App\Service\Statistics;
 
 use App\Repository\OrderRepository;
 use App\Repository\StockListRepository;
+use App\Service\Cache\StatisticsCacheService;
 use App\Enum\PaymentMethod;
 use App\Enum\PaymentType;
 use App\Enum\OrderStatus;
@@ -12,150 +13,132 @@ class StatisticsService
 {
     public function __construct(
         private OrderRepository $orderRepository,
-        private StockListRepository $stockListRepository
+        private StockListRepository $stockListRepository,
+        private StatisticsCacheService $cacheService
     ) {
     }
 
     public function calculateDailyStats(int $month, int $year): array
     {
-        $dailyData = [];
-        $currentMonthDays = cal_days_in_month(CAL_GREGORIAN, $month, $year);
-        
-        // Récupérer toutes les statistiques en une seule requête
-        $stats = $this->orderRepository->findDailyStatsByMonth($month, $year);
-        
-        // Créer un tableau associatif pour un accès facile
-        $dailyStats = [];
-        foreach ($stats as $stat) {
-            // Convertir le jour en entier pour enlever les zéros au début
-            $day = (int)$stat['day'];
-            $dailyStats[$day] = $stat['total'];
-        }
-        
-        // Remplir les données pour chaque jour
-        for ($i = 1; $i <= $currentMonthDays; $i++) {
-            $dailyData[] = [
-                'total' => number_format($dailyStats[$i] ?? 0, 2, '.', ''),
-                'url' => '/admin/orders/filter/day/' . sprintf('%04d-%02d-%02d', $year, $month, $i)
-            ];
-        }
-        
-        return $dailyData;
+        return $this->cacheService->getDailyStats($month, $year, function() use ($month, $year) {
+            $dailyData = [];
+            $currentMonthDays = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+            
+            // Récupérer toutes les statistiques en une seule requête
+            $stats = $this->orderRepository->findDailyStatsByMonth($month, $year);
+            
+            // Créer un tableau associatif pour un accès facile
+            $dailyStats = [];
+            foreach ($stats as $stat) {
+                // Convertir le jour en entier pour enlever les zéros au début
+                $day = (int)$stat['day'];
+                $dailyStats[$day] = $stat['total'];
+            }
+            
+            // Remplir les données pour chaque jour
+            for ($i = 1; $i <= $currentMonthDays; $i++) {
+                $dailyData[] = [
+                    'total' => number_format($dailyStats[$i] ?? 0, 2, '.', ''),
+                    'url' => '/admin/orders/filter/day/' . sprintf('%04d-%02d-%02d', $year, $month, $i)
+                ];
+            }
+            
+            return $dailyData;
+        });
     }
 
     public function calculateMonthlyStats(?\DateTime $startDate = null, ?\DateTime $endDate = null): array
     {
-        $monthlyData = [];
-        $labels = [];
-        $total = 0;
-        
-        if ($startDate && $endDate) {
-            $currentDate = clone $startDate;
-            
-            while ($currentDate <= $endDate) {
-                $targetMonth = (int)$currentDate->format('m');
-                $targetYear = (int)$currentDate->format('Y');
-                
-                $monthStats = $this->calculateMonthStats($targetMonth, $targetYear);
-                $monthlyData[] = $monthStats['data'];
-                $total += $monthStats['amount'];
-                $labels[] = $this->getMonthName($targetMonth) . ' ' . $targetYear;
-                
-                $currentDate->modify('first day of next month');
+        return $this->cacheService->getMonthlyStats($startDate, $endDate, function() use ($startDate, $endDate) {
+            if (!$startDate) {
+                $startDate = new \DateTime('first day of -11 months');
             }
-        } else {
-            $currentYear = (int)date('Y');
-            for ($month = 1; $month <= 12; $month++) {
-                $monthStats = $this->calculateMonthStats($month, $currentYear);
-                $monthlyData[] = $monthStats['data'];
-                $total += $monthStats['amount'];
-                $labels[] = $this->getMonthName($month);
+            if (!$endDate) {
+                $endDate = new \DateTime('last day of this month');
             }
-        }
-        
-        return [
-            'data' => $monthlyData,
-            'labels' => $labels,
-            'total' => $total
-        ];
-    }
 
-    private function calculateMonthStats(int $month, int $year): array
-    {
-        $orders = $this->orderRepository->findByMonth($month, $year);
-        $amount = 0;
-        
-        if ($orders) {
-            foreach ($orders as $order) {
-                $amount += (float)$order->getTotal();
+            $stats = $this->orderRepository->getMonthlyStats($startDate, $endDate);
+            
+            $monthlyData = [];
+            $labels = [];
+            $total = 0;
+            
+            $current = clone $startDate;
+            while ($current <= $endDate) {
+                $monthKey = $current->format('Y-m');
+                $monthlyData[$monthKey] = [
+                    'total' => '0.00',
+                    'url' => '/admin/orders/filter/month/' . $current->format('Y-m')
+                ];
+                $labels[] = $this->getMonthName((int)$current->format('m')) . ' ' . $current->format('Y');
+                $current->modify('+1 month');
             }
-        }
-        
-        return [
-            'data' => [
-                'total' => number_format($amount, 2, '.', ''),
-                'url' => '/admin/orders/filter/month/' . sprintf('%04d-%02d', $year, $month)
-            ],
-            'amount' => $amount
-        ];
+
+            foreach ($stats as $stat) {
+                $monthKey = $stat['year'] . '-' . str_pad($stat['month'], 2, '0', STR_PAD_LEFT);
+                if (isset($monthlyData[$monthKey])) {
+                    $monthlyData[$monthKey]['total'] = number_format($stat['total'], 2, '.', '');
+                    $total += $stat['total'];
+                }
+            }
+
+            return [
+                'data' => array_values($monthlyData),
+                'labels' => $labels,
+                'total' => $total
+            ];
+        });
     }
 
     public function calculatePaymentStats(): array
     {
-        $methodStats = [];
-        $typeStats = [];
-        $statusStats = [];
-        
-        // Payment methods
-        foreach (PaymentMethod::cases() as $method) {
-            $orders = $this->orderRepository->findByPaymentMethod($method->value);
-            $amount = 0;
+        return $this->cacheService->getPaymentStats(function() {
+            $orders = $this->orderRepository->findAll();
+            
+            $methodStats = array_fill(0, 8, 0); // Initialize array for 8 payment methods
+            $typeStats = array_fill(0, 2, 0);   // Initialize array for 2 payment types
+            $statusStats = array_fill(0, 4, 0);  // Initialize array for 4 status types
+            
             foreach ($orders as $order) {
-                $amount += (float)$order->getTotal();
+                $methodStats[$order->getPaymentMethod()] += $order->getTotal();
+                $typeStats[$order->getPaymentType()] += $order->getTotal();
+                $statusStats[$order->getStatus()] += $order->getTotal();
             }
-            $methodStats[$method->value] = $amount;
-        }
-        
-        // Payment types
-        foreach (PaymentType::cases() as $type) {
-            $orders = $this->orderRepository->findByPaymentType($type->value);
-            $amount = 0;
-            foreach ($orders as $order) {
-                $amount += (float)$order->getTotal();
-            }
-            $typeStats[$type->value] = $amount;
-        }
-        
-        // Order status
-        foreach (OrderStatus::cases() as $status) {
-            $orders = $this->orderRepository->findByStatus($status->value);
-            $amount = 0;
-            foreach ($orders as $order) {
-                $amount += (float)$order->getTotal();
-            }
-            $statusStats[$status->value] = $amount;
-        }
-        
-        return [
-            'methods' => $methodStats,
-            'types' => $typeStats,
-            'status' => $statusStats
-        ];
+            
+            return [
+                'methods' => $methodStats,
+                'types' => $typeStats,
+                'status' => $statusStats
+            ];
+        });
     }
 
     public function calculateStockValue(): float
     {
-        $stockValues = $this->stockListRepository->calculateStockValue();
-        return array_sum(array_column($stockValues, 'value'));
+        return $this->cacheService->getStockValue(function() {
+            $stocks = $this->stockListRepository->findAll();
+            $totalValue = 0;
+            
+            foreach ($stocks as $stock) {
+                $product = $stock->getProduct();
+                if ($product && $stock->getQuantity() > 0) {
+                    $totalValue += $stock->getQuantity() * $product->getPrice();
+                }
+            }
+            
+            return $totalValue;
+        });
     }
 
     public function getBestSellers(): array
     {
-        return [
-            'products' => $this->orderRepository->findBestProducts(),
-            'categories' => $this->orderRepository->findBestCategories(),
-            'customers' => $this->orderRepository->findBestCustomers()
-        ];
+        return $this->cacheService->getBestSellers(function() {
+            return [
+                'products' => $this->orderRepository->findBestProducts(),
+                'categories' => $this->orderRepository->findBestCategories(),
+                'customers' => $this->orderRepository->findBestCustomers()
+            ];
+        });
     }
 
     private function getMonthName(int $month): string

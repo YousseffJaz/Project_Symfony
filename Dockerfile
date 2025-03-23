@@ -17,6 +17,10 @@ RUN pecl install xdebug \
 RUN pecl install apcu \
     && docker-php-ext-enable apcu
 
+# Installation de Redis
+RUN pecl install redis \
+    && docker-php-ext-enable redis
+
 # Installation des extensions PHP nécessaires
 RUN docker-php-ext-install \
     pdo_pgsql \
