@@ -7,6 +7,7 @@ use App\Repository\OrderRepository;
 use App\Repository\ProductRepository;
 use App\Repository\PriceListRepository;
 use App\Repository\StockListRepository;
+use App\Repository\FluxRepository;
 use App\Enum\PaymentMethod;
 use App\Enum\PaymentType;
 use App\Enum\OrderStatus;
@@ -20,7 +21,8 @@ class AdminStatistiqueController extends AbstractController
 {
     public function __construct(
         private StatisticsService $statisticsService,
-        private OrderRepository $orderRepository
+        private OrderRepository $orderRepository,
+        private FluxRepository $fluxRepository
     ) {
     }
 
@@ -34,18 +36,26 @@ class AdminStatistiqueController extends AbstractController
         $month = (int)date('m');
         $year = (int)date('Y');
         
-        // Get start and end dates from request or default to current year
-        $start = $request->query->get('start', $year . '-01-01');
-        $end = $request->query->get('end', date('Y-m-t'));
+        // Get start and end dates from request or default to all time
+        $start = $request->query->get('start');
+        $end = $request->query->get('end');
         
-        $startDate = new \DateTime($start);
-        $endDate = new \DateTime($end);
+        if (!$start || !$end) {
+            // Si pas de dates spécifiées, on prend tout
+            $startDate = new \DateTime('2000-01-01');
+            $endDate = new \DateTime();
+        } else {
+            $startDate = new \DateTime($start);
+            $endDate = new \DateTime($end);
+        }
         
         // Get daily stats for current month
         $dailyStats = $this->statisticsService->calculateDailyStats($month, $year);
         
-        // Get monthly stats for date range
-        $monthlyStats = $this->statisticsService->calculateMonthlyStats($startDate, $endDate);
+        // Get monthly stats for last 12 months
+        $monthlyStatsStart = (new \DateTime())->modify('-11 months')->modify('first day of this month');
+        $monthlyStatsEnd = new \DateTime();
+        $monthlyStats = $this->statisticsService->calculateMonthlyStats($monthlyStatsStart, $monthlyStatsEnd);
         
         // Get payment stats
         $paymentStats = $this->statisticsService->calculatePaymentStats();
@@ -64,6 +74,16 @@ class AdminStatistiqueController extends AbstractController
             date('Y-m-01'),
             date('Y-m-t')
         );
+
+        // Get expenses for the period
+        $expenses = $this->fluxRepository->totalAmountStartAndEnd(1, $startDate->format('Y-m-d'), $endDate->format('Y-m-d'));
+
+        // Get unpaid amount for the period
+        $orders = $this->orderRepository->findByStartAndEnd($startDate->format('Y-m-d'), $endDate->format('Y-m-d'));
+        $notPaid = 0;
+        foreach ($orders as $order) {
+            $notPaid += $order->getTotal() - $order->getPaid();
+        }
 
         // Structure data for charts
         $array = [
@@ -84,11 +104,11 @@ class AdminStatistiqueController extends AbstractController
             'annual' => $monthlyStats['total'],
             'start' => $start,
             'end' => $end,
-            'profit' => 0,
+            'profit' => $totalStats[0]['total'] - ($expenses[0]['amount'] ?? 0),
             'stock' => $stockValue,
             'orders' => count($this->orderRepository->findAll()),
-            'notPaid' => 0,
-            'expenses' => [['amount' => 0]],
+            'notPaid' => $notPaid,
+            'expenses' => $expenses,
             'bestProducts' => $bestSellers['products'],
             'bestCategories' => $bestSellers['categories'],
             'bestCustomers' => $bestSellers['customers'],
