@@ -8,6 +8,8 @@ Ce projet est une application de gestion développée avec Symfony 7.
 - Composer
 - Symfony CLI
 - PostgreSQL 14 ou supérieur
+- Docker et Docker Compose
+- Redis 7.0 ou supérieur
 
 ## Installation
 
@@ -17,24 +19,30 @@ git clone [URL_DU_REPO]
 cd projet-symfony-gestion
 ```
 
-2. Installer les dépendances :
+2. Démarrer les conteneurs Docker :
+```bash
+docker-compose up -d
+```
+
+3. Installer les dépendances :
 ```bash
 composer install
 ```
 
-3. Configurer la base de données :
+4. Configurer la base de données et Redis :
 - Créer un fichier `.env.local` à la racine du projet
 - Configurer les variables d'environnement :
 ```env
-DATABASE_URL="postgresql://user:password@127.0.0.1:5432/dbname?serverVersion=14&charset=utf8"
+DATABASE_URL="postgresql://user:password@postgres:5432/dbname?serverVersion=14&charset=utf8"
+REDIS_URL="redis://redis:6379"
 ```
 
-4. Créer la base de données :
+5. Créer la base de données :
 ```bash
 symfony console doctrine:database:create
 ```
 
-5. Exécuter les migrations :
+6. Exécuter les migrations :
 ```bash
 symfony console doctrine:migrations:migrate
 ```
@@ -47,6 +55,7 @@ Les paramètres principaux sont configurés dans `config/services.yaml` :
 - `root_directory`: Dossier racine public
 - `session_max_idle_time`: Durée maximale d'inactivité de session (14400)
 - `cookie_lifetime`: Durée de vie des cookies (14400)
+- `redis_ttl`: Durée de vie du cache Redis pour les statistiques (3600)
 
 ## Fonctionnalités
 
@@ -55,7 +64,7 @@ Les paramètres principaux sont configurés dans `config/services.yaml` :
 - Gestion des stocks
 - Gestion des utilisateurs
 - Gestion des commandes avec export
-- Gestion des statistiques
+- Gestion des statistiques avec mise en cache Redis
 - Système de notification
 - Support multilingue (i18n)
 - Intégration Bugsnag pour le monitoring des erreurs
@@ -93,6 +102,33 @@ src/
 ├── Service/          # Services métier
 ├── Listener/         # Event Listeners
 └── Twig/             # Extensions Twig personnalisées
+docker/               # Configuration Docker
+├── nginx/            # Configuration Nginx
+├── php/              # Configuration PHP-FPM
+└── redis/            # Configuration Redis
+```
+
+## Docker
+
+Le projet utilise Docker pour l'environnement de développement. Les services disponibles sont :
+- `nginx`: Serveur web
+- `php`: Application PHP-FPM
+- `postgres`: Base de données PostgreSQL
+- `redis`: Cache Redis
+
+Pour gérer les conteneurs :
+```bash
+# Démarrer les conteneurs
+docker-compose up -d
+
+# Arrêter les conteneurs
+docker-compose down
+
+# Voir les logs
+docker-compose logs -f
+
+# Accéder au conteneur PHP
+docker-compose exec php bash
 ```
 
 ## Tests
