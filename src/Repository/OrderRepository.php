@@ -20,12 +20,18 @@ class OrderRepository extends ServiceEntityRepository
   }
 
   public function findByStartAndEnd($start, $end){
-    $query = $this->createQueryBuilder('o');
+    $query = $this->createQueryBuilder('o')
+      ->leftJoin('o.customer', 'c')->addSelect('c')
+      ->leftJoin('o.lineItems', 'l')->addSelect('l')
+      ->leftJoin('l.product', 'p')->addSelect('p')
+      ->leftJoin('l.variant', 'v')->addSelect('v')
+      ->leftJoin('o.admin', 'a')->addSelect('a')
+      ->leftJoin('o.orderHistories', 'h')->addSelect('h');
 
     $query->andWhere('o.createdAt >= :start AND o.createdAt <= :end')
-    ->setParameter('start', \DateTime::createFromFormat("Y-m-d",$start, new \DateTimeZone('Europe/Paris'))->setTime(00, 00, 00))
-    ->setParameter('end', \DateTime::createFromFormat("Y-m-d",$end, new \DateTimeZone('Europe/Paris'))->setTime(23,59,59))
-    ->addOrderBy('o.createdAt', 'DESC');
+      ->setParameter('start', \DateTime::createFromFormat("Y-m-d",$start, new \DateTimeZone('Europe/Paris'))->setTime(00, 00, 00))
+      ->setParameter('end', \DateTime::createFromFormat("Y-m-d",$end, new \DateTimeZone('Europe/Paris'))->setTime(23,59,59))
+      ->addOrderBy('o.createdAt', 'DESC');
 
     return $query->getQuery()->getResult();
   }

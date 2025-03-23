@@ -22,7 +22,6 @@
 					<div class="card">
 						<div class="card-header">
 							<h5>Liste des commandes</h5>
-              {% set totalDiscount = 0 %}
 							<a href="{{ path('admin_order_new') }}" class="btn btn-out-dashed waves-effect waves-light btn-primary btn-square text-right" style="float: right; padding: 5px 10px; margin: 0px 5px;">Ajouter</a>
 							<a id="print" href="#" class="btn btn-out-dashed waves-effect waves-light btn-danger btn-square text-right" style="float: right; padding: 5px 10px; margin: 0px 5px;">Imprimer</a>
 							<a id="search" href="#" class="btn btn-out-dashed waves-effect waves-light btn-danger btn-square text-right" style="float: right; padding: 5px 10px; margin: 0px 5px; background: #7f8c8d; border: 1px solid #7f8c8d;">Rechercher</a>
@@ -30,17 +29,9 @@
 							<input type="date" id="end" name="end" {% if end %} value="{{ end }}" {% endif %} style="float: right; padding: 5px 10px; margin: 0px 5px;">
 							<input type="date" id="start" name="start" {% if start %} value="{{ start }}" {% endif %} style="float: right; padding: 5px 10px; margin: 0px 5px;">
 							<i class="fas fa-arrow-left js-before" style="float: right; font-size: 18px; padding: 7px; cursor: pointer;"></i>
-							{% set totalDiscount = 0 %}
-							{% if orders %}
-								{% for order in orders %}
-									{% if app.user.role == "ROLE_SUPER_ADMIN" %}
-										{% set totalDiscount = totalDiscount + order.total %}
-									{% endif %}
-								{% endfor %}
-								{% if app.user.role == "ROLE_SUPER_ADMIN" %}
-									<div style="float: right;margin-top: 5px;font-size: 16px;margin-right: 12px;font-weight: bold;">Total :
-									{{ totalDiscount|number_format(2, ',', ' ') }}€</div>
-								{% endif %}
+							{% if app.user.role == "ROLE_SUPER_ADMIN" %}
+								<div style="float: right;margin-top: 5px;font-size: 16px;margin-right: 12px;font-weight: bold;">Total :
+								{{ total|number_format(2, ',', ' ') }}€</div>
 							{% endif %}
 						</div>
 
@@ -76,7 +67,6 @@
 										</thead>
 										<tbody>
 											{% for order in orders %}
-												{% set total = 0 %}
 												<tr>
 													<td>{{ order.id }}</td>
 													<td>{{ order.admin.firstName|capitalize }}</td>
@@ -118,34 +108,26 @@
 														{% endif %}
 													</td>
 													<td>
-														{% if order.lineItems.toArray %}
-															{% for lineItem in order.lineItems.toArray %}
-																{% set total = total + lineItem.price %}
-																<div class="flex justify-center items-center m-2 font-medium py-1 px-2 bg-white rounded bg-gray-100 border" style="max-width: fit-content; display: flex;">
-																	<div class="text-xs font-normal leading-none max-w-full flex-initial">{{ lineItem.quantity }}
-																		x ({{ lineItem.title }}) -
-																		{{ lineItem.price|number_format(2, ',', ' ') }}€</div>
-																</div>
-															{% endfor %}
-														{% endif %}
+														{% for lineItem in order.lineItems %}
+															<div class="flex justify-center items-center m-2 font-medium py-1 px-2 bg-white rounded bg-gray-100 border" style="max-width: fit-content; display: flex;">
+																<div class="text-xs font-normal leading-none max-w-full flex-initial">{{ lineItem.quantity }}
+																	x ({{ lineItem.title }}) -
+																	{{ lineItem.price|number_format(2, ',', ' ') }}€</div>
+															</div>
+														{% endfor %}
 													</td>
 													<td>{{ order.shippingCost|number_format(2, ',', ' ') }}€</td>
 													<td>
 														{{ order.paymentType|payment_type_label }}
 													</td>
-													{% set totalDiscount = totalDiscount - order.discount + order.shippingCost %}
 													{% set remaining = order.total - order.paid %}
 													<td>{{ remaining|number_format(2, ',', ' ') }}€</td>
                            <td>{{ order.total|number_format(2, ',', ' ') }}€</td>
 													<td>
-														{% if order.orderHistories.toArray  %}
+														{% if order.orderHistories|length > 0 %}
 															<a href="{{ path('admin_order_history', { id: order.id }) }}">
 																<i class="fas fa-flag" style="color: #7f8c8d; font-size: 20px; padding: 3px;"></i>
 															</a>
-														{% endif %}
-														{% set total = total - order.discount + order.shippingCost %}
-														{% if total != order.total %}
-															<i class="fas fa-exclamation-triangle" style="color: #f7b731; font-size: 20px; padding: 3px;"></i>
 														{% endif %}
 														<a href="{{ path('admin_order_edit', { id: order.id }) }}">
 															<i class="fas fa-edit" style="color: #4099ff; font-size: 20px; padding: 3px;"></i>

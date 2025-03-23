@@ -64,21 +64,19 @@ class OrderService
     public function getTotalsByDateRange(\DateTime $start, \DateTime $end): array
     {
         $orders = $this->getOrdersByDateRange($start, $end);
-        $total = $this->lineItemRepository->totalAmountByStartAndEnd(
-            $start->format('Y-m-d'),
-            $end->format('Y-m-d')
-        );
-
+        
+        // Calculer les totaux directement à partir des commandes chargées
+        $total = 0;
         $alreadyPaid = 0;
-        if ($orders) {
-            foreach ($orders as $order) {
-                $alreadyPaid += $order->getPaid();
-            }
+        
+        foreach ($orders as $order) {
+            $total += $order->getTotal();
+            $alreadyPaid += $order->getPaid();
         }
 
         return [
             'orders' => $orders,
-            'total' => $total[0]['total'] ?? 0,
+            'total' => $total,
             'alreadyPaid' => $alreadyPaid
         ];
     }
