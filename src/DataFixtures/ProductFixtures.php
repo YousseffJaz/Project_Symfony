@@ -110,7 +110,6 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
             $manager->persist($product);
             $reference = 'product_' . strtolower(str_replace(' ', '_', $productData['title']));
             $this->addReference($reference, $product);
-            echo "Created reference: " . $reference . "\n";
         }
 
         $manager->flush();

@@ -21,19 +21,25 @@ class AdminFixtures extends Fixture
         $admins = [
             [
                 'firstName' => 'Test',
+                'lastName' => 'Admin',
                 'email' => 'test@gmail.com',
+                'phone' => '0123456789',
                 'password' => 'testtest',
                 'role' => 'ROLE_SUPER_ADMIN',
             ],
             [
                 'firstName' => 'User1',
+                'lastName' => 'Manager',
                 'email' => 'user1@example.com',
+                'phone' => '0123456790',
                 'password' => 'user123',
                 'role' => 'ROLE_ADMIN',
             ],
             [
                 'firstName' => 'User2',
+                'lastName' => 'Staff',
                 'email' => 'user2@example.com',
+                'phone' => '0123456791',
                 'password' => 'user123',
                 'role' => 'ROLE_ADMIN',
             ],
@@ -42,7 +48,9 @@ class AdminFixtures extends Fixture
         foreach ($admins as $adminData) {
             $admin = new Admin();
             $admin->setFirstName($adminData['firstName']);
+            $admin->setLastName($adminData['lastName']);
             $admin->setEmail($adminData['email']);
+            $admin->setPhone($adminData['phone']);
             $admin->setRole($adminData['role']);
             
             $hashedPassword = $this->passwordHasher->hashPassword($admin, $adminData['password']);
