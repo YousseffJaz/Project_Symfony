@@ -31,7 +31,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Configuration du répertoire de travail
 WORKDIR /var/www
 
-# Copie des fichiers du projet
+# Copie des fichiers du projet 
 COPY . .
 
 # Installation des dépendances Composer
