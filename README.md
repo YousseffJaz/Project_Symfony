@@ -47,6 +47,88 @@ symfony console doctrine:database:create
 symfony console doctrine:migrations:migrate
 ```
 
+## API Platform et GraphQL
+
+Le projet utilise API Platform pour exposer une API REST et GraphQL.
+
+### API REST
+
+Les endpoints disponibles :
+
+- Catégories :
+  - GET `/api/categories` : Liste toutes les catégories
+  - GET `/api/categories/{id}` : Récupère une catégorie spécifique
+  - POST `/api/categories` : Crée une nouvelle catégorie
+  - PUT `/api/categories/{id}` : Met à jour une catégorie
+  - DELETE `/api/categories/{id}` : Supprime une catégorie
+
+- Produits :
+  - GET `/api/products` : Liste tous les produits
+  - GET `/api/products/{id}` : Récupère un produit spécifique
+  - POST `/api/products` : Crée un nouveau produit
+  - PUT `/api/products/{id}` : Met à jour un produit
+  - DELETE `/api/products/{id}` : Supprime un produit
+
+Exemple de requête REST :
+```bash
+# Lister les catégories
+curl http://localhost:8080/api/categories \
+  -H "Accept: application/json"
+
+# Créer une catégorie
+curl -X POST http://localhost:8080/api/categories \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Nouvelle Catégorie"}'
+```
+
+### GraphQL
+
+Endpoint GraphQL : `/api/graphql`
+
+Exemples de requêtes GraphQL :
+
+```graphql
+# Requête pour lister les catégories
+query {
+  categories {
+    edges {
+      node {
+        id
+        name
+        product {
+          edges {
+            node {
+              id
+              title
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+# Mutation pour créer une catégorie
+mutation {
+  createCategory(input: {
+    name: "Nouvelle Catégorie"
+  }) {
+    category {
+      id
+      name
+    }
+  }
+}
+```
+
+Pour tester les requêtes GraphQL :
+```bash
+# Exemple de requête GraphQL
+curl -X POST http://localhost:8080/api/graphql \
+  -H "Content-Type: application/json" \
+  -d '{"query": "query { categories { edges { node { id name } } } }"}'
+```
+
 ## Configuration
 
 Les paramètres principaux sont configurés dans `config/services.yaml` :
@@ -97,15 +179,18 @@ symfony console cache:clear
 src/
 ├── Controller/         # Contrôleurs de l'application
 │   └── Admin/         # Contrôleurs de l'administration
-├── Entity/            # Entités Doctrine avec attributs PHP 8
+├── Entity/            # Entités Doctrine avec attributs PHP 8 et API Platform
 ├── Repository/        # Repositories Doctrine
 ├── Service/          # Services métier
 ├── Listener/         # Event Listeners
 └── Twig/             # Extensions Twig personnalisées
+config/
+├── packages/         # Configuration des packages
+│   └── api_platform/ # Configuration API Platform
 docker/               # Configuration Docker
 ├── nginx/            # Configuration Nginx
-├── php/              # Configuration PHP-FPM
-└── redis/            # Configuration Redis
+├── php/             # Configuration PHP-FPM
+└── redis/           # Configuration Redis
 ```
 
 ## Docker
