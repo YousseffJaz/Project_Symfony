@@ -8,6 +8,8 @@ Ce projet est une application de gestion développée avec Symfony 7.
 - Composer
 - Symfony CLI
 - PostgreSQL 14 ou supérieur
+- MongoDB 7.0 ou supérieur
+- Elasticsearch 8.0 ou supérieur
 - Docker et Docker Compose
 - Redis 7.0 ou supérieur
 
@@ -29,11 +31,14 @@ docker-compose up -d
 composer install
 ```
 
-4. Configurer la base de données et Redis :
+4. Configurer les bases de données, Redis et Elasticsearch :
 - Créer un fichier `.env.local` à la racine du projet
 - Configurer les variables d'environnement :
 ```env
 DATABASE_URL="postgresql://user:password@postgres:5432/dbname?serverVersion=14&charset=utf8"
+MONGODB_URL="mongodb://symfony:symfony@mongodb:27017"
+MONGODB_DB="symfony"
+ELASTICSEARCH_URL="http://elasticsearch:9200"
 REDIS_URL="redis://redis:6379"
 ```
 
@@ -55,7 +60,12 @@ Le projet utilise API Platform pour exposer une API REST et GraphQL.
 
 Les endpoints disponibles :
 
-- Catégories :
+- Notes (MongoDB) :
+  - GET `/api/notes` : Liste toutes les notes
+  - GET `/api/notes/{id}` : Récupère une note spécifique
+  - POST `/api/notes` : Crée une nouvelle note
+
+- Catégories (PostgreSQL) :
   - GET `/api/categories` : Liste toutes les catégories
   - GET `/api/categories/{id}` : Récupère une catégorie spécifique
   - POST `/api/categories` : Crée une nouvelle catégorie
@@ -180,16 +190,19 @@ src/
 ├── Controller/         # Contrôleurs de l'application
 │   └── Admin/         # Contrôleurs de l'administration
 ├── Entity/            # Entités Doctrine avec attributs PHP 8 et API Platform
-├── Repository/        # Repositories Doctrine
+├── Document/          # Documents MongoDB ODM
+├── Repository/        # Repositories Doctrine et MongoDB
 ├── Service/          # Services métier
 ├── Listener/         # Event Listeners
 └── Twig/             # Extensions Twig personnalisées
 config/
 ├── packages/         # Configuration des packages
-│   └── api_platform/ # Configuration API Platform
+│   ├── api_platform/ # Configuration API Platform
+│   └── doctrine_mongodb/ # Configuration MongoDB ODM
 docker/               # Configuration Docker
 ├── nginx/            # Configuration Nginx
 ├── php/             # Configuration PHP-FPM
+├── elasticsearch/   # Configuration Elasticsearch
 └── redis/           # Configuration Redis
 ```
 
@@ -199,6 +212,8 @@ Le projet utilise Docker pour l'environnement de développement. Les services di
 - `nginx`: Serveur web
 - `php`: Application PHP-FPM
 - `postgres`: Base de données PostgreSQL
+- `mongodb`: Base de données MongoDB
+- `elasticsearch`: Moteur de recherche Elasticsearch
 - `redis`: Cache Redis
 
 Pour gérer les conteneurs :
@@ -214,6 +229,12 @@ docker-compose logs -f
 
 # Accéder au conteneur PHP
 docker-compose exec php bash
+
+# Accéder au shell MongoDB
+docker-compose exec mongodb mongosh
+
+# Accéder à Elasticsearch
+curl http://localhost:9200
 ```
 
 ## Tests

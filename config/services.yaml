@@ -9,6 +9,8 @@ parameters:
     root_directory: '%kernel.project_dir%/public'
     session_max_idle_time: 14400
     cookie_lifetime: 14400
+    env(MONGODB_URL): ''
+    env(MONGODB_DB): ''
 
 services:
     # default configuration for services in *this* file

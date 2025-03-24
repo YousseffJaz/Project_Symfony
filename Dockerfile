@@ -21,6 +21,10 @@ RUN pecl install apcu \
 RUN pecl install redis \
     && docker-php-ext-enable redis
 
+# Installation de MongoDB
+RUN pecl install mongodb \
+    && docker-php-ext-enable mongodb
+
 # Installation des extensions PHP nécessaires
 RUN docker-php-ext-install \
     pdo_pgsql \
