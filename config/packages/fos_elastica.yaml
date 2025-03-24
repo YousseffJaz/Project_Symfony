@@ -32,3 +32,5 @@ fos_elastica:
                 provider: ~
                 finder: ~
                 repository: App\Repository\ProductSearchRepository
+                elastica_to_model_transformer:
+                    ignore_missing: true

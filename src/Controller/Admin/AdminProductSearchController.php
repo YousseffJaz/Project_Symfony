@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Admin;
 
 use App\Repository\ProductSearchRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class ProductSearchController extends AbstractController
+class AdminProductSearchController extends AbstractController
 {
     #[Route('/api/products/search', name: 'api_products_search', methods: ['GET'])]
     public function search(Request $request, ProductSearchRepository $searchRepository, SerializerInterface $serializer): JsonResponse
