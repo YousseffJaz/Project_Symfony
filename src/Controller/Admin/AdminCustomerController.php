@@ -3,7 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Customer;
-use App\Form\CustomerType;
+use App\Form\AdminCustomerType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -41,7 +41,7 @@ class AdminCustomerController extends AbstractController
     public function new(Request $request): Response
     {
         $customer = new Customer();
-        $form = $this->createForm(CustomerType::class, $customer);
+        $form = $this->createForm(AdminCustomerType::class, $customer);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
