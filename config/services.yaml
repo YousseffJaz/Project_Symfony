@@ -80,3 +80,7 @@ services:
     App\Service\Cache\StatisticsCacheService:
         arguments:
             $cache: '@stats.cache'
+
+    App\Repository\ProductSearchRepository:
+        arguments:
+            $finder: '@fos_elastica.finder.products'
