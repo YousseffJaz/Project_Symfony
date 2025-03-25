@@ -1,0 +1,33 @@
+parameters:
+    level: 5
+    paths:
+        - src
+    excludePaths:
+        - src/Migrations/*
+    treatPhpDocTypesAsCertain: false
+    ignoreErrors:
+        - '#Property [a-zA-Z0-9\\_]+::\$id \(int\|null\) is never assigned int#'
+        - '#Property [a-zA-Z0-9\\_]+::\$id is never written, only read#'
+        - '#If condition is always true#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::findByStartAndEnd\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::findByPaymentType\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::findByPaymentMethod\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::findByExpedition\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::findByImpayee\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::findOrderNotComplete\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::findByDay\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::findByMonth\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::findByStatus\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::findOneByInvoice\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::incrementStock\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::findByStartAndEnd\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::findByPaymentType\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::findByPaymentMethod\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::findByExpedition\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::findByImpayee\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::findOrderNotComplete\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::findByDay\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::findByMonth\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::findByStatus\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::findOneByInvoice\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::incrementStock\(\)#' 
