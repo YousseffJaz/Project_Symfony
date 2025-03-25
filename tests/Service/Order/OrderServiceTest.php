@@ -63,33 +63,30 @@ class OrderServiceTest extends TestCase
 
     public function testGetTotalsByDateRange(): void
     {
-        $start = new \DateTime('2024-01-01');
-        $end = new \DateTime('2024-01-31');
+        $startDate = new \DateTime('2024-01-01');
+        $endDate = new \DateTime('2024-12-31');
 
-        $mockOrders = [
-            $this->createMockOrder(100, 50),
-            $this->createMockOrder(200, 100)
-        ];
+        $order1 = $this->createMock(Order::class);
+        $order1->method('getTotal')->willReturn(500.0);
+        $order1->method('getPaid')->willReturn(200.0);
+
+        $order2 = $this->createMock(Order::class);
+        $order2->method('getTotal')->willReturn(500.0);
+        $order2->method('getPaid')->willReturn(300.0);
 
         $this->orderRepository
             ->expects($this->once())
             ->method('findByStartAndEnd')
-            ->with('2024-01-01', '2024-01-31')
-            ->willReturn($mockOrders);
+            ->with('2024-01-01', '2024-12-31')
+            ->willReturn([$order1, $order2]);
 
-        $this->lineItemRepository
-            ->expects($this->once())
-            ->method('totalAmountByStartAndEnd')
-            ->with('2024-01-01', '2024-01-31')
-            ->willReturn([['total' => 300]]);
-
-        $result = $this->orderService->getTotalsByDateRange($start, $end);
+        $result = $this->orderService->getTotalsByDateRange($startDate, $endDate);
 
         $this->assertArrayHasKey('orders', $result);
         $this->assertArrayHasKey('total', $result);
         $this->assertArrayHasKey('alreadyPaid', $result);
-        $this->assertEquals(300, $result['total']);
-        $this->assertEquals(150, $result['alreadyPaid']);
+        $this->assertEquals(1000.0, $result['total']);
+        $this->assertEquals(500.0, $result['alreadyPaid']);
     }
 
     public function testGetOrdersByStatus(): void

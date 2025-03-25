@@ -5,6 +5,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - .:/var/www
+    environment:
+      - BUGSNAG_API_KEY=test_key_for_testing
     depends_on:
       - database
       - redis

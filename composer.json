@@ -112,7 +112,8 @@
     ],
     "compile": [
       "php bin/console doctrine:schema:update --force --complete"
-    ]
+    ],
+    "test": "php bin/phpunit"
   },
   "conflict": {
     "symfony/symfony": "*"
