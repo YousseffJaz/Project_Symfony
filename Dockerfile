@@ -42,6 +42,9 @@ WORKDIR /var/www
 # Copie des fichiers du projet 
 COPY . .
 
+# Copie des fichiers de configuration
+COPY .env.test .env
+
 # Installation des dépendances Composer
 RUN composer install --no-interaction --optimize-autoloader
 
