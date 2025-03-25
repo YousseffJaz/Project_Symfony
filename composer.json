@@ -1,6 +1,10 @@
 {
+  "name": "juuulienr/projet-symfony-gestion",
+  "description": "Application de gestion de projet Symfony",
   "type": "project",
   "license": "proprietary",
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "require": {
     "php": "^8.2",
     "api-platform/doctrine-odm": "^4.1",
@@ -12,7 +16,7 @@
     "doctrine/doctrine-bundle": "^2.7",
     "doctrine/doctrine-fixtures-bundle": "^3.4",
     "doctrine/doctrine-migrations-bundle": "^3.0",
-    "doctrine/mongodb-odm-bundle": "*",
+    "doctrine/mongodb-odm-bundle": "^5.3",
     "doctrine/orm": "^2.15",
     "dompdf/dompdf": "^3.1",
     "friendsofsymfony/elastica-bundle": "^6.6",
@@ -115,7 +119,7 @@
   },
   "extra": {
     "symfony": {
-      "allow-contrib": true,
+      "allow-contrib": false,
       "require": "^7.0",
       "docker": false
     }
