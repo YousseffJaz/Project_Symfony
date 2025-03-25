@@ -1,21 +1,12 @@
 api_platform:
-    title: 'API Gestion'
-    description: 'API pour la gestion des catégories'
-    version: '1.0.0'
-    show_webby: false
-    enable_docs: false
-    enable_swagger_ui: false
-    enable_re_doc: false
+    title: API Platform
+    version: 1.0.0
     formats:
         jsonld: ['application/ld+json']
         json: ['application/json']
-    graphql:
-        enabled: true
-        graphiql:
-            enabled: false
     defaults:
         stateless: true
         cache_headers:
             vary: ['Content-Type', 'Authorization', 'Origin']
-    doctrine_mongodb_odm:
-        enabled: true
+    enable_docs: true
+    enable_swagger_ui: true
