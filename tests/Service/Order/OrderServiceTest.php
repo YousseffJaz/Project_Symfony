@@ -7,7 +7,6 @@ use App\Service\Order\OrderService;
 use App\Entity\Order;
 use App\Entity\Admin;
 use App\Repository\OrderRepository;
-use App\Repository\LineItemRepository;
 use App\Repository\StockListRepository;
 use App\Repository\TransactionRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,7 +16,6 @@ class OrderServiceTest extends TestCase
 {
     private OrderService $orderService;
     private MockObject $orderRepository;
-    private MockObject $lineItemRepository;
     private MockObject $entityManager;
     private MockObject $stockListRepository;
     private MockObject $transactionRepository;
@@ -25,14 +23,12 @@ class OrderServiceTest extends TestCase
     protected function setUp(): void
     {
         $this->orderRepository = $this->createMock(OrderRepository::class);
-        $this->lineItemRepository = $this->createMock(LineItemRepository::class);
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->stockListRepository = $this->createMock(StockListRepository::class);
         $this->transactionRepository = $this->createMock(TransactionRepository::class);
 
         $this->orderService = new OrderService(
             $this->orderRepository,
-            $this->lineItemRepository,
             $this->entityManager,
             $this->stockListRepository,
             $this->transactionRepository

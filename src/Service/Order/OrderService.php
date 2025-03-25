@@ -7,7 +7,6 @@ use App\Entity\Admin;
 use App\Entity\LineItem;
 use App\Entity\OrderHistory;
 use App\Repository\OrderRepository;
-use App\Repository\LineItemRepository;
 use App\Repository\StockListRepository;
 use App\Repository\TransactionRepository;
 use App\Enum\OrderStatus;
@@ -19,7 +18,6 @@ class OrderService
 {
     public function __construct(
         private OrderRepository $orderRepository,
-        private LineItemRepository $lineItemRepository,
         private EntityManagerInterface $entityManager,
         private StockListRepository $stockListRepository,
         private TransactionRepository $transactionRepository
