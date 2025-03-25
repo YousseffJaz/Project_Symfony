@@ -19,6 +19,9 @@ jobs:
           extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, dom, filter, gd, iconv, json, mbstring
           coverage: none
 
+      - name: Setup environment
+        run: cp .env.test .env
+
       - name: Validate composer.json and composer.lock
         run: composer validate --strict
 
@@ -33,9 +36,6 @@ jobs:
 
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
-
-      - name: Setup environment
-        run: cp .env.test .env
 
       - name: Run test suite
         run: composer run-script test
