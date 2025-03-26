@@ -49,9 +49,9 @@ symfony console doctrine:database:create
 symfony console doctrine:migrations:migrate
 ```
 
-## API Platform et GraphQL
+## API Platform
 
-Le projet utilise API Platform pour exposer une API REST et GraphQL.
+Le projet utilise API Platform pour exposer une API REST.
 
 ### API REST
 
@@ -81,54 +81,6 @@ curl http://localhost:8080/api/categories \
 curl -X POST http://localhost:8080/api/categories \
   -H "Content-Type: application/json" \
   -d '{"name": "Nouvelle Catégorie"}'
-```
-
-### GraphQL
-
-Endpoint GraphQL : `/api/graphql`
-
-Exemples de requêtes GraphQL :
-
-```graphql
-# Requête pour lister les catégories
-query {
-  categories {
-    edges {
-      node {
-        id
-        name
-        product {
-          edges {
-            node {
-              id
-              title
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-# Mutation pour créer une catégorie
-mutation {
-  createCategory(input: {
-    name: "Nouvelle Catégorie"
-  }) {
-    category {
-      id
-      name
-    }
-  }
-}
-```
-
-Pour tester les requêtes GraphQL :
-```bash
-# Exemple de requête GraphQL
-curl -X POST http://localhost:8080/api/graphql \
-  -H "Content-Type: application/json" \
-  -d '{"query": "query { categories { edges { node { id name } } } }"}'
 ```
 
 ## Configuration

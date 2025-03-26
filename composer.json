@@ -8,7 +8,6 @@
   "require": {
     "php": "^8.2",
     "api-platform/doctrine-orm": "^4.1",
-    "api-platform/graphql": "^4.1",
     "api-platform/symfony": "^4.1",
     "bugsnag/bugsnag-symfony": "^1.14",
     "doctrine/dbal": "^3",
