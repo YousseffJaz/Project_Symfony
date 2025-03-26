@@ -20,27 +20,27 @@ class AdminFixtures extends Fixture
     {
         $admins = [
             [
-                'firstName' => 'Test',
-                'lastName' => 'Admin',
-                'email' => 'test@gmail.com',
-                'phone' => '0123456789',
-                'password' => 'testtest',
+                'firstName' => 'Admin',
+                'lastName' => 'System',
+                'email' => 'admin@example.com',
+                'phone' => '0000000000',
+                'password' => 'Admin123!@#',
                 'role' => 'ROLE_SUPER_ADMIN',
             ],
             [
-                'firstName' => 'User1',
-                'lastName' => 'Manager',
-                'email' => 'user1@example.com',
-                'phone' => '0123456790',
-                'password' => 'user123',
+                'firstName' => 'Manager',
+                'lastName' => 'System',
+                'email' => 'manager@example.com',
+                'phone' => '0000000001',
+                'password' => 'Manager123!@#',
                 'role' => 'ROLE_ADMIN',
             ],
             [
-                'firstName' => 'User2',
-                'lastName' => 'Staff',
-                'email' => 'user2@example.com',
-                'phone' => '0123456791',
-                'password' => 'user123',
+                'firstName' => 'Staff',
+                'lastName' => 'System',
+                'email' => 'staff@example.com',
+                'phone' => '0000000002',
+                'password' => 'Staff123!@#',
                 'role' => 'ROLE_ADMIN',
             ],
         ];
@@ -53,11 +53,13 @@ class AdminFixtures extends Fixture
             $admin->setPhone($adminData['phone']);
             $admin->setRole($adminData['role']);
             
-            $hashedPassword = $this->passwordHasher->hashPassword($admin, $adminData['password']);
+            $hashedPassword = $this->passwordHasher->hashPassword(
+                $admin,
+                $adminData['password']
+            );
             $admin->setHash($hashedPassword);
             
             $manager->persist($admin);
-            $this->addReference('admin_' . strtolower($adminData['firstName']), $admin);
         }
 
         $manager->flush();

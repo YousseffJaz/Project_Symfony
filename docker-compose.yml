@@ -6,7 +6,7 @@ services:
     volumes:
       - .:/var/www
     environment:
-      - BUGSNAG_API_KEY=test_key_for_testing
+      - BUGSNAG_API_KEY=${BUGSNAG_API_KEY}
     depends_on:
       - database
       - redis
@@ -25,9 +25,9 @@ services:
   database:
     image: postgres:15-alpine
     environment:
-      POSTGRES_DB: symfony
-      POSTGRES_USER: symfony
-      POSTGRES_PASSWORD: symfony
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
