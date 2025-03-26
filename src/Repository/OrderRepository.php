@@ -173,7 +173,9 @@ class OrderRepository extends ServiceEntityRepository
   public function findByExpedition(){
     $query = $this->createQueryBuilder('o');
 
-    $query->andWhere('o.orderStatus = 1 OR o.orderStatus = 0')
+    $query->andWhere('o.orderStatus = :status1 OR o.orderStatus = :status0')
+    ->setParameter('status1', '1')
+    ->setParameter('status0', '0')
     ->addOrderBy('o.createdAt', 'DESC');
 
     return $query->getQuery()
