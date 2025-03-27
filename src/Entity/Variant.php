@@ -6,6 +6,8 @@ use App\Repository\VariantRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use InvalidArgumentException;
 
 #[ORM\Entity(repositoryClass: VariantRepository::class)]
 class Variant
@@ -25,15 +27,20 @@ class Variant
     #[ORM\Column(type: 'boolean', nullable: true)]
     private bool $archive = false;
 
-    #[ORM\OneToMany(targetEntity: PriceList::class, mappedBy: 'variant', orphanRemoval: true)]
-    private Collection $priceLists;
+    #[ORM\Column(type: 'float')]
+    #[Assert\NotNull]
+    #[Assert\Range(
+        min: 0.01,
+        max: 999999.99,
+        notInRangeMessage: "Le prix doit être compris entre {{ min }}€ et {{ max }}€"
+    )]
+    private float $price = 0.0;
 
     #[ORM\OneToMany(targetEntity: LineItem::class, mappedBy: 'variant')]
     private Collection $lineItems;
 
     public function __construct()
     {
-        $this->priceLists = new ArrayCollection();
         $this->archive = false;
         $this->lineItems = new ArrayCollection();
     }
@@ -79,32 +86,21 @@ class Variant
         return $this;
     }
 
-    /**
-     * @return Collection|PriceList[]
-     */
-    public function getPriceLists(): Collection
+    public function getPrice(): float
     {
-        return $this->priceLists;
+        return $this->price;
     }
 
-    public function addPriceList(PriceList $priceList): self
+    public function setPrice(float $price): self
     {
-        if (!$this->priceLists->contains($priceList)) {
-            $this->priceLists[] = $priceList;
-            $priceList->setVariant($this);
+        if ($price < 0.01 || $price > 999999.99) {
+            throw new InvalidArgumentException(
+                sprintf("Le prix doit être compris entre %.2f€ et %.2f€", 0.01, 999999.99)
+            );
         }
 
-        return $this;
-    }
-
-    public function removePriceList(PriceList $priceList): self
-    {
-        if ($this->priceLists->removeElement($priceList)) {
-            // set the owning side to null (unless already changed)
-            if ($priceList->getVariant() === $this) {
-                $priceList->setVariant(null);
-            }
-        }
+        // Arrondir à 2 décimales
+        $this->price = round($price, 2);
 
         return $this;
     }

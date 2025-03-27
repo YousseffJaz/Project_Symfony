@@ -27,14 +27,6 @@ class AdminExpenseType extends AbstractType
         'class' => 'form-control',
         'autocomplete' => 'off'
       ]
-    ])
-    ->add('createdAt', DateTimeType::class, [
-      'attr' => [
-        'class' => 'form-control',
-        'autocomplete' => 'off'
-      ],
-      'date_format' => 'dd/MM/yyyy',
-      'required' => false
     ]);
   }
 

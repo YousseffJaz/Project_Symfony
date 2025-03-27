@@ -36,9 +36,6 @@ class LineItem
     #[ORM\ManyToOne(targetEntity: StockList::class, inversedBy: 'lineItems')]
     private ?StockList $stock = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $priceList = null;
-
     public function getId(): ?int
     {
         return $this->id;
@@ -124,18 +121,6 @@ class LineItem
     public function setStock(?StockList $stock): self
     {
         $this->stock = $stock;
-
-        return $this;
-    }
-
-    public function getPriceList(): ?string
-    {
-        return $this->priceList;
-    }
-
-    public function setPriceList(?string $priceList): self
-    {
-        $this->priceList = $priceList;
 
         return $this;
     }

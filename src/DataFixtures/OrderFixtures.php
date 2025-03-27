@@ -54,7 +54,7 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
         ];
 
         // Liste des admins disponibles
-        $admins = ['admin_test', 'admin_user1', 'admin_user2'];
+        $admins = ['admin_admin', 'admin_manager', 'admin_staff'];
 
         // Générer 100 commandes
         for ($i = 1; $i <= 100; $i++) {

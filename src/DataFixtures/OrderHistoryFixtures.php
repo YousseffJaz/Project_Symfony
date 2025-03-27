@@ -16,22 +16,22 @@ class OrderHistoryFixtures extends Fixture implements DependentFixtureInterface
         $orderHistories = [
             [
                 'invoice' => 'order_1',
-                'admin' => 'admin_test',
+                'admin' => 'admin_admin',
                 'title' => 'Commande créée',
             ],
             [
                 'invoice' => 'order_1',
-                'admin' => 'admin_test',
+                'admin' => 'admin_admin',
                 'title' => 'Commande validée',
             ],
             [
                 'invoice' => 'order_2',
-                'admin' => 'admin_user1',
+                'admin' => 'admin_manager',
                 'title' => 'Commande créée',
             ],
             [
                 'invoice' => 'order_2',
-                'admin' => 'admin_user1',
+                'admin' => 'admin_manager',
                 'title' => 'Commande en cours de traitement',
             ],
         ];

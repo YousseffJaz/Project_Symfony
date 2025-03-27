@@ -2,8 +2,6 @@
 
 {% block title %}Ajouter un variant{% endblock %}
 
-{% form_theme form 'admin/variant/_form_theme.html.twig' %}
-
 {% block body %}
 
 <div class="pcoded-content">
@@ -29,7 +27,7 @@
               {{ form_start(form) }}
               {{ form_row(form.title, { 'label': 'Titre' }) }}
               <hr>
-              {{ form_row(form.priceLists, { 'label': 'Ajouter une ou plusieurs grilles' }) }}
+              {{ form_row(form.price, { 'label': 'Prix' }) }}
               <div class="form-group row mt-2" style="float: right; margin-right: 20px;">
                 <button type="submit" class="btn btn-primary m-b-0">Ajouter un variant</button>
               </div>
@@ -45,41 +43,5 @@
 </div>
 </div>
 </div>
-
-
-{% endblock %}
-
-
-{% block javascripts %}
-
-<script>
-// Ad Form Config Array Collection
-$('#addPriceList').click(function(){
-    const prices = $('#admin_variant_priceLists');
-    const widgetsCounter = $('#widgets-counter');
-    const index = +widgetsCounter.val();
-    const template = prices.data('prototype').replace(/__name__/g, index);
-    widgetsCounter.val(index + 1);
-    prices.append(template);
-    handleDeleteButtons();
-});
-
-function handleDeleteButtons() {
-    $('button[data-action="delete"]').click(function(){
-        const target = this.dataset.target;
-        $(target).remove();
-    });
-}
-
-function updateCounter() {
-    const widgetsCounter = $('#widgets-counter');
-    const count = +$('#admin_variant_priceLists div.form-group').length;
-    widgetsCounter.val(count);
-}
-
-updateCounter();
-handleDeleteButtons();
-</script>
-
 
 {% endblock %}

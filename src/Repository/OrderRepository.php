@@ -292,7 +292,6 @@ class OrderRepository extends ServiceEntityRepository
     ->groupBy("v.product")
     ->select('SUM(l.price) as total, SUM(l.quantity) as quantity, p.title as title')
     ->andWhere('o.createdAt >= :start AND o.createdAt <= :end')
-      // ->andWhere('p.archive = false')
     ->setParameter('start', \DateTime::createFromFormat("Y-m-d",$start, new \DateTimeZone('Europe/Paris'))->setTime(00, 00, 00))
     ->setParameter('end', \DateTime::createFromFormat("Y-m-d",$end, new \DateTimeZone('Europe/Paris'))->setTime(23, 59, 59))
     ->orderBy("SUM(l.price)", "DESC");
@@ -325,7 +324,6 @@ class OrderRepository extends ServiceEntityRepository
     ->groupBy("p.category")
     ->select('SUM(l.price) as total, SUM(l.quantity) as quantity, c.name as title')
     ->andWhere('o.createdAt >= :start AND o.createdAt <= :end')
-      // ->andWhere('p.archive = false')
     ->setParameter('start', \DateTime::createFromFormat("Y-m-d",$start, new \DateTimeZone('Europe/Paris'))->setTime(00, 00, 00))
     ->setParameter('end', \DateTime::createFromFormat("Y-m-d",$end, new \DateTimeZone('Europe/Paris'))->setTime(23, 59, 59))
     ->orderBy("SUM(l.price)", "DESC");
@@ -366,16 +364,15 @@ class OrderRepository extends ServiceEntityRepository
     ->getResult();
   }
 
-  public function findByCategoryAndPriceListAndStartAndEnd($category, $start, $end){
+  public function findByCategoryAndStartAndEnd($category, $start, $end){
     $query = $this->createQueryBuilder('o')
     ->leftjoin('o.lineItems', 'l')
-    ->leftjoin('l.product', 'p')
+    ->leftjoin('l.variant', 'v')
+    ->leftjoin('v.product', 'p')
     ->leftjoin('p.category', 'c')
-    ->groupBy("l.priceList")
     ->andWhere('c.id = :category')
-    ->select('SUM(l.price) as total, SUM(l.quantity) as quantity, l.priceList as name')
+    ->select('SUM(l.price) as total, SUM(l.quantity) as quantity')
     ->andWhere('o.createdAt >= :start AND o.createdAt <= :end')
-      // ->andWhere('p.archive = false')
     ->setParameter('start', \DateTime::createFromFormat("Y-m-d",$start, new \DateTimeZone('Europe/Paris'))->setTime(00, 00, 00))
     ->setParameter('end', \DateTime::createFromFormat("Y-m-d",$end, new \DateTimeZone('Europe/Paris'))->setTime(23, 59, 59))
     ->setParameter('category', $category)
@@ -385,14 +382,14 @@ class OrderRepository extends ServiceEntityRepository
     ->getResult();
   }
 
-  public function findByCategoryAndPriceList($category){
+  public function findByCategory($category){
     $query = $this->createQueryBuilder('o')
     ->leftjoin('o.lineItems', 'l')
-    ->leftjoin('l.product', 'p')
+    ->leftjoin('l.variant', 'v')
+    ->leftjoin('v.product', 'p')
     ->leftjoin('p.category', 'c')
-    ->groupBy("l.priceList")
     ->andWhere('c.id = :category')
-    ->select('SUM(l.price) as total, SUM(l.quantity) as quantity, l.priceList as name')
+    ->select('SUM(l.price) as total, SUM(l.quantity) as quantity')
     ->setParameter('category', $category)
     ->orderBy("SUM(l.price)", "DESC");
 

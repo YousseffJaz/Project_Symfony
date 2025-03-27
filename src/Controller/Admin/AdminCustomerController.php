@@ -53,8 +53,41 @@ class AdminCustomerController extends AbstractController
             return $this->redirectToRoute('admin_customer_index');
         }
 
-        return $this->render('admin/customer/new.html.twig', [
-            'form' => $form->createView()
+        return $this->render('admin/customer/form.html.twig', [
+            'form' => $form->createView(),
+            'title' => 'Ajouter un client',
+            'customer' => $customer
+        ]);
+    }
+
+    #[Route('/{id}', name: 'admin_customer_show')]
+    #[IsGranted('ROLE_ADMIN')]
+    public function show(Customer $customer): Response
+    {
+        return $this->render('admin/customer/show.html.twig', [
+            'customer' => $customer
+        ]);
+    }
+
+    #[Route('/{id}/edit', name: 'admin_customer_edit')]
+    #[IsGranted('ROLE_ADMIN')]
+    public function edit(Request $request, Customer $customer): Response
+    {
+        $form = $this->createForm(AdminCustomerType::class, $customer);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Le client a été modifié avec succès !');
+
+            return $this->redirectToRoute('admin_customer_show', ['id' => $customer->getId()]);
+        }
+
+        return $this->render('admin/customer/form.html.twig', [
+            'form' => $form->createView(),
+            'title' => 'Modifier le client',
+            'customer' => $customer
         ]);
     }
 } 

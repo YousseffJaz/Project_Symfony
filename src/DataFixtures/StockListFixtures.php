@@ -15,22 +15,33 @@ class StockListFixtures extends Fixture implements DependentFixtureInterface
     {
         $faker = Factory::create('fr_FR');
 
-        // Créer quelques listes de stock de test
-        for ($i = 0; $i < 5; $i++) {
-            $stockList = new StockList();
-            $stockList->setName($faker->word());
-            $stockList->setQuantity($faker->numberBetween(0, 100));
-            
-            // Assigner un produit aléatoire
-            $product = $this->getReference('product_' . $faker->randomElement([
-                'ordinateur_portable_pro',
-                'smartphone_premium',
-                'cable_usb_type-c',
-                'processeur_intel_i7'
-            ]), Product::class);
-            $stockList->setProduct($product);
+        $cities = ['Paris', 'Lyon'];
+        $products = [
+            'ordinateur_portable_pro',
+            'smartphone_premium',
+            'cable_usb_type-c',
+            'processeur_intel_i7',
+            'carte_graphique_rtx_4070',
+            'ssd_1to_nvme',
+            'ecran_27_4k',
+            'souris_gaming_pro',
+            'clavier_mecanique_rgb',
+            'casque_audio_sans_fil',
+            'webcam_hd',
+            'tablette_graphique'
+        ];
 
-            $manager->persist($stockList);
+        foreach ($cities as $city) {
+            foreach ($products as $productRef) {
+                $stockList = new StockList();
+                $stockList->setName($city);
+                $stockList->setQuantity($faker->numberBetween(10, 100));
+                
+                $product = $this->getReference('product_' . $productRef, Product::class);
+                $stockList->setProduct($product);
+
+                $manager->persist($stockList);
+            }
         }
 
         $manager->flush();

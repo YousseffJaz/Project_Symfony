@@ -16,6 +16,7 @@ use App\Repository\ProductRepository;
 use App\Repository\StockListRepository;
 use App\Repository\OrderRepository;
 use App\Enum\OrderStatus;
+use App\Event\PreOrderValidationEvent;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,6 +24,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class AdminOrderController extends AbstractController
 {
@@ -30,7 +33,8 @@ class AdminOrderController extends AbstractController
         private EntityManagerInterface $entityManager,
         private OrderService $orderService,
         private OrderExportService $orderExportService,
-        private OrderRepository $orderRepository
+        private OrderRepository $orderRepository,
+        private EventDispatcherInterface $eventDispatcher
     ) {
     }
 
@@ -124,7 +128,6 @@ class AdminOrderController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid()) {
             $stockList = $request->request->all('stockListId');
-            $priceList = $request->request->all('priceList');
             $variantId = $request->request->all('variantId');
             $title = $request->request->all('title');
             $quantity = $request->request->all('quantity');
@@ -145,31 +148,11 @@ class AdminOrderController extends AbstractController
                             $item->setPrice($price[$i]);
                             $item->setVariant($variant);
                             $item->setProduct($product);
-                            $item->setPriceList($priceList[$i]);
                             $item->setOrder($order);
                             $item->setStock($stock);
 
                             $manager->persist($item);
-
-                            if ($stock->getQuantity() - $quantity[$i] < 0) {
-                                $variable = abs($stock->getQuantity() - $quantity[$i]);
-                                $this->addFlash(
-                                    'error',
-                                    "Il manque {$variable} {$variant->getTitle()} dans le stock à {$stock->getName()} !"
-                                );
-                            }
-                            
                             $order->addLineItem($item);
-                            $stock->setQuantity($stock->getQuantity() - $quantity[$i]);
-
-                            /** @var Admin */
-                            $admin = $this->getAdmin();
-                            $history = new OrderHistory();
-                            $history->setTitle("Le produit '{$variant->getTitle()}' a été ajouté en '{$quantity[$i]}' exemplaire(s) pour '{$price[$i]}€'");
-                            $history->setInvoice($order);
-                            $history->setAdmin($admin);
-                            $manager->persist($history);
-                            $manager->flush();
                         }
                     }
                 }
@@ -182,6 +165,21 @@ class AdminOrderController extends AbstractController
                 );
 
                 return $this->redirectToRoute('admin_order_new');
+            }
+
+            // Validation du stock via l'événement
+            try {
+                $event = new PreOrderValidationEvent($order);
+                $this->eventDispatcher->dispatch($event, PreOrderValidationEvent::NAME);
+            } catch (BadRequestHttpException $e) {
+                $this->addFlash('error', $e->getMessage());
+                return $this->redirectToRoute('admin_order_new');
+            }
+
+            // Mise à jour des stocks après validation
+            foreach ($order->getLineItems() as $item) {
+                $stock = $item->getStock();
+                $stock->setQuantity($stock->getQuantity() - $item->getQuantity());
             }
 
             if ($order->getTotal() < $order->getPaid()) {
@@ -197,12 +195,22 @@ class AdminOrderController extends AbstractController
             /** @var Admin */
             $admin = $this->getAdmin();
             $order->setAdmin($admin);
+
+            // Ajout de l'historique pour chaque ligne
+            foreach ($order->getLineItems() as $item) {
+                $history = new OrderHistory();
+                $history->setTitle("Le produit '{$item->getVariant()->getTitle()}' a été ajouté en '{$item->getQuantity()}' exemplaire(s) pour '{$item->getPrice()}€'");
+                $history->setInvoice($order);
+                $history->setAdmin($admin);
+                $manager->persist($history);
+            }
+
             $manager->persist($order);
             $manager->flush();
 
             $this->addFlash(
                 'success',
-                "Une nouvelle commande à été ajouté !"
+                "Une nouvelle commande à été ajoutée !"
             );
 
             return $this->redirectToRoute('admin_order_index');
@@ -223,14 +231,99 @@ class AdminOrderController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->entityManager->flush();
+            try {
+                // Vérifier que chaque ligne a un variant et un stock associé
+                foreach ($order->getLineItems() as $item) {
+                    $variant = $item->getVariant();
+                    if (!$variant) {
+                        throw new BadRequestHttpException('Un produit de la commande n\'a pas de variant associé.');
+                    }
+                    
+                    if (!$item->getStock()) {
+                        throw new BadRequestHttpException(
+                            sprintf(
+                                'Aucun stock n\'est associé au produit "%s". Veuillez sélectionner un stock.',
+                                $variant->getTitle()
+                            )
+                        );
+                    }
+                }
 
-            $this->addFlash(
-                'success',
-                "La commande a été modifiée !"
-            );
+                // Validation du stock via l'événement
+                $event = new PreOrderValidationEvent($order, false, $this->entityManager);
+                $this->eventDispatcher->dispatch($event, PreOrderValidationEvent::NAME);
 
-            return $this->redirectToRoute('admin_order_index');
+                // Mise à jour des stocks uniquement pour les nouveaux produits ou les quantités modifiées
+                foreach ($order->getLineItems() as $item) {
+                    $originalData = $this->entityManager->getUnitOfWork()->getOriginalEntityData($item);
+                    if (!$originalData || $originalData['quantity'] !== $item->getQuantity()) {
+                        $stock = $item->getStock();
+                        $variant = $item->getVariant();
+                        $quantityDiff = $originalData ? ($item->getQuantity() - $originalData['quantity']) : $item->getQuantity();
+                        
+                        // Si la quantité a diminué, on remet en stock la différence
+                        if ($quantityDiff < 0) {
+                            $stock->setQuantity($stock->getQuantity() + abs($quantityDiff));
+                            
+                            // Ajouter une entrée dans l'historique pour le retour en stock
+                            $history = new OrderHistory();
+                            $history->setTitle(sprintf(
+                                "Retour en stock de %d unité(s) du produit '%s' dans le stock '%s'",
+                                abs($quantityDiff),
+                                $variant->getTitle(),
+                                $stock->getName()
+                            ));
+                            $history->setInvoice($order);
+                            $history->setAdmin($this->getAdmin());
+                            $this->entityManager->persist($history);
+                        } else {
+                            // Si la quantité a augmenté ou si c'est un nouveau produit
+                            $stock->setQuantity($stock->getQuantity() - $quantityDiff);
+                        }
+                    }
+                }
+
+                // Mise à jour du statut de la commande
+                if ($order->getTotal() < $order->getPaid()) {
+                    $order->setStatus(OrderStatus::REFUND->value);
+                } elseif ($order->getTotal() == $order->getPaid()) {
+                    $order->setStatus(OrderStatus::PAID->value);
+                } elseif ($order->getPaid() != 0) {
+                    $order->setStatus(OrderStatus::PARTIAL->value);
+                } else {
+                    $order->setStatus(OrderStatus::WAITING->value);
+                }
+
+                // Ajout dans l'historique uniquement pour les modifications de quantité
+                foreach ($order->getLineItems() as $item) {
+                    $originalData = $this->entityManager->getUnitOfWork()->getOriginalEntityData($item);
+                    if (!$originalData || $originalData['quantity'] !== $item->getQuantity()) {
+                        $variant = $item->getVariant();
+                        $history = new OrderHistory();
+                        if (!$originalData) {
+                            $action = 'ajouté';
+                        } else {
+                            $quantityDiff = $item->getQuantity() - $originalData['quantity'];
+                            $action = $quantityDiff > 0 ? 'augmenté' : 'diminué';
+                        }
+                        $history->setTitle("Le produit '{$variant->getTitle()}' a été {$action} à '{$item->getQuantity()}' exemplaire(s) pour '{$item->getPrice()}€'");
+                        $history->setInvoice($order);
+                        $history->setAdmin($this->getAdmin());
+                        $this->entityManager->persist($history);
+                    }
+                }
+
+                $this->entityManager->flush();
+
+                $this->addFlash(
+                    'success',
+                    "La commande a été modifiée !"
+                );
+
+                return $this->redirectToRoute('admin_order_index');
+            } catch (BadRequestHttpException $e) {
+                $this->addFlash('error', $e->getMessage());
+            }
         }
 
         $products = $productRepository->findBy(['archive' => false], ['title' => "ASC"]);

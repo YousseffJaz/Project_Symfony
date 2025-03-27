@@ -66,9 +66,6 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $orderHistories;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $priceList = null;
-
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $stockList = null;
 
     #[ORM\Column(type: 'boolean', options: ['default' => true])]
@@ -256,18 +253,6 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
                 $orderHistory->setAdmin(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getPriceList(): ?string
-    {
-        return $this->priceList;
-    }
-
-    public function setPriceList(?string $priceList): self
-    {
-        $this->priceList = $priceList;
 
         return $this;
     }

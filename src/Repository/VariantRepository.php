@@ -20,25 +20,33 @@ class VariantRepository extends ServiceEntityRepository
   }
 
   public function filter($keyword, $stockList){
-    $fields = ['v.id', 'v.title', 'l.price', 's.quantity'];
     $query = $this->createQueryBuilder('v')
-    ->leftjoin('v.priceLists', 'l')
+    ->select('v.id', 'v.title', 'v.price', 's.quantity', 'p.title as product_name')
     ->leftjoin('v.product', 'p')
     ->leftjoin('p.stockLists', 's');
 
     if($keyword) {
-      $query->select($fields)
-      ->andWhere('v.title LIKE :keyword')
+      $query
+      ->andWhere('(LOWER(v.title) LIKE LOWER(:keyword) OR LOWER(p.title) LIKE LOWER(:keyword))')
       ->andWhere('s.name = :stockList')
       ->andWhere('v.archive = false')
-      ->setParameter('keyword', '%'.$keyword.'%')
+      ->setParameter('keyword', '%'.strtolower($keyword).'%')
       ->setParameter('stockList', $stockList);
     }
 
     $query->addOrderBy('v.title', "ASC");
 
-    return $query->getQuery()
-    ->getResult();
+    $results = $query->getQuery()->getArrayResult();
+    
+    // Format results to match expected structure
+    return array_map(function($item) {
+      return [
+        'id' => $item['id'],
+        'title' => $item['title'] . ' (' . $item['product_name'] . ')',
+        'price' => $item['price'],
+        'quantity' => $item['quantity']
+      ];
+    }, $results);
   }
 
 

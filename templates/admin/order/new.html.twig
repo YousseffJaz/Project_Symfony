@@ -364,28 +364,34 @@ $(function () {
 
   $("body").on("click", "#lineItemButton", function (e) {
     var stock = $("#lineItemButton").data('quantity');
-    // if (stock < $('#lineItemQuantity').val()) {
-      // alert("Le produit est disponible qu'en "+stock+" exemplaires.");
-    // } else {
-      $('.show_lines').append(`<div class="lineitem flex justify-center items-center m-2 font-medium py-1 px-2 bg-white rounded bg-gray-100 border" style="max-width: fit-content;display: flex;"><input type="hidden" name="variantId[]" value="`+ $("#lineItemButton").data('id') +`"><input type="hidden" name="stockListId[]" value="`+  $('#admin_order_stockList').val() + `"><input type="hidden" name="title[]" value="`+ $("#lineItemTitle").val() +`"><input type="hidden" name="price[]" value="`+ $("#lineItemPrice").val() +`"><input type="hidden" name="priceList[]" value="`+ $('#admin_order_priceList').val() +`"><input type="hidden" name="quantity[]" value="`+ $("#lineItemQuantity").val() +`"><div class="text-xs font-normal leading-none max-w-full flex-initial" style="padding: 7px 5px 7px 15px;">`+ $("#lineItemQuantity").val() +` x (` + $("#lineItemTitle").val() +`) - `+ $("#lineItemPrice").val() +`€ <i class="fas fa-times js-delete-product" data-price="`+ $("#lineItemPrice").val() +`" style=" color: #aaa; margin-left: 7px; margin-right: 3px; cursor: pointer;"></i></div>`);
+    $('.show_lines').append(`<div class="lineitem flex justify-center items-center m-2 font-medium py-1 px-2 bg-white rounded bg-gray-100 border" style="max-width: fit-content;display: flex;">
+      <input type="hidden" name="variantId[]" value="`+ $("#lineItemButton").data('id') +`">
+      <input type="hidden" name="stockListId[]" value="`+ $('#admin_order_stockList').val() +`">
+      <input type="hidden" name="title[]" value="`+ $("#lineItemTitle").val() +`">
+      <input type="hidden" name="price[]" value="`+ $("#lineItemPrice").val() +`">
+      <input type="hidden" name="quantity[]" value="`+ $("#lineItemQuantity").val() +`">
+      <div class="text-xs font-normal leading-none max-w-full flex-initial" style="padding: 7px 5px 7px 15px;">
+        `+ $("#lineItemQuantity").val() +` x (` + $("#lineItemTitle").val() +`) - `+ $("#lineItemPrice").val() +`€ 
+        <i class="fas fa-times js-delete-product" data-price="`+ $("#lineItemPrice").val() +`" style="color: #aaa; margin-left: 7px; margin-right: 3px; cursor: pointer;"></i>
+      </div>
+    </div>`);
 
-      var total = $('#admin_order_total').val();
-      var price = $("#lineItemPrice").val();
+    var total = $('#admin_order_total').val();
+    var price = $("#lineItemPrice").val();
 
-      if (total && price) {
-        var total = parseFloat(total) + parseFloat(price);
-        total = total.toFixed(2);
-      } else if (total) {
-        var total = total;
-      } else if (price) {
-        var total = price;
-      } else {
-        var total = "";
-      }
-      
-      $('#admin_order_total').val(total);
-      $(this).parent().remove();
-    // }
+    if (total && price) {
+      var total = parseFloat(total) + parseFloat(price);
+      total = total.toFixed(2);
+    } else if (total) {
+      var total = total;
+    } else if (price) {
+      var total = price;
+    } else {
+      var total = "";
+    }
+    
+    $('#admin_order_total').val(total);
+    $(this).parent().remove();
   });
 
 
@@ -397,7 +403,7 @@ $(function () {
   $("body").on("keyup", "#lineItemQuantity", function (e) {
     var quantity = $(this).val();
     var price = $("#lineItemButton").data('price');
-    var total = parseFloat(quantity) * parseFloat(price);
+    var total = (parseFloat(quantity) * parseFloat(price)).toFixed(2);
     $('#lineItemPrice').val(total);
   });
 
@@ -410,45 +416,39 @@ $(function () {
     $(".search_bar").removeClass("available");
   });
 
-  $("#search").on("input", function () {
-    if ($(this).val().length) {
-      $.ajax({
-        url : '{{ path("admin_variant_autocomplete") }}',
-        data : {
-          'keyword' : $(this).val().toLowerCase(),
-          'stockList' : $('#admin_order_stockList').val() ? $('#admin_order_stockList').val() : "Lyon"
-        },
-        success: function(result) {
-          console.log(result);
-          $(".search_results").empty();
-          if (result.length > 0) {
-            $(".search_results").addClass("open");
-            $(".search_bar").addClass("available");
-            result.forEach(element => {
-              console.log(element);
-              if (element.quantity > 0) {
-                $(".search_results").append(`<li class="result" data-title="` + element.title + `" data-price="` + element.price + `" data-id="` + element.id + `" data-quantity=` + element.quantity + `><div class="result_text"><p class="name">` + element.title + ` - `+ element.price+`€ - (`+ element.quantity+` disponibles)</p></div></li>`);
-              }
-            });
-            $(".search_results").append(`<li class="result add-product"><div class="result_text"><p class="name" style="color: #1a73e8;"><i class="fas fa-plus" style="padding-right: 5px;"></i> Ajouter un nouveau produit</p></div></li>`);
-          } else {
-            $(".search_results").empty();
-            $(".search_results").removeClass("open");
-            $(".search_bar").removeClass("available");
-          }
-        },
-        error: function(error) {
-          console.log(error);
+  $("#search").on("focus input", function (e) {
+    $.ajax({
+      url : '{{ path("admin_variant_autocomplete") }}',
+      data : {
+        'keyword' : $(this).val().toLowerCase(),
+        'stockList' : $('#admin_order_stockList').val()
+      },
+      success: function(result) {
+        console.log(result);
+        $(".search_results").empty();
+        if (result.length > 0) {
+          $(".search_results").addClass("open");
+          $(".search_bar").addClass("available");
+          result.forEach(element => {
+            console.log(element);
+            if (element.quantity > 0) {
+              $(".search_results").append(`<li class="result" data-title="` + element.title + `" data-price="` + element.price + `" data-id="` + element.id + `" data-quantity=` + element.quantity + `><div class="result_text"><p class="name">` + element.title + ` - `+ element.price+`€ - (`+ element.quantity+` disponibles)</p></div></li>`);
+            }
+          });
+          $(".search_results").append(`<li class="result add-product"><div class="result_text"><p class="name" style="color: #1a73e8;"><i class="fas fa-plus" style="padding-right: 5px;"></i> Ajouter un nouveau produit</p></div></li>`);
+        } else {
           $(".search_results").empty();
           $(".search_results").removeClass("open");
           $(".search_bar").removeClass("available");
         }
-      });
-    } else {
-      $(".search_results").empty();
-      $(".search_results").removeClass("open");
-      $(".search_bar").removeClass("available");
-    }
+      },
+      error: function(error) {
+        console.log(error);
+        $(".search_results").empty();
+        $(".search_results").removeClass("open");
+        $(".search_bar").removeClass("available");
+      }
+    });
   });
 
   $("body").click(function (e) {

@@ -36,7 +36,6 @@
                                   <th>Email</th>
                                   <th>Téléphone</th>
                                   <th>Rôle</th>
-                                  <th>Grille tarifaire</th>
                                   <th>Stock</th>
                                   {# <th>Statistiques</th> #}
                                   {# <th>Commandes</th> #}
@@ -56,7 +55,6 @@
                                     <td>{{ admin.email }}</td>
                                     <td>{{ admin.phone|default('-') }}</td>
                                     <td>{{ admin.role }}</td>
-                                    <td>{{ admin.priceList }}</td>
                                     <td>{{ admin.stockList }}</td>
                                     <td>
                                       <a href="{{ path('admin_admin_edit', { id: admin.id }) }}">

@@ -5,7 +5,6 @@ namespace App\Controller\Admin;
 use App\Entity\Admin;
 use App\Form\AdminRegistrationType;
 use App\Form\AdminAdminType;
-use App\Repository\PriceListRepository;
 use App\Repository\StockListRepository;
 use App\Repository\AdminRepository;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,23 +31,17 @@ class AdminAdminController extends AbstractController
 
     #[Route('/admin/admin/new', name: 'admin_admin_new')]
     #[IsGranted('ROLE_SUPER_ADMIN', message: "Vous n'avez pas le droit d'accéder à cette page")]
-    public function new(Request $request, EntityManagerInterface $manager, UserPasswordHasherInterface $passwordHasher, PriceListRepository $priceRepo, StockListRepository $stockRepo): Response
+    public function new(Request $request, EntityManagerInterface $manager, UserPasswordHasherInterface $passwordHasher, StockListRepository $stockRepo): Response
     {
         $admin = new Admin();
         $form = $this->createForm(AdminRegistrationType::class, $admin);
         $form->handleRequest($request);
-        $prices = $priceRepo->findPriceListName();
         $stocks = $stockRepo->findAllStockName();
 
         if($form->isSubmitted() && $form->isValid()) {
-            $priceList = $request->request->get('priceList');
             $stockList = $request->request->get('stockList');
             $hash = $passwordHasher->hashPassword($admin, $admin->getHash());
             $admin->setHash($hash);
-
-            if ($priceList) {
-                $admin->setPriceList($priceList);
-            }
 
             if ($stockList) {
                 $admin->setStockList($stockList);
@@ -64,31 +57,24 @@ class AdminAdminController extends AbstractController
 
         return $this->render('admin/admin/new.html.twig', [
             'form' => $form->createView(),
-            'prices' => $prices,
             'stocks' => $stocks,
         ]);
     }
 
     #[Route('/admin/admin/edit/{id}', name: 'admin_admin_edit')]
     #[IsGranted('ROLE_SUPER_ADMIN', message: "Vous n'avez pas le droit d'accéder à cette page")]
-    public function edit(Admin $admin, Request $request, EntityManagerInterface $manager, PriceListRepository $priceRepo, StockListRepository $stockRepo, UserPasswordHasherInterface $passwordHasher): Response
+    public function edit(Admin $admin, Request $request, EntityManagerInterface $manager, StockListRepository $stockRepo, UserPasswordHasherInterface $passwordHasher): Response
     {
         $form = $this->createForm(AdminAdminType::class, $admin);
         $form->handleRequest($request);
-        $prices = $priceRepo->findPriceListName();
         $stocks = $stockRepo->findAllStockName();
 
         if($form->isSubmitted() && $form->isValid()) {
             $stockList = $request->request->get('stockList');
-            $priceList = $request->request->get('priceList');
 
             if ($admin->getHash()) {
                 $hash = $passwordHasher->hashPassword($admin, $admin->getHash());
                 $admin->setHash($hash);
-            }
-
-            if ($priceList) {
-                $admin->setPriceList($priceList);
             }
 
             if ($stockList) {
@@ -103,7 +89,6 @@ class AdminAdminController extends AbstractController
         }
 
         return $this->render('admin/admin/edit.html.twig', [
-            'prices' => $prices,
             'stocks' => $stocks,
             'admin' => $admin,
             'form' => $form->createView()

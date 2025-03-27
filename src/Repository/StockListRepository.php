@@ -35,7 +35,7 @@ class StockListRepository extends ServiceEntityRepository
   public function findQuantityByProductAndStock($product, $stock){
     $query = $this->createQueryBuilder('s')
     ->select('SUM(s.quantity) as quantity, p.id as id')
-    ->groupBy("s.product")
+    ->groupBy("s.product, p.id")
     ->leftJoin('s.product', 'p')
     ->andWhere('p.id = :product')
     ->andWhere("s.name = :stock")

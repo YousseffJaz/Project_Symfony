@@ -16,117 +16,117 @@ class VariantFixtures extends Fixture implements DependentFixtureInterface
             [
                 'product' => 'product_ordinateur_portable_pro',
                 'title' => 'Noir',
-                'archive' => false,
+                'price' => 1299.99,
             ],
             [
                 'product' => 'product_ordinateur_portable_pro',
                 'title' => 'Argent',
-                'archive' => false,
+                'price' => 1399.99,
             ],
             [
                 'product' => 'product_smartphone_premium',
                 'title' => 'Noir',
-                'archive' => false,
+                'price' => 899.99,
             ],
             [
                 'product' => 'product_smartphone_premium',
                 'title' => 'Or',
-                'archive' => false,
+                'price' => 999.99,
             ],
             [
                 'product' => 'product_cable_usb_type-c',
                 'title' => '1m',
-                'archive' => false,
+                'price' => 19.99,
             ],
             [
                 'product' => 'product_cable_usb_type-c',
                 'title' => '2m',
-                'archive' => false,
+                'price' => 29.99,
             ],
             [
                 'product' => 'product_processeur_intel_i7',
                 'title' => 'Standard',
-                'archive' => false,
+                'price' => 399.99,
             ],
             [
                 'product' => 'product_processeur_intel_i7',
                 'title' => 'Overclocked',
-                'archive' => false,
+                'price' => 449.99,
             ],
             [
                 'product' => 'product_carte_graphique_rtx_4070',
                 'title' => 'Standard',
-                'archive' => false,
+                'price' => 799.99,
             ],
             [
                 'product' => 'product_carte_graphique_rtx_4070',
                 'title' => 'OC Edition',
-                'archive' => false,
+                'price' => 849.99,
             ],
             [
                 'product' => 'product_ssd_1to_nvme',
                 'title' => 'Standard',
-                'archive' => false,
+                'price' => 129.99,
             ],
             [
                 'product' => 'product_ecran_27_4k',
                 'title' => 'Noir',
-                'archive' => false,
+                'price' => 449.99,
             ],
             [
                 'product' => 'product_ecran_27_4k',
                 'title' => 'Blanc',
-                'archive' => false,
+                'price' => 449.99,
             ],
             [
                 'product' => 'product_souris_gaming_pro',
                 'title' => 'Noir',
-                'archive' => false,
+                'price' => 79.99,
             ],
             [
                 'product' => 'product_souris_gaming_pro',
                 'title' => 'Blanc',
-                'archive' => false,
+                'price' => 79.99,
             ],
             [
                 'product' => 'product_clavier_mecanique_rgb',
                 'title' => 'AZERTY',
-                'archive' => false,
+                'price' => 149.99,
             ],
             [
                 'product' => 'product_clavier_mecanique_rgb',
                 'title' => 'QWERTY',
-                'archive' => false,
+                'price' => 149.99,
             ],
             [
                 'product' => 'product_casque_audio_sans_fil',
                 'title' => 'Noir',
-                'archive' => false,
+                'price' => 199.99,
             ],
             [
                 'product' => 'product_casque_audio_sans_fil',
                 'title' => 'Blanc',
-                'archive' => false,
+                'price' => 199.99,
             ],
             [
                 'product' => 'product_webcam_hd',
                 'title' => 'Standard',
-                'archive' => false,
+                'price' => 69.99,
             ],
             [
                 'product' => 'product_tablette_graphique',
                 'title' => 'Small',
-                'archive' => false,
+                'price' => 249.99,
             ],
             [
                 'product' => 'product_tablette_graphique',
                 'title' => 'Medium',
-                'archive' => false,
+                'price' => 299.99,
             ],
             [
                 'product' => 'product_tablette_graphique',
                 'title' => 'Large',
-                'archive' => false,
+                'price' => 349.99,
             ]
         ];
 
@@ -134,10 +134,10 @@ class VariantFixtures extends Fixture implements DependentFixtureInterface
             $variant = new Variant();
             $variant->setProduct($this->getReference($variantData['product'], Product::class));
             $variant->setTitle($variantData['title']);
-            $variant->setArchive($variantData['archive']);
+            $variant->setPrice($variantData['price']);
             
             $manager->persist($variant);
-            $this->addReference('variant_' . strtolower(str_replace(' ', '_', $variantData['product'] . '_' . $variantData['title'])), $variant);
+            $this->addReference('variant_' . strtolower(str_replace(' ', '_', $variantData['product'])) . '_' . strtolower($variantData['title']), $variant);
         }
 
         $manager->flush();

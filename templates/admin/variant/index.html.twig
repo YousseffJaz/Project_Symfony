@@ -22,32 +22,20 @@
           {% endfor %}
           <div class="card">
             <div class="card-header">
-              <h5>Grille tarifaire des variants</h5>
+              <h5>Liste des variants</h5>
               <a href="{{ path('admin_product_index') }}" class="btn btn-out-dashed waves-effect waves-light btn-info btn-square" style="float: right; padding: 5px 10px; margin: 0px 5px;">
                 <i class="fas fa-boxes"></i> Voir les produits et stocks
               </a>
             </div>
             <div class="card-block table-border-style">
-              {% set length = [] %}
               {% if variants %}
-                {% for variant in variants %}
-                  {% if variant.priceLists.toArray %}
-                    {% for priceLists in variant.priceLists.toArray %}
-                      {% if priceLists.title not in length %}
-                        {% set length = length|merge([priceLists.title]) %}
-                      {% endif %}
-                    {% endfor %}
-                  {% endif %}
-                {% endfor %}
                 <div class="table-responsive">
                   <table class="table table-striped table-bordered datatable display">
                     <thead>
                       <tr>
                         <th>Titre</th>
                         <th>Produit</th>
-                        {% for priceTitle in length %}
-                          <th>{{priceTitle}}</th>
-                        {% endfor %}
+                        <th>Prix</th>
                         <th>Action</th>
                       </tr>
                     </thead>
@@ -62,19 +50,7 @@
                               </a>
                             {% endif %}
                           </td>
-                          {% for priceTitle in length %}
-                            {% if variant.priceLists.toArray %}
-                              <td> 
-                                {% for priceLists in variant.priceLists.toArray %}
-                                  {% if priceTitle == priceLists.title %}
-                                    {{ priceLists.price|number_format(2, ',', ' ') }}€
-                                  {% endif %}
-                                {% endfor %}
-                              </td>
-                            {% else %}
-                              <td></td>
-                            {% endif %}
-                          {% endfor %}
+                          <td>{{ variant.price|number_format(2, ',', ' ') }}€</td>
                           <td>
                             {% if app.user.role == "ROLE_SUPER_ADMIN" %}
                               <a href="{{ path('admin_variant_edit', { id: variant.id }) }}">

@@ -63,25 +63,13 @@
               <a href="{{ path('admin_variant_new', { id: product.id }) }}" class="btn btn-out-dashed waves-effect waves-light btn-primary btn-square text-right" style="float: right; padding: 5px 10px; margin: 0px 5px;">Ajouter un variant</a>
             </div>
             <div class="card-block table-border-style">
-              {% set length = [] %}
               {% if variants %}
-                {% for variant in variants %}
-                  {% if variant.priceLists.toArray %}
-                    {% for priceLists in variant.priceLists.toArray %}
-                      {% if priceLists.title not in length %}
-                        {% set length = length|merge([priceLists.title]) %}
-                      {% endif %}
-                    {% endfor %}
-                  {% endif %}
-                {% endfor %}
                 <div class="table-responsive">
                   <table class="table table-striped table-bordered datatable display">
                     <thead>
                       <tr>
                         <th>Titre</th>
-                        {% for priceTitle in length %}
-                          <th>{{priceTitle}}</th>
-                        {% endfor %}
+                        <th>Prix</th>
                         <th>Action</th>
                       </tr>
                     </thead>
@@ -89,25 +77,23 @@
                       {% for variant in variants %} 
                         <tr>
                           <td>{{variant.title }}</td>
-                          {% for priceTitle in length %}
-                            {% if variant.priceLists.toArray %}
-                              <td> 
-                                {% for priceLists in variant.priceLists.toArray %}
-                                  {% if priceTitle == priceLists.title %}
-                                    {% set profit = priceLists.price - product.purchasePrice %}
-                                    {% if product.purchasePrice > 0 %}
-                                      {% set margin = (priceLists.price/product.purchasePrice) * 100 - 100 %}
-                                    {% else %}
-                                      {% set margin = 0 %}
-                                    {% endif %}
-                                    <div class="flex justify-center items-center m-2 font-medium py-1 px-2 bg-white rounded bg-gray-100 border" style="max-width: fit-content; display: flex;"><div class="text-xs font-normal leading-none max-w-full flex-initial">Prix : {{ priceLists.price|number_format(2, ',', ' ') }}€</div></div>
-                                    <div class="flex justify-center items-center m-2 font-medium py-1 px-2 bg-white rounded bg-gray-100 border" style="max-width: fit-content; display: flex;color: #7f8c8d;"><div class="text-xs font-normal leading-none max-w-full flex-initial">Marge : {{ margin|number_format(2, ',', ' ') }}%</div></div>
-                                    <div class="flex justify-center items-center m-2 font-medium py-1 px-2 bg-white rounded bg-gray-100 border" style="max-width: fit-content; display: flex;color: #7f8c8d;"><div class="text-xs font-normal leading-none max-w-full flex-initial">Profit : {{ profit|number_format(4, ',', ' ') }}€</div></div>
-                                  {% endif %}
-                                {% endfor %}
-                              </td>
+                          <td>
+                            {% set profit = variant.price - product.purchasePrice %}
+                            {% if product.purchasePrice > 0 %}
+                              {% set margin = (variant.price/product.purchasePrice) * 100 - 100 %}
+                            {% else %}
+                              {% set margin = 0 %}
                             {% endif %}
-                          {% endfor %}
+                            <div class="flex justify-center items-center m-2 font-medium py-1 px-2 bg-white rounded bg-gray-100 border" style="max-width: fit-content; display: flex;">
+                              <div class="text-xs font-normal leading-none max-w-full flex-initial">Prix : {{ variant.price|number_format(2, ',', ' ') }}€</div>
+                            </div>
+                            <div class="flex justify-center items-center m-2 font-medium py-1 px-2 bg-white rounded bg-gray-100 border" style="max-width: fit-content; display: flex;color: #7f8c8d;">
+                              <div class="text-xs font-normal leading-none max-w-full flex-initial">Marge : {{ margin|number_format(2, ',', ' ') }}%</div>
+                            </div>
+                            <div class="flex justify-center items-center m-2 font-medium py-1 px-2 bg-white rounded bg-gray-100 border" style="max-width: fit-content; display: flex;color: #7f8c8d;">
+                              <div class="text-xs font-normal leading-none max-w-full flex-initial">Profit : {{ profit|number_format(2, ',', ' ') }}€</div>
+                            </div>
+                          </td>
                           <td>
                             <a href="{{ path('admin_variant_edit', { id: variant.id }) }}">
                               <i class="fas fa-edit" style="color: #4099ff; font-size: 20px; padding: 3px;"></i>
@@ -170,7 +156,6 @@ function updateCounter() {
 updateCounter();
 handleDeleteButtons();
 </script>
-
 
 {% endblock %}
 

@@ -37,12 +37,6 @@ class AdminVariantController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $variant->setProduct($product);
-
-            foreach ($variant->getPriceLists() as $price) {
-                $price->setVariant($variant);
-                $manager->persist($price);
-            }
-
             $manager->persist($variant);
             $manager->flush();
 
@@ -67,11 +61,6 @@ class AdminVariantController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            foreach ($variant->getPriceLists() as $price) {
-                $price->setVariant($variant);
-                $manager->persist($price);
-            }
-            
             $manager->flush();
 
             $this->addFlash(

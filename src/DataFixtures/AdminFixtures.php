@@ -22,9 +22,9 @@ class AdminFixtures extends Fixture
             [
                 'firstName' => 'Admin',
                 'lastName' => 'System',
-                'email' => 'admin@example.com',
+                'email' => 'test@gmail.com',
                 'phone' => '0000000000',
-                'password' => 'Admin123!@#',
+                'password' => 'testtest',
                 'role' => 'ROLE_SUPER_ADMIN',
             ],
             [
@@ -60,6 +60,10 @@ class AdminFixtures extends Fixture
             $admin->setHash($hashedPassword);
             
             $manager->persist($admin);
+            
+            // Ajouter une référence pour chaque admin
+            $reference = 'admin_' . strtolower(str_replace(' ', '_', $adminData['firstName']));
+            $this->addReference($reference, $admin);
         }
 
         $manager->flush();

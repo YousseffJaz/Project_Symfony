@@ -6,8 +6,8 @@ use App\Service\Statistics\StatisticsService;
 use App\Service\Cache\StatisticsCacheService;
 use App\Repository\OrderRepository;
 use App\Repository\ProductRepository;
-use App\Repository\PriceListRepository;
 use App\Repository\StockListRepository;
+use App\Repository\VariantRepository;
 use App\Repository\FluxRepository;
 use App\Enum\PaymentMethod;
 use App\Enum\PaymentType;
@@ -200,30 +200,31 @@ class AdminStatistiqueController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function stocks(
         ProductRepository $productRepo,
-        PriceListRepository $priceRepo,
+        VariantRepository $variantRepo,
         StockListRepository $stockRepo
     ) {
-        $products = $productRepo->findBy(['archive' => false, 'digital' => false ]);
+        $products = $productRepo->findBy(['archive' => false, 'digital' => false]);
         $stocks = $stockRepo->findStockName();
         $array = [];
 
-        foreach ($stocks as $key=>$stock) {
+        foreach ($stocks as $key => $stock) {
             $amount = 0;
             foreach ($products as $product) {
                 $quantity = $stockRepo->findQuantityByProductAndStock($product, $stock);
-                $listPrices = $priceRepo->findByProduct($product);
-                if ($listPrices && $stocks) {
+                $variants = $variantRepo->findBy(['product' => $product, 'archive' => false]);
+                
+                if ($variants && $quantity) {
                     foreach ($quantity as $items) {
-                        $price = 0;
-                        foreach ($listPrices as $list) {
-                            $price = $price + $list['price'];
+                        $totalPrice = 0;
+                        foreach ($variants as $variant) {
+                            $totalPrice += $variant->getPrice();
                         }
-                        $price = $price / sizeof($listPrices);
-                        $amount = $amount + ($items['quantity'] * round($price, 2));
+                        $averagePrice = count($variants) > 0 ? $totalPrice / count($variants) : 0;
+                        $amount += $items['quantity'] * round($averagePrice, 2);
                     }
                 }
             }
-            $array[] = [ 'name' => $stock['name'], 'amount' => $amount ];
+            $array[] = ['name' => $stock['name'], 'amount' => $amount];
         }
 
         return $this->render('admin/statistiques/stocks.html.twig', [
@@ -232,7 +233,6 @@ class AdminStatistiqueController extends AbstractController
     }
 
     public static function dateToFrench($date) {
-
         $french_months = ["Janv.", "Févr.", "Mars", "Avr.", "Mai", "Juin", "Juil.", "Aoùt", "Sept.", "Oct.", "Nov.", "Déc."];
         $english_months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
