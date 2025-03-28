@@ -87,18 +87,7 @@ services:
         arguments:
             $cache: '@stats.cache'
 
-    App\Repository\ProductSearchRepository:
-        arguments:
-            $finder: '@fos_elastica.finder.products'
 
-    App\EventListener\ProductIndexer:
-        arguments:
-            $persister: '@fos_elastica.object_persister.products'
+    App\EventSubscriber\OrderStockValidationSubscriber:
         tags:
-            - { name: 'doctrine.event_listener', event: 'postPersist' }
-            - { name: 'doctrine.event_listener', event: 'postUpdate' }
-            - { name: 'doctrine.event_listener', event: 'preRemove' }
-
-    App\EventListener\OrderStockValidationListener:
-        tags:
-            - { name: kernel.event_listener, event: order.pre_validation, method: onPreOrderValidation }
+            - { name: kernel.event_subscriber }

@@ -16,8 +16,15 @@ class Kernel extends BaseKernel
     public function boot(): void
     {
         parent::boot();
-        $this->container->get('bugsnag')->registerCallback(function ($report) {
-        });
+        
+        if ($this->getEnvironment() === 'prod') {
+            // Configuration de Sentry pour la production
+            if ($this->container->has('sentry')) {
+                $this->container->get('sentry')->configureScope(function ($scope) {
+                    $scope->setTag('environment', $this->getEnvironment());
+                });
+            }
+        }
     }
 
     const CONFIG_EXTS = '.{php,xml,yaml,yml}';

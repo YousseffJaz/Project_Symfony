@@ -4,7 +4,7 @@ namespace App\Tests\Unit\EventSubscriber;
 
 use App\Entity\LineItem;
 use App\Entity\Order;
-use App\Entity\Stock;
+use App\Entity\StockList;
 use App\Entity\Variant;
 use App\Event\PreOrderValidationEvent;
 use App\EventSubscriber\OrderStockValidationSubscriber;
@@ -68,10 +68,10 @@ class OrderStockValidationSubscriberTest extends TestCase
         $lineItem = new LineItem();
         $variant = new Variant();
         $variant->setTitle('Test Variant');
-        $stock = new Stock();
-        $stock->setQuantity(5);
+        $stockList = new StockList();
+        $stockList->setQuantity(5);
         $lineItem->setVariant($variant);
-        $lineItem->setStock($stock);
+        $lineItem->setStock($stockList);
         $lineItem->setQuantity(10);
         $order->addLineItem($lineItem);
 

@@ -1,6 +1,0 @@
-bugsnag:
-  api_key: '%env(BUGSNAG_API_KEY)%'
-  release_stage: '%env(APP_ENV)%'
-  notify_release_stages:
-    - production
-  app_version: 1.0.0

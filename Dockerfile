@@ -45,12 +45,20 @@ COPY .env.test .env
 RUN composer install --no-interaction --optimize-autoloader
 
 # Configuration des permissions
-RUN chown -R www-data:www-data var
+RUN chown -R www-data:www-data var \
+    && chmod -R 777 var \
+    && chown -R www-data:www-data bin \
+    && chmod -R 777 bin
 
 # Configuration de Xdebug
 RUN echo "xdebug.mode=debug,develop" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && echo "xdebug.client_host=host.docker.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
-    && echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+    && echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.log_level=0" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.output_dir=/dev/null" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
+# Configuration de PHP pour Sentry
+RUN echo "zend.exception_ignore_args=Off" >> /usr/local/etc/php/conf.d/sentry.ini
 
 # Configuration d'APCu
 RUN echo "apc.enable_cli=1" >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini 

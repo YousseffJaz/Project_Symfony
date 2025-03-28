@@ -8,7 +8,6 @@ Ce projet est une application de gestion développée avec Symfony 7.
 - Composer
 - Symfony CLI
 - PostgreSQL 14 ou supérieur
-- Elasticsearch 8.0 ou supérieur
 - Docker et Docker Compose
 - Redis 7.0 ou supérieur
 
@@ -30,13 +29,13 @@ docker-compose up -d
 composer install
 ```
 
-4. Configurer les bases de données, Redis et Elasticsearch :
+4. Configurer les bases de données et Redis :
 - Créer un fichier `.env.local` à la racine du projet
 - Configurer les variables d'environnement :
 ```env
 DATABASE_URL="postgresql://user:password@postgres:5432/dbname?serverVersion=14&charset=utf8"
-ELASTICSEARCH_URL="http://elasticsearch:9200"
 REDIS_URL="redis://redis:6379"
+SENTRY_DSN="votre_dsn_sentry"  # Obtenir votre DSN depuis le dashboard Sentry
 ```
 
 5. Créer la base de données :
@@ -57,7 +56,7 @@ Le projet utilise API Platform pour exposer une API REST.
 
 Les endpoints disponibles :
 
-- Catégories (PostgreSQL) :
+- Catégories :
   - GET `/api/categories` : Liste toutes les catégories
   - GET `/api/categories/{id}` : Récupère une catégorie spécifique
   - POST `/api/categories` : Crée une nouvelle catégorie
@@ -93,6 +92,20 @@ Les paramètres principaux sont configurés dans `config/services.yaml` :
 - `cookie_lifetime`: Durée de vie des cookies (14400)
 - `redis_ttl`: Durée de vie du cache Redis pour les statistiques (3600)
 
+### Monitoring avec Sentry
+
+Le projet utilise Sentry pour le monitoring des erreurs et des performances. La configuration se fait via la variable d'environnement :
+```env
+SENTRY_DSN="votre_dsn_sentry"
+```
+
+Fonctionnalités Sentry activées :
+- Capture des exceptions
+- Traçage des performances
+- Intégration avec Doctrine et Twig
+- Monitoring des requêtes HTTP
+- Support multilingue (i18n)
+
 ## Fonctionnalités
 
 - Gestion des produits
@@ -103,7 +116,7 @@ Les paramètres principaux sont configurés dans `config/services.yaml` :
 - Gestion des statistiques avec mise en cache Redis
 - Système de notification
 - Support multilingue (i18n)
-- Intégration Bugsnag pour le monitoring des erreurs
+- Intégration Sentry pour le monitoring des erreurs et des performances
 - Support CORS (Cross-Origin Resource Sharing)
 - API REST sécurisée
 
@@ -144,7 +157,6 @@ config/
 docker/               # Configuration Docker
 ├── nginx/            # Configuration Nginx
 ├── php/             # Configuration PHP-FPM
-├── elasticsearch/   # Configuration Elasticsearch
 └── redis/           # Configuration Redis
 ```
 
@@ -154,7 +166,6 @@ Le projet utilise Docker pour l'environnement de développement. Les services di
 - `nginx`: Serveur web
 - `php`: Application PHP-FPM
 - `postgres`: Base de données PostgreSQL
-- `elasticsearch`: Moteur de recherche Elasticsearch
 - `redis`: Cache Redis
 
 Pour gérer les conteneurs :
@@ -170,9 +181,6 @@ docker-compose logs -f
 
 # Accéder au conteneur PHP
 docker-compose exec php bash
-
-# Accéder à Elasticsearch
-curl http://localhost:9200
 ```
 
 ## Tests

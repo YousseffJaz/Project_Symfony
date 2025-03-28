@@ -13,18 +13,6 @@
             "src/ApiResource/.gitignore"
         ]
     },
-    "bugsnag/bugsnag-symfony": {
-        "version": "1.14",
-        "recipe": {
-            "repo": "github.com/symfony/recipes-contrib",
-            "branch": "main",
-            "version": "1.13",
-            "ref": "f571597c0e65ca904f2d853c2396017ab28da0df"
-        },
-        "files": [
-            "config/packages/bugsnag.yaml"
-        ]
-    },
     "doctrine/doctrine-bundle": {
         "version": "2.14",
         "recipe": {
@@ -64,18 +52,6 @@
             "migrations/.gitignore"
         ]
     },
-    "friendsofsymfony/elastica-bundle": {
-        "version": "6.6",
-        "recipe": {
-            "repo": "github.com/symfony/recipes-contrib",
-            "branch": "main",
-            "version": "5.0",
-            "ref": "46c9cd2c1e07f0fcfd97e96f12b03b2e0845c4cd"
-        },
-        "files": [
-            "config/packages/fos_elastica.yaml"
-        ]
-    },
     "nelmio/cors-bundle": {
         "version": "2.5",
         "recipe": {
@@ -112,6 +88,18 @@
             ".env.test",
             "phpunit.xml.dist",
             "tests/bootstrap.php"
+        ]
+    },
+    "sentry/sentry-symfony": {
+        "version": "5.2",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "5.0",
+            "ref": "76afa07d23e76f678942f00af5a6a417ba0816d0"
+        },
+        "files": [
+            "config/packages/sentry.yaml"
         ]
     },
     "symfony/apache-pack": {

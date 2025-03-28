@@ -26,6 +26,13 @@ class AdminProductType extends AbstractType
         'autocomplete' => 'off'
       ]
     ])
+    ->add('price', NumberType::class, [
+      'attr' => [
+        'class' => 'form-control',
+        'autocomplete' => 'off'
+      ],
+      'required' => false
+    ])
     ->add('purchasePrice', NumberType::class, [
       'attr' => [
         'class' => 'form-control',

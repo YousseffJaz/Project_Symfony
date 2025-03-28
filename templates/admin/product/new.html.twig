@@ -31,11 +31,12 @@
                 <div class="col-md-6">
                   {{ form_row(form.title, { 'label': 'Titre' }) }}<br>
                   {{ form_row(form.purchasePrice, { 'label': "Prix de revient (€)" }) }}<br>
-                  {{ form_row(form.digital, { 'label': 'Produit digital' }) }}
+                  {{ form_row(form.price, { 'label': "Prix de vente (€)" }) }}
                 </div>
                 <div class="col-md-6">
                   {{ form_row(form.category, { 'label': 'Catégorie' }) }}<br>
-                  {{ form_row(form.alert, { 'label': 'Alerte' }) }}
+                  {{ form_row(form.alert, { 'label': 'Alerte' }) }}<br>
+                  {{ form_row(form.digital, { 'label': 'Produit digital' }) }}
                 </div>
               </div>
               <hr>

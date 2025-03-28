@@ -54,6 +54,7 @@ class AdminProductController extends AbstractController
             $variant = new Variant();
             $variant->setTitle($product->getTitle()); 
             $variant->setProduct($product);
+            $variant->setPrice($product->getPrice());
 
             $manager->persist($variant);
             $manager->flush();

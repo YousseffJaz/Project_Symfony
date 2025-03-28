@@ -1,13 +1,42 @@
 <?php
 
-namespace App\EventListener;
+namespace App\EventSubscriber;
 
 use App\Event\PreOrderValidationEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-class OrderStockValidationListener
+class OrderStockValidationSubscriber implements EventSubscriberInterface
 {
-    public function onPreOrderValidation(PreOrderValidationEvent $event): void
+    private const MINIMUM_ORDER_AMOUNT = 10.0; // Montant minimum de commande en euros
+
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            PreOrderValidationEvent::NAME => [
+                ['validateStock', 20],
+                ['validateMinimumOrderAmount', 10]
+            ]
+        ];
+    }
+
+    public function validateMinimumOrderAmount(PreOrderValidationEvent $event): void
+    {
+        $order = $event->getOrder();
+        $total = $order->getTotal();
+
+        if ($total < self::MINIMUM_ORDER_AMOUNT) {
+            throw new BadRequestHttpException(
+                sprintf(
+                    'Le montant total de la commande (%.2f€) est inférieur au minimum requis (%.2f€)',
+                    $total,
+                    self::MINIMUM_ORDER_AMOUNT
+                )
+            );
+        }
+    }
+
+    public function validateStock(PreOrderValidationEvent $event): void
     {
         $order = $event->getOrder();
         $originalLineItems = $event->getOriginalLineItems();
