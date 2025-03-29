@@ -11,5 +11,4 @@ parameters:
         - '#Property [a-zA-Z0-9\\_]+::\$id is never written, only read#'
         - '#If condition is always true#'
         - '#Call to an undefined method [a-zA-Z0-9\\_]+::expects\(\)#'
-        - '#Call to method PHPUnit\\Framework\\Assert::(assertTrue|assertFalse|assertIsArray)\(\) with .* will always evaluate to true#'
-        - '#Parameter \#1 \$(paymentMethod|paymentType) of method App\\Entity\\Order::set(PaymentMethod|PaymentType)\(\) expects string\|null, int given#' 
+        - '#Call to method PHPUnit\\Framework\\Assert::(assertTrue|assertFalse|assertIsArray)\(\) with .* will always evaluate to true#' 

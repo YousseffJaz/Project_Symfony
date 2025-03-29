@@ -42,8 +42,11 @@ class AdminOrderController extends AbstractController
 
     private function getAdmin(): Admin
     {
-        /* @var Admin */
-        return $this->getUser();
+        $user = $this->getUser();
+        if (!$user instanceof Admin) {
+            throw new \RuntimeException('User must be an Admin instance');
+        }
+        return $user;
     }
 
     #[Route('/admin/orders', name: 'admin_order_index')]
