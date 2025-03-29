@@ -6,7 +6,7 @@ services:
     volumes:
       - .:/var/www
     environment:
-      - SENTRY_DSN=${SENTRY_DSN}
+      - SENTRY_DSN=null
     depends_on:
       - database
       - redis
