@@ -1,19 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Admin;
 
 use App\Entity\Admin;
 use App\Entity\PasswordUpdate;
-use App\Form\PasswordUpdateType;
 use App\Form\AdminAccountType;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use App\Form\PasswordUpdateType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class AdminAccountController extends AbstractController
 {
@@ -24,8 +26,8 @@ class AdminAccountController extends AbstractController
         $username = $utils->getLastUsername();
 
         return $this->render('admin/account/login.html.twig', [
-            'hasError' => $error !== null,
-            'username' => $username
+            'hasError' => null !== $error,
+            'username' => $username,
         ]);
     }
 
@@ -40,7 +42,7 @@ class AdminAccountController extends AbstractController
     public function profile(
         Request $request,
         EntityManagerInterface $entityManager,
-        UserPasswordHasherInterface $passwordHasher
+        UserPasswordHasherInterface $passwordHasher,
     ): Response {
         /** @var Admin $admin */
         $admin = $this->getUser();
@@ -57,7 +59,7 @@ class AdminAccountController extends AbstractController
 
             $this->addFlash(
                 'success',
-                "Les données du profil ont été modifiées avec succès !"
+                'Les données du profil ont été modifiées avec succès !'
             );
         }
 
@@ -71,7 +73,7 @@ class AdminAccountController extends AbstractController
 
             $this->addFlash(
                 'success',
-                "Votre mot de passe a bien été modifié !"
+                'Votre mot de passe a bien été modifié !'
             );
         }
 

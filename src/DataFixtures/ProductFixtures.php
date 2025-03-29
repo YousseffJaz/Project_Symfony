@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
-use App\Entity\Product;
 use App\Entity\Category;
+use App\Entity\Product;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -96,7 +98,7 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
                 'category' => 'category_informatique',
                 'purchasePrice' => 199.99,
                 'alert' => 5,
-            ]
+            ],
         ];
 
         foreach ($products as $productData) {
@@ -106,9 +108,9 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
             $product->setCategory($this->getReference($productData['category'], Category::class));
             $product->setPurchasePrice($productData['purchasePrice']);
             $product->setAlert($productData['alert']);
-            
+
             $manager->persist($product);
-            $reference = 'product_' . strtolower(str_replace(' ', '_', $productData['title']));
+            $reference = 'product_'.strtolower(str_replace(' ', '_', $productData['title']));
             $this->addReference($reference, $product);
         }
 
@@ -121,4 +123,4 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
             CategoryFixtures::class,
         ];
     }
-} 
+}

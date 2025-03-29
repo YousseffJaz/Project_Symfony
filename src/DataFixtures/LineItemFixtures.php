@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\Entity\LineItem;
@@ -30,30 +32,30 @@ class LineItemFixtures extends Fixture implements DependentFixtureInterface
             'clavier_mecanique_rgb',
             'casque_audio_sans_fil',
             'webcam_hd',
-            'tablette_graphique'
+            'tablette_graphique',
         ];
 
         // Créer quelques lignes de commande de test
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 20; ++$i) {
             $lineItem = new LineItem();
-            
+
             // Sélectionner un produit aléatoire
             $productRef = $faker->randomElement($products);
-            $product = $this->getReference('product_' . $productRef, Product::class);
-            
+            $product = $this->getReference('product_'.$productRef, Product::class);
+
             // Récupérer un variant du produit
-            $variantRef = 'variant_' . $productRef . '_' . strtolower($faker->randomElement(['noir', 'standard', 'azerty', '1m']));
+            $variantRef = 'variant_'.$productRef.'_'.strtolower($faker->randomElement(['noir', 'standard', 'azerty', '1m']));
             try {
                 $variant = $this->getReference($variantRef, Variant::class);
-                
+
                 $lineItem->setTitle($variant->getTitle());
                 $lineItem->setQuantity($faker->numberBetween(1, 10));
                 $lineItem->setPrice($variant->getPrice());
                 $lineItem->setProduct($product);
                 $lineItem->setVariant($variant);
-                
+
                 // Assigner une commande aléatoire
-                $order = $this->getReference('order_' . $faker->numberBetween(1, 3), Order::class);
+                $order = $this->getReference('order_'.$faker->numberBetween(1, 3), Order::class);
                 $lineItem->setOrder($order);
 
                 $manager->persist($lineItem);
@@ -74,4 +76,4 @@ class LineItemFixtures extends Fixture implements DependentFixtureInterface
             VariantFixtures::class,
         ];
     }
-} 
+}

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App;
 
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
@@ -16,8 +18,8 @@ class Kernel extends BaseKernel
     public function boot(): void
     {
         parent::boot();
-        
-        if ($this->getEnvironment() === 'prod') {
+
+        if ('prod' === $this->getEnvironment()) {
             // Configuration de Sentry pour la production
             if ($this->container->has('sentry')) {
                 $this->container->get('sentry')->configureScope(function ($scope) {
@@ -27,7 +29,7 @@ class Kernel extends BaseKernel
         }
     }
 
-    const CONFIG_EXTS = '.{php,xml,yaml,yml}';
+    public const CONFIG_EXTS = '.{php,xml,yaml,yml}';
 
     public function getCacheDir(): string
     {

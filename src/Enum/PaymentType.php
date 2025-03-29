@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enum;
 
 enum PaymentType: int
@@ -9,9 +11,9 @@ enum PaymentType: int
 
     public function getLabel(): string
     {
-        return match($this) {
+        return match ($this) {
             self::ONLINE => 'En ligne',
             self::LOCAL => 'Sur place',
         };
     }
-} 
+}

@@ -1,17 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
-use ApiPlatform\Metadata\Delete;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
@@ -20,7 +22,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Get(),
         new Post(),
         new Put(),
-        new Delete()
+        new Delete(),
     ],
     normalizationContext: ['groups' => ['product:read']],
     denormalizationContext: ['groups' => ['product:write']]
@@ -136,7 +138,7 @@ class Product
         }
 
         // Gérer l'ancienne catégorie si elle existe
-        if ($this->category !== null) {
+        if (null !== $this->category) {
             $oldCategory = $this->category;
             $this->category = null;
             $oldCategory->removeProduct($this);
@@ -146,7 +148,7 @@ class Product
         $this->category = $category;
 
         // Si une nouvelle catégorie est définie, ajouter ce produit à sa collection
-        if ($category !== null && !$category->getProduct()->contains($this)) {
+        if (null !== $category && !$category->getProduct()->contains($this)) {
             $category->addProduct($this);
         }
 

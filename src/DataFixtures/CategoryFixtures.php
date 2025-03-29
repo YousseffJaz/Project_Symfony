@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\Entity\Category;
@@ -28,11 +30,11 @@ class CategoryFixtures extends Fixture
         foreach ($categories as $categoryData) {
             $category = new Category();
             $category->setName($categoryData['name']);
-            
+
             $manager->persist($category);
-            $this->addReference('category_' . strtolower(str_replace(' ', '_', $categoryData['name'])), $category);
+            $this->addReference('category_'.strtolower(str_replace(' ', '_', $categoryData['name'])), $category);
         }
 
         $manager->flush();
     }
-} 
+}

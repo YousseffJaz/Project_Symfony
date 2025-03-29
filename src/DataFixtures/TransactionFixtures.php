@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
-use App\Entity\Transaction;
 use App\Entity\Order;
+use App\Entity\Transaction;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -17,19 +19,19 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
         $usedOrders = [];
 
         // Créer quelques transactions de test
-        for ($i = 0; $i < 15; $i++) {
+        for ($i = 0; $i < 15; ++$i) {
             $transaction = new Transaction();
             $transaction->setAmount($faker->randomFloat(2, -1000, 1000));
             $transaction->setComment($faker->sentence());
-            
+
             // Assigner une commande aléatoire (si disponible)
             if ($faker->boolean() && count($usedOrders) < 3) {
                 do {
                     $orderNumber = $faker->numberBetween(1, 3);
-                } while (in_array($orderNumber, $usedOrders));
-                
+                } while (in_array($orderNumber, $usedOrders, true));
+
                 $usedOrders[] = $orderNumber;
-                $order = $this->getReference('order_' . $orderNumber, Order::class);
+                $order = $this->getReference('order_'.$orderNumber, Order::class);
                 $transaction->setInvoice($order);
             }
 
@@ -45,4 +47,4 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
             OrderFixtures::class,
         ];
     }
-} 
+}

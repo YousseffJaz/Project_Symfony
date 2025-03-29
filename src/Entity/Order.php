@@ -1,10 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\OrderRepository;
-use App\Entity\OrderHistory;
-use App\Entity\LineItem;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -88,6 +88,7 @@ class Order
     public function setCustomer(?Customer $customer): self
     {
         $this->customer = $customer;
+
         return $this;
     }
 
@@ -99,6 +100,7 @@ class Order
     public function setCreatedAt(\DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
+
         return $this;
     }
 
@@ -110,6 +112,7 @@ class Order
     public function setTotal(float $total): self
     {
         $this->total = $total;
+
         return $this;
     }
 
@@ -121,6 +124,7 @@ class Order
     public function setPaid(float $paid): self
     {
         $this->paid = $paid;
+
         return $this;
     }
 
@@ -132,6 +136,7 @@ class Order
     public function setPaymentMethod(?string $paymentMethod): self
     {
         $this->paymentMethod = $paymentMethod;
+
         return $this;
     }
 
@@ -143,6 +148,7 @@ class Order
     public function setPaymentType(?string $paymentType): self
     {
         $this->paymentType = $paymentType;
+
         return $this;
     }
 
@@ -154,6 +160,7 @@ class Order
     public function setOrderStatus(?string $orderStatus): self
     {
         $this->orderStatus = $orderStatus;
+
         return $this;
     }
 
@@ -165,6 +172,7 @@ class Order
     public function setNote(?string $note): self
     {
         $this->note = $note;
+
         return $this;
     }
 
@@ -176,6 +184,7 @@ class Order
     public function setShippingCost(?float $shippingCost): self
     {
         $this->shippingCost = $shippingCost;
+
         return $this;
     }
 
@@ -187,6 +196,7 @@ class Order
     public function setDiscount(?float $discount): self
     {
         $this->discount = $discount;
+
         return $this;
     }
 
@@ -198,6 +208,7 @@ class Order
     public function setAdmin(?Admin $admin): self
     {
         $this->admin = $admin;
+
         return $this;
     }
 
@@ -215,6 +226,7 @@ class Order
             $this->lineItems[] = $lineItem;
             $lineItem->setOrder($this);
         }
+
         return $this;
     }
 
@@ -225,6 +237,7 @@ class Order
                 $lineItem->setOrder(null);
             }
         }
+
         return $this;
     }
 
@@ -236,6 +249,7 @@ class Order
     public function setTrackingId(?string $trackingId): self
     {
         $this->trackingId = $trackingId;
+
         return $this;
     }
 
@@ -247,6 +261,7 @@ class Order
     public function setStatus(int $status): self
     {
         $this->status = $status;
+
         return $this;
     }
 
@@ -264,6 +279,7 @@ class Order
             $this->orderHistories[] = $orderHistory;
             $orderHistory->setInvoice($this);
         }
+
         return $this;
     }
 
@@ -274,6 +290,7 @@ class Order
                 $orderHistory->setInvoice(null);
             }
         }
+
         return $this;
     }
 
@@ -285,6 +302,7 @@ class Order
     public function setNote2(?string $note2): self
     {
         $this->note2 = $note2;
+
         return $this;
     }
 

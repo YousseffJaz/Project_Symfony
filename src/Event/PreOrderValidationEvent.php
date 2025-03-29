@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Event;
 
 use App\Entity\Order;
-use Symfony\Contracts\EventDispatcher\Event;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class PreOrderValidationEvent extends Event
 {
@@ -15,9 +17,9 @@ class PreOrderValidationEvent extends Event
     public function __construct(
         private Order $order,
         private bool $isNewOrder = true,
-        ?EntityManagerInterface $entityManager = null
+        ?EntityManagerInterface $entityManager = null,
     ) {
-        if (!$isNewOrder && $entityManager !== null) {
+        if (!$isNewOrder && null !== $entityManager) {
             // Charger l'état original de la commande depuis la base de données
             $originalOrder = $entityManager->getUnitOfWork()->getOriginalEntityData($order);
             if ($originalOrder) {
@@ -28,7 +30,7 @@ class PreOrderValidationEvent extends Event
                         $this->originalLineItems[$lineItem->getId()] = [
                             'quantity' => $originalData['quantity'] ?? 0,
                             'variant' => $originalData['variant'] ?? null,
-                            'stock' => $originalData['stock'] ?? null
+                            'stock' => $originalData['stock'] ?? null,
                         ];
                     }
                 }
@@ -50,4 +52,4 @@ class PreOrderValidationEvent extends Event
     {
         return $this->originalLineItems;
     }
-} 
+}

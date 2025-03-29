@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\CustomerRepository;
@@ -17,11 +19,11 @@ class Customer
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: "Le prénom ne peut pas être vide")]
+    #[Assert\NotBlank(message: 'Le prénom ne peut pas être vide')]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: "Le nom ne peut pas être vide")]
+    #[Assert\NotBlank(message: 'Le nom ne peut pas être vide')]
     private ?string $lastname = null;
 
     #[ORM\Column(length: 255)]
@@ -29,7 +31,7 @@ class Customer
     #[Assert\Email(message: "L'email '{{ value }}' n'est pas un email valide.")]
     private ?string $email = null;
 
-    #[ORM\Column(type: "text")]
+    #[ORM\Column(type: 'text')]
     #[Assert\NotBlank(message: "L'adresse ne peut pas être vide")]
     private ?string $address = null;
 
@@ -61,6 +63,7 @@ class Customer
     public function setFirstname(string $firstname): self
     {
         $this->firstname = $firstname;
+
         return $this;
     }
 
@@ -72,6 +75,7 @@ class Customer
     public function setLastname(string $lastname): self
     {
         $this->lastname = $lastname;
+
         return $this;
     }
 
@@ -83,6 +87,7 @@ class Customer
     public function setEmail(string $email): self
     {
         $this->email = $email;
+
         return $this;
     }
 
@@ -94,6 +99,7 @@ class Customer
     public function setAddress(string $address): self
     {
         $this->address = $address;
+
         return $this;
     }
 
@@ -105,6 +111,7 @@ class Customer
     public function setPhone(?string $phone): self
     {
         $this->phone = $phone;
+
         return $this;
     }
 
@@ -122,6 +129,7 @@ class Customer
             $this->orders->add($order);
             $order->setCustomer($this);
         }
+
         return $this;
     }
 
@@ -133,6 +141,7 @@ class Customer
                 $order->setCustomer(null);
             }
         }
+
         return $this;
     }
 
@@ -143,6 +152,6 @@ class Customer
 
     public function getFullName(): string
     {
-        return $this->firstname . ' ' . $this->lastname;
+        return $this->firstname.' '.$this->lastname;
     }
-} 
+}

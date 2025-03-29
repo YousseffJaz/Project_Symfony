@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\Entity\Admin;
@@ -41,7 +43,7 @@ class OrderHistoryFixtures extends Fixture implements DependentFixtureInterface
             $history->setInvoice($this->getReference($historyData['invoice'], Order::class));
             $history->setAdmin($this->getReference($historyData['admin'], Admin::class));
             $history->setTitle($historyData['title']);
-            
+
             $manager->persist($history);
         }
 
@@ -55,4 +57,4 @@ class OrderHistoryFixtures extends Fixture implements DependentFixtureInterface
             AdminFixtures::class,
         ];
     }
-} 
+}

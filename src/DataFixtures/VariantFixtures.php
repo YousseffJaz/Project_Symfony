@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
-use App\Entity\Variant;
 use App\Entity\Product;
+use App\Entity\Variant;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -127,7 +129,7 @@ class VariantFixtures extends Fixture implements DependentFixtureInterface
                 'product' => 'product_tablette_graphique',
                 'title' => 'Large',
                 'price' => 349.99,
-            ]
+            ],
         ];
 
         foreach ($variants as $variantData) {
@@ -135,9 +137,9 @@ class VariantFixtures extends Fixture implements DependentFixtureInterface
             $variant->setProduct($this->getReference($variantData['product'], Product::class));
             $variant->setTitle($variantData['title']);
             $variant->setPrice($variantData['price']);
-            
+
             $manager->persist($variant);
-            $this->addReference('variant_' . strtolower(str_replace(' ', '_', $variantData['product'])) . '_' . strtolower($variantData['title']), $variant);
+            $this->addReference('variant_'.strtolower(str_replace(' ', '_', $variantData['product'])).'_'.strtolower($variantData['title']), $variant);
         }
 
         $manager->flush();
@@ -149,4 +151,4 @@ class VariantFixtures extends Fixture implements DependentFixtureInterface
             ProductFixtures::class,
         ];
     }
-} 
+}

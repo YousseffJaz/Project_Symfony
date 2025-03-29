@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enum;
 
 enum PaymentMethod: int
@@ -15,7 +17,7 @@ enum PaymentMethod: int
 
     public function getLabel(): string
     {
-        return match($this) {
+        return match ($this) {
             self::CASH => 'Espèces',
             self::TRANSCASH => 'Transcash',
             self::CARD => 'Carte bancaire',
@@ -26,4 +28,4 @@ enum PaymentMethod: int
             self::BANK => 'Virement bancaire',
         };
     }
-} 
+}

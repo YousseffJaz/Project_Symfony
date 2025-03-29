@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
-use App\Entity\Transaction;
 use App\Entity\Order;
+use App\Entity\Transaction;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -15,24 +17,23 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class TransactionRepository extends ServiceEntityRepository
 {
-  public function __construct(ManagerRegistry $registry)
-  {
-    parent::__construct($registry, Transaction::class);
-  }
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Transaction::class);
+    }
 
+    public function totalAmount()
+    {
+        $query = $this->createQueryBuilder('t')
+        ->select('SUM(t.amount) as total')
+        ->where('t.invoice is null');
 
-  public function totalAmount(){
-    $query = $this->createQueryBuilder('t')
-    ->select('SUM(t.amount) as total')
-    ->where('t.invoice is null');
+        return $query->getQuery()
+        ->getResult();
+    }
 
-    return $query->getQuery()
-    ->getResult();
-  }
-
-  public function findOneByInvoice(Order $invoice): ?Transaction
-  {
-    return $this->findOneBy(['invoice' => $invoice]);
-  }
+    public function findOneByInvoice(Order $invoice): ?Transaction
+    {
+        return $this->findOneBy(['invoice' => $invoice]);
+    }
 }
-

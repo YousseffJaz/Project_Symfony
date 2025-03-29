@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Twig;
 
 use App\Enum\PaymentType;
@@ -17,14 +19,14 @@ class PaymentTypeExtension extends AbstractExtension
 
     public function getPaymentTypeLabel($value): string
     {
-        if ($value === null) {
+        if (null === $value) {
             return '';
         }
 
         try {
-            return PaymentType::from((int)$value)->getLabel();
+            return PaymentType::from((int) $value)->getLabel();
         } catch (\ValueError $e) {
             return 'Type invalide';
         }
     }
-} 
+}

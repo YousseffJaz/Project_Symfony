@@ -1,20 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Admin;
 
 use App\Entity\Admin;
-use App\Form\AdminRegistrationType;
 use App\Form\AdminAdminType;
-use App\Repository\StockListRepository;
+use App\Form\AdminRegistrationType;
 use App\Repository\AdminRepository;
+use App\Repository\StockListRepository;
+use App\Service\Admin\AdminArchiveService;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use App\Service\Admin\AdminArchiveService;
 
 class AdminAdminController extends AbstractController
 {
@@ -25,7 +27,7 @@ class AdminAdminController extends AbstractController
         $admins = $adminRepo->findBy(['archive' => false]);
 
         return $this->render('admin/admin/index.html.twig', [
-            'admins' => $admins
+            'admins' => $admins,
         ]);
     }
 
@@ -38,7 +40,7 @@ class AdminAdminController extends AbstractController
         $form->handleRequest($request);
         $stocks = $stockRepo->findAllStockName();
 
-        if($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $stockList = $request->request->get('stockList');
             $hash = $passwordHasher->hashPassword($admin, $admin->getHash());
             $admin->setHash($hash);
@@ -50,7 +52,7 @@ class AdminAdminController extends AbstractController
             $manager->persist($admin);
             $manager->flush();
 
-            $this->addFlash('success', "Un nouveau administrateur à été ajouté !");
+            $this->addFlash('success', 'Un nouveau administrateur à été ajouté !');
 
             return $this->redirectToRoute('admin_admin_index');
         }
@@ -69,7 +71,7 @@ class AdminAdminController extends AbstractController
         $form->handleRequest($request);
         $stocks = $stockRepo->findAllStockName();
 
-        if($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $stockList = $request->request->get('stockList');
 
             if ($admin->getHash()) {
@@ -80,18 +82,18 @@ class AdminAdminController extends AbstractController
             if ($stockList) {
                 $admin->setStockList($stockList);
             }
-            
+
             $manager->flush();
 
             $this->addFlash('success', "L'administrateur '{$admin->getFirstName()}' a été modifié !");
 
-            return $this->redirectToRoute("admin_admin_index");
+            return $this->redirectToRoute('admin_admin_index');
         }
 
         return $this->render('admin/admin/edit.html.twig', [
             'stocks' => $stocks,
             'admin' => $admin,
-            'form' => $form->createView()
+            'form' => $form->createView(),
         ]);
     }
 
@@ -99,11 +101,11 @@ class AdminAdminController extends AbstractController
     #[IsGranted('ROLE_SUPER_ADMIN', message: "Vous n'avez pas le droit d'accéder à cette page")]
     public function archive(
         Admin $admin,
-        AdminArchiveService $archiveService
+        AdminArchiveService $archiveService,
     ): Response {
         try {
             if (!$archiveService->canBeArchived($admin)) {
-                throw new \RuntimeException("Cet administrateur ne peut pas être archivé actuellement.");
+                throw new \RuntimeException('Cet administrateur ne peut pas être archivé actuellement.');
             }
 
             $archiveService->archiveAdmin($admin);

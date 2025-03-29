@@ -1,24 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Admin;
 
+use App\Repository\AdminRepository;
 use App\Repository\OrderRepository;
 use App\Repository\ProductRepository;
-use App\Repository\NotificationRepository;
-use App\Repository\AdminRepository;
 use App\Service\Order\OrderService;
-use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin')]
 class AdminDashboardController extends AbstractController
 {
     public function __construct(
-        private OrderService $orderService
+        private OrderService $orderService,
     ) {
     }
 
@@ -26,7 +26,7 @@ class AdminDashboardController extends AbstractController
     public function index(
         OrderRepository $orderRepo,
         ProductRepository $productRepo,
-        AdminRepository $adminRepo
+        AdminRepository $adminRepo,
     ): Response {
         // Statistiques commandes
         $today = new \DateTime('now');
@@ -45,13 +45,13 @@ class AdminDashboardController extends AbstractController
 
         // Commandes en attente
         $pendingOrders = count($orderRepo->findBy(['status' => 0]));
-        
+
         // Commandes en cours
         $processingOrders = count($orderRepo->findBy(['status' => 1]));
-        
+
         // Commandes livrées
         $deliveredOrders = count($orderRepo->findBy(['status' => 2]));
-        
+
         // Commandes annulées
         $canceledOrders = count($orderRepo->findBy(['status' => 3]));
 
@@ -93,7 +93,7 @@ class AdminDashboardController extends AbstractController
     {
         $search = $request->request->get('search');
         $orders = $orderRepo->search($search);
-        
+
         return $this->render('admin/order/index.html.twig',
             $this->orderService->prepareIndexViewData($orders)
         );

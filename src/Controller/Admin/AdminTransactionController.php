@@ -1,15 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Admin;
 
 use App\Entity\Transaction;
-use App\Form\AdminTransactionType;
 use App\Repository\TransactionRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/transactions')]
@@ -39,10 +40,11 @@ class AdminTransactionController extends AbstractController
 
         $this->addFlash(
             'success',
-            "La transaction a été supprimée !"
+            'La transaction a été supprimée !'
         );
 
         $referer = $request->headers->get('referer');
+
         return $this->redirect($referer);
     }
 }

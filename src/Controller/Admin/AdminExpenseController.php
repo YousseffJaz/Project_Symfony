@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Admin;
 
 use App\Entity\Flux;
 use App\Form\AdminExpenseType;
-use App\Repository\TransactionRepository;
 use App\Repository\FluxRepository;
+use App\Repository\TransactionRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/expense')]
@@ -20,7 +22,7 @@ class AdminExpenseController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function index(Request $request, FluxRepository $expenseRepo, TransactionRepository $transactionRepo): Response
     {
-        $expenses = $expenseRepo->findBy(['type' => true], ['createdAt' => "DESC"]);
+        $expenses = $expenseRepo->findBy(['type' => true], ['createdAt' => 'DESC']);
 
         return $this->render('admin/expense/index.html.twig', [
             'expenses' => $expenses,
@@ -42,14 +44,14 @@ class AdminExpenseController extends AbstractController
 
             $this->addFlash(
                 'success',
-                "Une nouvelle dépense à été ajoutée !"
+                'Une nouvelle dépense à été ajoutée !'
             );
 
             return $this->redirectToRoute('admin_expense_index');
         }
 
         return $this->render('admin/expense/new.html.twig', [
-            'form' => $form->createView()
+            'form' => $form->createView(),
         ]);
     }
 
@@ -65,7 +67,7 @@ class AdminExpenseController extends AbstractController
 
             $this->addFlash(
                 'success',
-                "La dépense a été modifiée !"
+                'La dépense a été modifiée !'
             );
 
             return $this->redirectToRoute('admin_expense_index');
@@ -73,7 +75,7 @@ class AdminExpenseController extends AbstractController
 
         return $this->render('admin/expense/edit.html.twig', [
             'form' => $form->createView(),
-            'expense' => $expense
+            'expense' => $expense,
         ]);
     }
 
@@ -86,9 +88,9 @@ class AdminExpenseController extends AbstractController
 
         $this->addFlash(
             'success',
-            "La dépense a été supprimée !"
+            'La dépense a été supprimée !'
         );
 
-        return $this->redirectToRoute("admin_expense_index");
+        return $this->redirectToRoute('admin_expense_index');
     }
 }

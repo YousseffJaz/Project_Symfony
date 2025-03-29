@@ -1,16 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
-use App\Entity\Role;
-use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use App\Repository\AdminRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AdminRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -92,7 +93,8 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
         $this->orderHistories = new ArrayCollection();
     }
 
-    public function getClassName(): string {
+    public function getClassName(): string
+    {
         return (new \ReflectionClass($this))->getShortName();
     }
 
@@ -143,6 +145,7 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->role) {
             $roles[] = $this->role;
         }
+
         return array_unique($roles);
     }
 
@@ -163,7 +166,7 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials(): void
     {
-        if ($this->archivedAt !== null) {
+        if (null !== $this->archivedAt) {
             $this->isActive = false;
         }
     }
@@ -337,6 +340,7 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsActive(bool $isActive): self
     {
         $this->isActive = $isActive;
+
         return $this;
     }
 
@@ -348,6 +352,7 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
     public function setArchivedAt(?\DateTimeImmutable $archivedAt): self
     {
         $this->archivedAt = $archivedAt;
+
         return $this;
     }
 
@@ -359,6 +364,7 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastName(?string $lastName): self
     {
         $this->lastName = $lastName;
+
         return $this;
     }
 
@@ -370,6 +376,7 @@ class Admin implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPhone(?string $phone): self
     {
         $this->phone = $phone;
+
         return $this;
     }
 }

@@ -1,18 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service\Admin;
 
 use App\Entity\Admin;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class AdminArchiveService
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
         private UserPasswordHasherInterface $passwordHasher,
-        private TokenStorageInterface $tokenStorage
+        private TokenStorageInterface $tokenStorage,
     ) {
     }
 
@@ -26,19 +28,19 @@ class AdminArchiveService
 
         // Sauvegarder la date d'archivage
         $admin->setArchivedAt(new \DateTimeImmutable());
-        
+
         // Marquer comme archivé
         $admin->setArchive(true);
-        
+
         // Anonymiser les données personnelles
-        $admin->setEmail('archived_' . $admin->getId() . '@archived.local');
+        $admin->setEmail('archived_'.$admin->getId().'@archived.local');
         $admin->setFirstName('Archived');
         $admin->setLastName('User');
         $admin->setPhone(null);
-        
+
         // Désactiver le compte
         $admin->setIsActive(false);
-        
+
         // Révoquer tous les tokens de connexion existants
         $admin->setHash($this->passwordHasher->hashPassword(
             $admin,
@@ -54,4 +56,4 @@ class AdminArchiveService
         // Par exemple, s'il n'a pas de commandes en cours
         return true; // À adapter selon vos besoins
     }
-} 
+}

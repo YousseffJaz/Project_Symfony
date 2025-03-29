@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\EventSubscriber;
 
 use App\Event\PreOrderValidationEvent;
@@ -15,8 +17,8 @@ class OrderStockValidationSubscriber implements EventSubscriberInterface
         return [
             PreOrderValidationEvent::NAME => [
                 ['validateStock', 20],
-                ['validateMinimumOrderAmount', 10]
-            ]
+                ['validateMinimumOrderAmount', 10],
+            ],
         ];
     }
 
@@ -26,13 +28,7 @@ class OrderStockValidationSubscriber implements EventSubscriberInterface
         $total = $order->getTotal();
 
         if ($total < self::MINIMUM_ORDER_AMOUNT) {
-            throw new BadRequestHttpException(
-                sprintf(
-                    'Le montant total de la commande (%.2f€) est inférieur au minimum requis (%.2f€)',
-                    $total,
-                    self::MINIMUM_ORDER_AMOUNT
-                )
-            );
+            throw new BadRequestHttpException(sprintf('Le montant total de la commande (%.2f€) est inférieur au minimum requis (%.2f€)', $total, self::MINIMUM_ORDER_AMOUNT));
         }
     }
 
@@ -40,7 +36,7 @@ class OrderStockValidationSubscriber implements EventSubscriberInterface
     {
         $order = $event->getOrder();
         $originalLineItems = $event->getOriginalLineItems();
-        
+
         foreach ($order->getLineItems() as $lineItem) {
             $variant = $lineItem->getVariant();
             if (!$variant) {
@@ -49,62 +45,36 @@ class OrderStockValidationSubscriber implements EventSubscriberInterface
 
             $stock = $lineItem->getStock();
             if (!$stock) {
-                throw new BadRequestHttpException(
-                    sprintf(
-                        'Aucun stock n\'est associé au produit "%s". Veuillez sélectionner un stock.',
-                        $variant->getTitle()
-                    )
-                );
+                throw new BadRequestHttpException(sprintf('Aucun stock n\'est associé au produit "%s". Veuillez sélectionner un stock.', $variant->getTitle()));
             }
 
             $requestedQuantity = $lineItem->getQuantity();
             $availableStock = $stock->getQuantity();
-            
+
             // Si c'est une nouvelle commande, on vérifie tout
             if ($event->isNewOrder()) {
                 if ($requestedQuantity > $availableStock) {
-                    throw new BadRequestHttpException(
-                        sprintf(
-                            'La quantité demandée (%d) pour le produit "%s" excède le stock disponible (%d)',
-                            $requestedQuantity,
-                            $variant->getTitle(),
-                            $availableStock
-                        )
-                    );
+                    throw new BadRequestHttpException(sprintf('La quantité demandée (%d) pour le produit "%s" excède le stock disponible (%d)', $requestedQuantity, $variant->getTitle(), $availableStock));
                 }
                 continue;
             }
-            
+
             // Pour une modification de commande
             $originalData = $originalLineItems[$lineItem->getId()] ?? null;
-            
+
             // Si c'est un nouveau produit dans la commande
-            if ($originalData === null) {
+            if (null === $originalData) {
                 if ($requestedQuantity > $availableStock) {
-                    throw new BadRequestHttpException(
-                        sprintf(
-                            'La quantité demandée (%d) pour le nouveau produit "%s" excède le stock disponible (%d)',
-                            $requestedQuantity,
-                            $variant->getTitle(),
-                            $availableStock
-                        )
-                    );
+                    throw new BadRequestHttpException(sprintf('La quantité demandée (%d) pour le nouveau produit "%s" excède le stock disponible (%d)', $requestedQuantity, $variant->getTitle(), $availableStock));
                 }
                 continue;
             }
-            
+
             // Si la quantité a été augmentée
             $quantityDiff = $requestedQuantity - $originalData['quantity'];
             if ($quantityDiff > 0 && $quantityDiff > $availableStock) {
-                throw new BadRequestHttpException(
-                    sprintf(
-                        'L\'augmentation de quantité (%d) pour le produit "%s" excède le stock disponible (%d)',
-                        $quantityDiff,
-                        $variant->getTitle(),
-                        $availableStock
-                    )
-                );
+                throw new BadRequestHttpException(sprintf('L\'augmentation de quantité (%d) pour le produit "%s" excède le stock disponible (%d)', $quantityDiff, $variant->getTitle(), $availableStock));
             }
         }
     }
-} 
+}

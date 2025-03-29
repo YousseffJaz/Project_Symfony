@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Admin;
@@ -14,8 +16,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class AdminRepository extends ServiceEntityRepository
 {
-  public function __construct(ManagerRegistry $registry)
-  {
-    parent::__construct($registry, Admin::class);
-  }
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Admin::class);
+    }
 }

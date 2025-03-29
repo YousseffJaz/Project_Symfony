@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Admin;
 
 use App\Entity\Product;
 use App\Entity\Variant;
 use App\Form\AdminVariantType;
 use App\Repository\VariantRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/variants')]
@@ -20,10 +22,10 @@ class AdminVariantController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function index(VariantRepository $variantRepo): Response
     {
-        $variants = $variantRepo->findBy(['archive' => false], ['title' => "ASC"]);
+        $variants = $variantRepo->findBy(['archive' => false], ['title' => 'ASC']);
 
         return $this->render('admin/variant/index.html.twig', [
-            'variants' => $variants
+            'variants' => $variants,
         ]);
     }
 
@@ -42,14 +44,14 @@ class AdminVariantController extends AbstractController
 
             $this->addFlash(
                 'success',
-                "Un nouveau variant à été ajouté !"
+                'Un nouveau variant à été ajouté !'
             );
 
             return $this->redirectToRoute('admin_product_edit', ['id' => $product->getId()]);
         }
 
         return $this->render('admin/variant/new.html.twig', [
-            'form' => $form->createView()
+            'form' => $form->createView(),
         ]);
     }
 
@@ -65,7 +67,7 @@ class AdminVariantController extends AbstractController
 
             $this->addFlash(
                 'success',
-                "Le variant a été modifié !"
+                'Le variant a été modifié !'
             );
 
             return $this->redirectToRoute('admin_product_edit', ['id' => $variant->getProduct()->getId()]);
@@ -81,8 +83,8 @@ class AdminVariantController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function autocomplete(VariantRepository $repo, Request $request): Response
     {
-        $keyword = strtolower($request->query->get('keyword')); 
-        $stockList = $request->query->get('stockList'); 
+        $keyword = strtolower($request->query->get('keyword'));
+        $stockList = $request->query->get('stockList');
         $variants = $repo->filter($keyword, $stockList);
 
         return $this->json($variants, 200);
@@ -97,9 +99,9 @@ class AdminVariantController extends AbstractController
 
         $this->addFlash(
             'success',
-            "Le variant a été supprimé !"
+            'Le variant a été supprimé !'
         );
 
-        return $this->redirectToRoute("admin_variant_index");
+        return $this->redirectToRoute('admin_variant_index');
     }
 }

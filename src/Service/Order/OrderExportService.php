@@ -1,29 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service\Order;
 
 use App\Entity\Order;
-use Symfony\Component\HttpFoundation\Response;
-use Twig\Environment;
+use App\Enum\OrderStatus;
+use App\Enum\PaymentMethod;
+use App\Enum\PaymentType;
 use Dompdf\Dompdf;
 use Dompdf\Options;
-use App\Enum\OrderStatus;
-use App\Enum\PaymentType;
-use App\Enum\PaymentMethod;
+use Symfony\Component\HttpFoundation\Response;
+use Twig\Environment;
 
 class OrderExportService
 {
     public function __construct(
-        private Environment $twig
+        private Environment $twig,
     ) {
     }
 
     public function exportOrder(Order $order, string $format = 'pdf'): Response
     {
-        return match($format) {
+        return match ($format) {
             'csv' => $this->exportToCsv($order),
             'pdf' => $this->exportToPdf($order),
-            default => throw new \InvalidArgumentException('Format non supporté')
+            default => throw new \InvalidArgumentException('Format non supporté'),
         };
     }
 
@@ -181,7 +183,7 @@ class OrderExportService
         // Render the template with embedded CSS
         $html = $this->twig->render('admin/order/export.html.twig', [
             'order' => $order,
-            'embedded_styles' => $styles
+            'embedded_styles' => $styles,
         ]);
 
         // Create PDF
@@ -193,7 +195,7 @@ class OrderExportService
         // Generate response
         $response = new Response($dompdf->output());
         $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-Disposition', 'attachment; filename="facture_' . $order->getId() . '.pdf"');
+        $response->headers->set('Content-Disposition', 'attachment; filename="facture_'.$order->getId().'.pdf"');
 
         return $response;
     }
@@ -203,11 +205,11 @@ class OrderExportService
         $data = [
             'Numéro de commande' => $order->getId(),
             'Date' => $order->getCreatedAt()->format('d/m/Y'),
-            'Client' => $order->getFirstname() . ' ' . $order->getLastname(),
-            'Total' => number_format($order->getTotal(), 2, ',', ' ') . '€',
+            'Client' => $order->getFirstname().' '.$order->getLastname(),
+            'Total' => number_format($order->getTotal(), 2, ',', ' ').'€',
             'Statut' => $this->getStatusLabel($order->getStatus()),
-            'Mode de paiement' => $this->getPaymentMethodLabel($order->getPaymentMethod() !== null ? (int) $order->getPaymentMethod() : null),
-            'Type de paiement' => $this->getPaymentTypeLabel($order->getPaymentType() !== null ? (int) $order->getPaymentType() : null),
+            'Mode de paiement' => $this->getPaymentMethodLabel(null !== $order->getPaymentMethod() ? (int) $order->getPaymentMethod() : null),
+            'Type de paiement' => $this->getPaymentTypeLabel(null !== $order->getPaymentType() ? (int) $order->getPaymentType() : null),
         ];
 
         $csv = '';
@@ -217,7 +219,7 @@ class OrderExportService
 
         $response = new Response($csv);
         $response->headers->set('Content-Type', 'text/csv');
-        $response->headers->set('Content-Disposition', 'attachment; filename="commande_' . $order->getId() . '.csv"');
+        $response->headers->set('Content-Disposition', 'attachment; filename="commande_'.$order->getId().'.csv"');
 
         return $response;
     }
@@ -229,7 +231,7 @@ class OrderExportService
             'lineItems' => $order->getLineItems(),
             'total' => $order->getTotal(),
             'paid' => $order->getPaid(),
-            'remaining' => $order->getTotal() - $order->getPaid()
+            'remaining' => $order->getTotal() - $order->getPaid(),
         ];
     }
 
@@ -267,4 +269,4 @@ class OrderExportService
             default => 'Inconnu',
         };
     }
-} 
+}

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Service\Cache;
 
 use App\Service\Cache\StatisticsCacheService;
@@ -20,16 +22,16 @@ class StatisticsCacheServiceTest extends TestCase
     public function testGetPaymentStats(): void
     {
         $expectedData = ['payment' => 'stats'];
-        
+
         // Pré-remplir le cache
         $item = $this->cache->getItem('stats_payment');
         $item->set($expectedData);
         $this->cache->save($item);
-        
-        $callback = function() {
+
+        $callback = function () {
             $this->fail('Callback should not be called when data is in cache');
         };
-        
+
         $result = $this->statisticsCacheService->getPaymentStats($callback);
         $this->assertEquals($expectedData, $result);
     }
@@ -37,14 +39,14 @@ class StatisticsCacheServiceTest extends TestCase
     public function testGetPaymentStatsFromCallbackWhenCacheEmpty(): void
     {
         $expectedData = ['payment' => 'fresh'];
-        
-        $callback = function() use ($expectedData) {
+
+        $callback = function () use ($expectedData) {
             return $expectedData;
         };
-        
+
         $result = $this->statisticsCacheService->getPaymentStats($callback);
         $this->assertEquals($expectedData, $result);
-        
+
         // Vérifier que les données sont en cache
         $item = $this->cache->getItem('stats_payment');
         $this->assertTrue($item->isHit());
@@ -54,18 +56,18 @@ class StatisticsCacheServiceTest extends TestCase
     public function testGetPaymentStatsWithCacheException(): void
     {
         $expectedData = ['payment' => 'fallback'];
-        
+
         // Simuler une erreur de cache en utilisant un mock
         $mockCache = $this->createMock(ArrayAdapter::class);
         $mockCache->method('getItem')
             ->willThrowException(new \Exception('Cache error'));
-            
+
         $service = new StatisticsCacheService($mockCache);
-        
-        $callback = function() use ($expectedData) {
+
+        $callback = function () use ($expectedData) {
             return $expectedData;
         };
-        
+
         $result = $service->getPaymentStats($callback);
         $this->assertEquals($expectedData, $result);
     }
@@ -73,16 +75,16 @@ class StatisticsCacheServiceTest extends TestCase
     public function testGetBestSellers(): void
     {
         $expectedData = ['best' => 'sellers'];
-        
+
         // Pré-remplir le cache
         $item = $this->cache->getItem('stats_best_sellers');
         $item->set($expectedData);
         $this->cache->save($item);
-        
-        $callback = function() {
+
+        $callback = function () {
             $this->fail('Callback should not be called when data is in cache');
         };
-        
+
         $result = $this->statisticsCacheService->getBestSellers($callback);
         $this->assertEquals($expectedData, $result);
     }
@@ -90,16 +92,16 @@ class StatisticsCacheServiceTest extends TestCase
     public function testGetTotalAmount(): void
     {
         $expectedData = ['total' => 1500.50];
-        
+
         // Pré-remplir le cache
         $item = $this->cache->getItem('stats_total_amount');
         $item->set($expectedData);
         $this->cache->save($item);
-        
-        $callback = function() {
+
+        $callback = function () {
             $this->fail('Callback should not be called when data is in cache');
         };
-        
+
         $result = $this->statisticsCacheService->getTotalAmount($callback);
         $this->assertEquals($expectedData, $result);
     }
@@ -112,17 +114,17 @@ class StatisticsCacheServiceTest extends TestCase
             'stats_stock_value' => 1500.50,
             'stats_best_sellers' => ['best' => 'sellers'],
             'stats_total_amount' => ['total' => 1000],
-            'stats_total_orders_count' => 42
+            'stats_total_orders_count' => 42,
         ];
-        
+
         foreach ($items as $key => $value) {
             $item = $this->cache->getItem($key);
             $item->set($value);
             $this->cache->save($item);
         }
-        
+
         $this->statisticsCacheService->clearCache();
-        
+
         // Vérifier que les éléments ont été supprimés
         foreach (array_keys($items) as $key) {
             $this->assertFalse($this->cache->getItem($key)->isHit());
@@ -135,11 +137,11 @@ class StatisticsCacheServiceTest extends TestCase
         $mockCache = $this->createMock(ArrayAdapter::class);
         $mockCache->method('deleteItem')
             ->willThrowException(new \Exception('Delete error'));
-            
+
         $service = new StatisticsCacheService($mockCache);
-        
+
         // Ne devrait pas lever d'exception
         $service->clearCache();
         $this->assertTrue(true); // Si on arrive ici, le test est réussi
     }
-} 
+}

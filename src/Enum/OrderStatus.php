@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enum;
 
 enum OrderStatus: int
@@ -11,7 +13,7 @@ enum OrderStatus: int
 
     public function getLabel(): string
     {
-        return match($this) {
+        return match ($this) {
             self::WAITING => 'En attente',
             self::PARTIAL => 'Partiellement payé',
             self::PAID => 'Payé',
@@ -21,11 +23,11 @@ enum OrderStatus: int
 
     public function getColor(): string
     {
-        return match($this) {
+        return match ($this) {
             self::WAITING => 'warning',
             self::PARTIAL => 'info',
             self::PAID => 'success',
             self::REFUND => 'danger',
         };
     }
-} 
+}

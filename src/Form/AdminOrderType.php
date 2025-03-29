@@ -1,21 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
-use App\Entity\Order;
 use App\Entity\Customer;
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
+use App\Entity\Order;
+use App\Enum\OrderStatus;
+use App\Enum\PaymentMethod;
+use App\Enum\PaymentType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
-use App\Enum\OrderStatus;
-use App\Enum\PaymentType;
-use App\Enum\PaymentMethod;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class AdminOrderType extends AbstractType
 {
@@ -40,89 +42,89 @@ class AdminOrderType extends AbstractType
             ->add('customer', EntityType::class, [
                 'class' => Customer::class,
                 'choice_label' => function (Customer $customer) {
-                    return $customer->getFirstname() . ' ' . $customer->getLastname() . ' (' . $customer->getEmail() . ')';
+                    return $customer->getFirstname().' '.$customer->getLastname().' ('.$customer->getEmail().')';
                 },
                 'attr' => [
                     'class' => 'form-control',
-                    'autocomplete' => 'off'
+                    'autocomplete' => 'off',
                 ],
                 'required' => true,
-                'placeholder' => 'Choisir un client'
+                'placeholder' => 'Choisir un client',
             ])
             ->add('total', NumberType::class, [
                 'attr' => [
                     'class' => 'form-control',
-                    'autocomplete' => 'off'
-                ]
+                    'autocomplete' => 'off',
+                ],
             ])
             ->add('shippingCost', NumberType::class, [
                 'attr' => [
                     'class' => 'form-control',
-                    'autocomplete' => 'off'
+                    'autocomplete' => 'off',
                 ],
-                'required' => false
+                'required' => false,
             ])
             ->add('discount', NumberType::class, [
                 'attr' => [
                     'class' => 'form-control',
-                    'autocomplete' => 'off'
+                    'autocomplete' => 'off',
                 ],
-                'required' => false
+                'required' => false,
             ])
             ->add('paid', NumberType::class, [
                 'attr' => [
                     'class' => 'form-control',
-                    'autocomplete' => 'off'
-                ]
+                    'autocomplete' => 'off',
+                ],
             ])
             ->add('note', TextareaType::class, [
                 'attr' => [
                     'class' => 'form-control',
-                    'autocomplete' => 'off'
+                    'autocomplete' => 'off',
                 ],
-                'required' => false
+                'required' => false,
             ])
             ->add('orderStatus', ChoiceType::class, [
                 'placeholder' => 'Choisir un statut',
                 'attr' => [
                     'class' => 'form-control',
-                    'autocomplete' => 'off'
+                    'autocomplete' => 'off',
                 ],
-                'choices' => $statusOptions
+                'choices' => $statusOptions,
             ])
             ->add('paymentType', ChoiceType::class, [
                 'placeholder' => 'Choisir un type de paiement',
                 'attr' => [
                     'class' => 'form-control',
-                    'autocomplete' => 'off'
+                    'autocomplete' => 'off',
                 ],
                 'choices' => $paymentTypeOptions,
-                'required' => false
+                'required' => false,
             ])
             ->add('paymentMethod', ChoiceType::class, [
                 'placeholder' => 'Choisir une méthode de paiement',
                 'attr' => [
                     'class' => 'form-control',
-                    'autocomplete' => 'off'
+                    'autocomplete' => 'off',
                 ],
                 'choices' => $paymentMethodOptions,
-                'required' => false
+                'required' => false,
             ])
             ->add('createdAt', DateTimeType::class, [
                 'attr' => [
                     'class' => 'form-control',
-                    'autocomplete' => 'off'
+                    'autocomplete' => 'off',
                 ],
                 'widget' => 'single_text',
                 'html5' => true,
-                'required' => false
+                'required' => false,
             ])
             ->add('trackingId', TextType::class, [
                 'attr' => [
                     'class' => 'form-control',
-                    'autocomplete' => 'off'
+                    'autocomplete' => 'off',
                 ],
-                'required' => false
+                'required' => false,
             ]);
     }
 

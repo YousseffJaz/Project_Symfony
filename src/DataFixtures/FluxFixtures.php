@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\Entity\Flux;
@@ -14,7 +16,7 @@ class FluxFixtures extends Fixture
         $faker = Factory::create('fr_FR');
 
         // Créer quelques flux de test
-        for ($i = 0; $i < 8; $i++) {
+        for ($i = 0; $i < 8; ++$i) {
             $flux = new Flux();
             $flux->setName($faker->word());
             $flux->setAmount($faker->randomFloat(2, 100, 10000));
@@ -25,4 +27,4 @@ class FluxFixtures extends Fixture
 
         $manager->flush();
     }
-} 
+}

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Customer;
@@ -38,4 +40,4 @@ class CustomerRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-} 
+}

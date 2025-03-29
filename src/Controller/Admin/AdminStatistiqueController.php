@@ -1,21 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Admin;
 
-use App\Service\Statistics\StatisticsService;
-use App\Service\Cache\StatisticsCacheService;
+use App\Enum\OrderStatus;
+use App\Enum\PaymentMethod;
+use App\Enum\PaymentType;
+use App\Repository\FluxRepository;
 use App\Repository\OrderRepository;
 use App\Repository\ProductRepository;
 use App\Repository\StockListRepository;
 use App\Repository\VariantRepository;
-use App\Repository\FluxRepository;
-use App\Enum\PaymentMethod;
-use App\Enum\PaymentType;
-use App\Enum\OrderStatus;
+use App\Service\Cache\StatisticsCacheService;
+use App\Service\Statistics\StatisticsService;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class AdminStatistiqueController extends AbstractController
@@ -24,24 +26,24 @@ class AdminStatistiqueController extends AbstractController
         private StatisticsService $statisticsService,
         private OrderRepository $orderRepository,
         private FluxRepository $fluxRepository,
-        private StatisticsCacheService $cacheService
+        private StatisticsCacheService $cacheService,
     ) {
     }
 
     /**
-    * Permet d'afficher les statistiques
-    */
+     * Permet d'afficher les statistiques.
+     */
     #[Route('/admin/statistiques', name: 'admin_statistique_index')]
     #[IsGranted('ROLE_ADMIN')]
     public function index(Request $request): Response
     {
-        $month = (int)date('m');
-        $year = (int)date('Y');
-        
+        $month = (int) date('m');
+        $year = (int) date('Y');
+
         // Get start and end dates from request or default to all time
         $start = $request->query->get('start');
         $end = $request->query->get('end');
-        
+
         if (!$start || !$end) {
             // Si pas de dates spécifiées, on prend tout
             $startDate = new \DateTime('2000-01-01');
@@ -50,32 +52,32 @@ class AdminStatistiqueController extends AbstractController
             $startDate = new \DateTime($start);
             $endDate = new \DateTime($end);
         }
-        
+
         // Get daily stats for current month
         $dailyStats = $this->statisticsService->calculateDailyStats($month, $year);
-        
+
         // Get monthly stats for last 12 months
         $monthlyStatsStart = (new \DateTime())->modify('-11 months')->modify('first day of this month');
         $monthlyStatsEnd = new \DateTime();
         $monthlyStats = $this->statisticsService->calculateMonthlyStats($monthlyStatsStart, $monthlyStatsEnd);
-        
+
         // Get payment stats
         $paymentStats = $this->statisticsService->calculatePaymentStats();
-        
+
         // Get stock value
         $stockValue = $this->statisticsService->calculateStockValue();
-        
+
         // Get best sellers
         $bestSellers = $this->statisticsService->getBestSellers();
-        
+
         // Get total stats with cache
-        $totalStats = $this->cacheService->getTotalAmount(fn() => $this->orderRepository->totalAmount());
-        
+        $totalStats = $this->cacheService->getTotalAmount(fn () => $this->orderRepository->totalAmount());
+
         // Get current month stats with cache
         $monthStats = $this->cacheService->getMonthlyAmount(
             date('Y-m-01'),
             date('Y-m-t'),
-            fn() => $this->orderRepository->totalAmountByStartAndEnd(date('Y-m-01'), date('Y-m-t'))
+            fn () => $this->orderRepository->totalAmountByStartAndEnd(date('Y-m-01'), date('Y-m-t'))
         );
 
         // Get expenses for the period with cache
@@ -83,7 +85,7 @@ class AdminStatistiqueController extends AbstractController
             1,
             $startDate->format('Y-m-d'),
             $endDate->format('Y-m-d'),
-            fn() => $this->fluxRepository->totalAmountStartAndEnd(1, $startDate->format('Y-m-d'), $endDate->format('Y-m-d'))
+            fn () => $this->fluxRepository->totalAmountStartAndEnd(1, $startDate->format('Y-m-d'), $endDate->format('Y-m-d'))
         );
 
         // Get unpaid amount for the period
@@ -92,12 +94,12 @@ class AdminStatistiqueController extends AbstractController
         // Structure data for charts
         $array = [
             'labels' => range(1, cal_days_in_month(CAL_GREGORIAN, $month, $year)),
-            'amounts' => $dailyStats
+            'amounts' => $dailyStats,
         ];
 
         $array2 = [
             'labels' => $monthlyStats['labels'],
-            'amounts' => $monthlyStats['data']
+            'amounts' => $monthlyStats['data'],
         ];
 
         return $this->render('admin/statistiques/index.html.twig', [
@@ -134,7 +136,7 @@ class AdminStatistiqueController extends AbstractController
             'waiting' => $paymentStats['status'][OrderStatus::WAITING->value],
             'partial' => $paymentStats['status'][OrderStatus::PARTIAL->value],
             'paid' => $paymentStats['status'][OrderStatus::PAID->value],
-            'refund' => $paymentStats['status'][OrderStatus::REFUND->value]
+            'refund' => $paymentStats['status'][OrderStatus::REFUND->value],
         ]);
     }
 
@@ -142,23 +144,23 @@ class AdminStatistiqueController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function month(Request $request, OrderRepository $orderRepo): Response
     {
-        $month = (int)$request->query->get('month', date('m'));
-        $year = (int)$request->query->get('year', date('Y'));
+        $month = (int) $request->query->get('month', date('m'));
+        $year = (int) $request->query->get('year', date('Y'));
         $days = cal_days_in_month(CAL_GREGORIAN, $month, $year);
         $labels = [];
         $data = [];
         $total = 0;
 
-        for ($i = 1; $i <= $days; $i++) {
+        for ($i = 1; $i <= $days; ++$i) {
             $orders = $orderRepo->findByDay($i, $month, $year);
             $amount = 0;
-            
+
             if ($orders) {
                 foreach ($orders as $order) {
-                    $amount += (float)$order->getTotal();
+                    $amount += (float) $order->getTotal();
                 }
             }
-            
+
             $data[] = number_format($amount, 2, '.', '');
             $total += $amount;
             $labels[] = $i;
@@ -169,7 +171,7 @@ class AdminStatistiqueController extends AbstractController
             'data' => json_encode($data),
             'total' => number_format($total, 2, '.', ' '),
             'month' => $this->getMonthName($month),
-            'year' => $year
+            'year' => $year,
         ]);
     }
 
@@ -187,21 +189,21 @@ class AdminStatistiqueController extends AbstractController
             9 => 'Septembre',
             10 => 'Octobre',
             11 => 'Novembre',
-            12 => 'Décembre'
+            12 => 'Décembre',
         ];
-        
+
         return $months[$month] ?? '';
     }
 
     /**
-    * Permet d'afficher la valeur des stocks
-    */
+     * Permet d'afficher la valeur des stocks.
+     */
     #[Route('/admin/statistiques/stocks', name: 'admin_statistiques_stocks')]
     #[IsGranted('ROLE_ADMIN')]
     public function stocks(
         ProductRepository $productRepo,
         VariantRepository $variantRepo,
-        StockListRepository $stockRepo
+        StockListRepository $stockRepo,
     ) {
         $products = $productRepo->findBy(['archive' => false, 'digital' => false]);
         $stocks = $stockRepo->findStockName();
@@ -212,7 +214,7 @@ class AdminStatistiqueController extends AbstractController
             foreach ($products as $product) {
                 $quantity = $stockRepo->findQuantityByProductAndStock($product, $stock);
                 $variants = $variantRepo->findBy(['product' => $product, 'archive' => false]);
-                
+
                 if ($variants && $quantity) {
                     foreach ($quantity as $items) {
                         $totalPrice = 0;
@@ -232,9 +234,10 @@ class AdminStatistiqueController extends AbstractController
         ]);
     }
 
-    public static function dateToFrench($date) {
-        $french_months = ["Janv.", "Févr.", "Mars", "Avr.", "Mai", "Juin", "Juil.", "Aoùt", "Sept.", "Oct.", "Nov.", "Déc."];
-        $english_months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    public static function dateToFrench($date)
+    {
+        $french_months = ['Janv.', 'Févr.', 'Mars', 'Avr.', 'Mai', 'Juin', 'Juil.', 'Aoùt', 'Sept.', 'Oct.', 'Nov.', 'Déc.'];
+        $english_months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
         return str_replace($english_months, $french_months, $date);
     }

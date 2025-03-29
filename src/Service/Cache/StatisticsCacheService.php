@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service\Cache;
 
 use Symfony\Component\Cache\Adapter\AdapterInterface;
-use Symfony\Contracts\Cache\ItemInterface;
 
 class StatisticsCacheService
 {
@@ -20,14 +21,14 @@ class StatisticsCacheService
     private const CACHE_TTL = 3600; // 1 heure
 
     public function __construct(
-        private AdapterInterface $cache
+        private AdapterInterface $cache,
     ) {
     }
 
     public function getDailyStats(int $month, int $year, callable $callback): array
     {
         $key = sprintf(self::DAILY_STATS_KEY, $month, $year);
-        
+
         try {
             $cacheItem = $this->cache->getItem($key);
             if ($cacheItem->isHit()) {
@@ -35,11 +36,11 @@ class StatisticsCacheService
             }
 
             $result = $callback();
-            
+
             $cacheItem->set($result);
             $cacheItem->expiresAfter(self::CACHE_TTL);
             $this->cache->save($cacheItem);
-            
+
             return $result;
         } catch (\Exception $e) {
             return $callback();
@@ -49,7 +50,7 @@ class StatisticsCacheService
     public function getMonthlyStats(\DateTime $startDate, \DateTime $endDate, callable $callback): array
     {
         $key = sprintf(self::MONTHLY_STATS_KEY, $startDate->format('Y-m-d'), $endDate->format('Y-m-d'));
-        
+
         try {
             $cacheItem = $this->cache->getItem($key);
             if ($cacheItem->isHit()) {
@@ -57,11 +58,11 @@ class StatisticsCacheService
             }
 
             $result = $callback();
-            
+
             $cacheItem->set($result);
             $cacheItem->expiresAfter(self::CACHE_TTL);
             $this->cache->save($cacheItem);
-            
+
             return $result;
         } catch (\Exception $e) {
             return $callback();
@@ -77,11 +78,11 @@ class StatisticsCacheService
             }
 
             $result = $callback();
-            
+
             $cacheItem->set($result);
             $cacheItem->expiresAfter(self::CACHE_TTL);
             $this->cache->save($cacheItem);
-            
+
             return $result;
         } catch (\Exception $e) {
             return $callback();
@@ -97,11 +98,11 @@ class StatisticsCacheService
             }
 
             $result = $callback();
-            
+
             $cacheItem->set($result);
             $cacheItem->expiresAfter(self::CACHE_TTL);
             $this->cache->save($cacheItem);
-            
+
             return $result;
         } catch (\Exception $e) {
             return $callback();
@@ -117,11 +118,11 @@ class StatisticsCacheService
             }
 
             $result = $callback();
-            
+
             $cacheItem->set($result);
             $cacheItem->expiresAfter(self::CACHE_TTL);
             $this->cache->save($cacheItem);
-            
+
             return $result;
         } catch (\Exception $e) {
             return $callback();
@@ -137,11 +138,11 @@ class StatisticsCacheService
             }
 
             $result = $callback();
-            
+
             $cacheItem->set($result);
             $cacheItem->expiresAfter(self::CACHE_TTL);
             $this->cache->save($cacheItem);
-            
+
             return $result;
         } catch (\Exception $e) {
             return $callback();
@@ -151,7 +152,7 @@ class StatisticsCacheService
     public function getMonthlyAmount(string $start, string $end, callable $callback): array
     {
         $key = sprintf(self::MONTHLY_AMOUNT_KEY, $start, $end);
-        
+
         try {
             $cacheItem = $this->cache->getItem($key);
             if ($cacheItem->isHit()) {
@@ -159,11 +160,11 @@ class StatisticsCacheService
             }
 
             $result = $callback();
-            
+
             $cacheItem->set($result);
             $cacheItem->expiresAfter(self::CACHE_TTL);
             $this->cache->save($cacheItem);
-            
+
             return $result;
         } catch (\Exception $e) {
             return $callback();
@@ -173,7 +174,7 @@ class StatisticsCacheService
     public function getExpenses(int $type, string $start, string $end, callable $callback): array
     {
         $key = sprintf(self::EXPENSES_KEY, $start, $end, $type);
-        
+
         try {
             $cacheItem = $this->cache->getItem($key);
             if ($cacheItem->isHit()) {
@@ -181,11 +182,11 @@ class StatisticsCacheService
             }
 
             $result = $callback();
-            
+
             $cacheItem->set($result);
             $cacheItem->expiresAfter(self::CACHE_TTL);
             $this->cache->save($cacheItem);
-            
+
             return $result;
         } catch (\Exception $e) {
             return $callback();
@@ -195,7 +196,7 @@ class StatisticsCacheService
     public function getUnpaidAmount(string $start, string $end, callable $callback): float
     {
         $key = sprintf(self::UNPAID_AMOUNT_KEY, $start, $end);
-        
+
         try {
             $cacheItem = $this->cache->getItem($key);
             if ($cacheItem->isHit()) {
@@ -203,11 +204,11 @@ class StatisticsCacheService
             }
 
             $result = $callback();
-            
+
             $cacheItem->set($result);
             $cacheItem->expiresAfter(self::CACHE_TTL);
             $this->cache->save($cacheItem);
-            
+
             return $result;
         } catch (\Exception $e) {
             return $callback();
@@ -235,14 +236,14 @@ class StatisticsCacheService
             }
 
             $result = $callback();
-            
+
             $cacheItem->set($result);
             $cacheItem->expiresAfter(self::CACHE_TTL);
             $this->cache->save($cacheItem);
-            
+
             return $result;
         } catch (\Exception $e) {
             return $callback();
         }
     }
-} 
+}

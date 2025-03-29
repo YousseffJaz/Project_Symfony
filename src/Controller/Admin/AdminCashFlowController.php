@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Admin;
 
 use App\Entity\Flux;
 use App\Form\AdminCashflowType;
 use App\Repository\FluxRepository;
 use App\Repository\OrderRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/cashflow')]
@@ -20,9 +22,9 @@ class AdminCashFlowController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function index(
         FluxRepository $cashflowRepo,
-        OrderRepository $orderRepo
+        OrderRepository $orderRepo,
     ): Response {
-        $cashflows = $cashflowRepo->findBy(['type' => 0], ['createdAt' => "DESC"]);
+        $cashflows = $cashflowRepo->findBy(['type' => 0], ['createdAt' => 'DESC']);
         $notPaid = 0;
         $orders = $orderRepo->findByNotNote();
 
@@ -51,14 +53,14 @@ class AdminCashFlowController extends AbstractController
 
             $this->addFlash(
                 'success',
-                "Un nouveau compte à été ajouté !"
+                'Un nouveau compte à été ajouté !'
             );
 
             return $this->redirectToRoute('admin_cashflow_index');
         }
 
         return $this->render('admin/cashflow/new.html.twig', [
-            'form' => $form->createView()
+            'form' => $form->createView(),
         ]);
     }
 
@@ -74,7 +76,7 @@ class AdminCashFlowController extends AbstractController
 
             $this->addFlash(
                 'success',
-                "Le compte a été modifié !"
+                'Le compte a été modifié !'
             );
 
             return $this->redirectToRoute('admin_cashflow_index');
@@ -82,7 +84,7 @@ class AdminCashFlowController extends AbstractController
 
         return $this->render('admin/cashflow/edit.html.twig', [
             'form' => $form->createView(),
-            'cashflow' => $cashflow
+            'cashflow' => $cashflow,
         ]);
     }
 
@@ -95,9 +97,9 @@ class AdminCashFlowController extends AbstractController
 
         $this->addFlash(
             'success',
-            "Le compte a été supprimé !"
+            'Le compte a été supprimé !'
         );
 
-        return $this->redirectToRoute("admin_cashflow_index");
+        return $this->redirectToRoute('admin_cashflow_index');
     }
 }

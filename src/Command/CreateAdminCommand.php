@@ -1,17 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Command;
 
 use App\Entity\Admin;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Console\Question\Question;
-use Symfony\Component\Console\Helper\QuestionHelper;
 
 #[AsCommand(
     name: 'app:create-admin',
@@ -24,7 +26,7 @@ class CreateAdminCommand extends Command
 
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private UserPasswordHasherInterface $passwordHasher
+        private UserPasswordHasherInterface $passwordHasher,
     ) {
         parent::__construct();
     }
@@ -74,4 +76,4 @@ class CreateAdminCommand extends Command
 
         return Command::SUCCESS;
     }
-} 
+}

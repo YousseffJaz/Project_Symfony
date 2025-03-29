@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\OrderHistory;
@@ -14,18 +16,18 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class OrderHistoryRepository extends ServiceEntityRepository
 {
-  public function __construct(ManagerRegistry $registry)
-  {
-    parent::__construct($registry, OrderHistory::class);
-  }
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, OrderHistory::class);
+    }
 
-  
-  public function filter($keyword){
-    $query = $this->createQueryBuilder('h')
-    ->andWhere('h.title LIKE :keyword')
-    ->addOrderBy('h.createdAt', 'DESC')
-    ->setParameter('keyword', '%'.$keyword.'%');
+    public function filter($keyword)
+    {
+        $query = $this->createQueryBuilder('h')
+        ->andWhere('h.title LIKE :keyword')
+        ->addOrderBy('h.createdAt', 'DESC')
+        ->setParameter('keyword', '%'.$keyword.'%');
 
-    return $query->getQuery()->getResult();
-  }
+        return $query->getQuery()->getResult();
+    }
 }

@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
-use App\Entity\StockList;
 use App\Entity\Product;
+use App\Entity\StockList;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -28,7 +30,7 @@ class StockListFixtures extends Fixture implements DependentFixtureInterface
             'clavier_mecanique_rgb',
             'casque_audio_sans_fil',
             'webcam_hd',
-            'tablette_graphique'
+            'tablette_graphique',
         ];
 
         foreach ($cities as $city) {
@@ -36,8 +38,8 @@ class StockListFixtures extends Fixture implements DependentFixtureInterface
                 $stockList = new StockList();
                 $stockList->setName($city);
                 $stockList->setQuantity($faker->numberBetween(10, 100));
-                
-                $product = $this->getReference('product_' . $productRef, Product::class);
+
+                $product = $this->getReference('product_'.$productRef, Product::class);
                 $stockList->setProduct($product);
 
                 $manager->persist($stockList);
@@ -53,4 +55,4 @@ class StockListFixtures extends Fixture implements DependentFixtureInterface
             ProductFixtures::class,
         ];
     }
-} 
+}

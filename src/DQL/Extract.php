@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DQL;
 
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
@@ -16,16 +18,16 @@ class Extract extends FunctionNode
     {
         $parser->match(Lexer::T_IDENTIFIER);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);
-        
+
         // Get field (DAY, MONTH, etc.)
         $parser->match(Lexer::T_IDENTIFIER);
         $this->field = $parser->getLexer()->token->value;
-        
+
         $parser->match(Lexer::T_FROM);
-        
+
         // Get datetime expression
         $this->value = $parser->ArithmeticPrimary();
-        
+
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 
@@ -36,4 +38,4 @@ class Extract extends FunctionNode
             $this->value->dispatch($sqlWalker)
         );
     }
-} 
+}

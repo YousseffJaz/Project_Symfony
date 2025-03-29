@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use App\Entity\Customer;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\TelType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\TelType;
 
 class AdminCustomerType extends AbstractType
 {
@@ -19,34 +21,34 @@ class AdminCustomerType extends AbstractType
             ->add('firstname', TextType::class, [
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Prénom du client'
-                ]
+                    'placeholder' => 'Prénom du client',
+                ],
             ])
             ->add('lastname', TextType::class, [
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Nom du client'
-                ]
+                    'placeholder' => 'Nom du client',
+                ],
             ])
             ->add('email', EmailType::class, [
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Email du client'
-                ]
+                    'placeholder' => 'Email du client',
+                ],
             ])
             ->add('address', TextareaType::class, [
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'Adresse du client',
-                    'rows' => 3
-                ]
+                    'rows' => 3,
+                ],
             ])
             ->add('phone', TelType::class, [
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Téléphone du client'
+                    'placeholder' => 'Téléphone du client',
                 ],
-                'required' => false
+                'required' => false,
             ])
         ;
     }
@@ -57,4 +59,4 @@ class AdminCustomerType extends AbstractType
             'data_class' => Customer::class,
         ]);
     }
-} 
+}

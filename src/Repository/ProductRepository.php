@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Product;
@@ -14,22 +16,23 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ProductRepository extends ServiceEntityRepository
 {
-  public function __construct(ManagerRegistry $registry)
-  {
-    parent::__construct($registry, Product::class);
-  }
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Product::class);
+    }
 
-  public function findProductAlmostSoldOut() {
-    return $this->createQueryBuilder('p')
-    ->leftJoin('p.stockLists', 's')
-    ->andWhere('p.alert >= s.quantity OR s.quantity IS NULL')
-    ->andWhere('p.archive = false')
-    ->getQuery()
-    ->getResult();
-  }
+    public function findProductAlmostSoldOut()
+    {
+        return $this->createQueryBuilder('p')
+        ->leftJoin('p.stockLists', 's')
+        ->andWhere('p.alert >= s.quantity OR s.quantity IS NULL')
+        ->andWhere('p.archive = false')
+        ->getQuery()
+        ->getResult();
+    }
 
-  public function findOneById(int $id): ?Product
-  {
-    return $this->findOneBy(['id' => $id]);
-  }
+    public function findOneById(int $id): ?Product
+    {
+        return $this->findOneBy(['id' => $id]);
+    }
 }

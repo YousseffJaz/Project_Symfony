@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\Entity\Admin;
@@ -52,20 +54,20 @@ class AdminFixtures extends Fixture
             $admin->setEmail($adminData['email']);
             $admin->setPhone($adminData['phone']);
             $admin->setRole($adminData['role']);
-            
+
             $hashedPassword = $this->passwordHasher->hashPassword(
                 $admin,
                 $adminData['password']
             );
             $admin->setHash($hashedPassword);
-            
+
             $manager->persist($admin);
-            
+
             // Ajouter une référence pour chaque admin
-            $reference = 'admin_' . strtolower(str_replace(' ', '_', $adminData['firstName']));
+            $reference = 'admin_'.strtolower(str_replace(' ', '_', $adminData['firstName']));
             $this->addReference($reference, $admin);
         }
 
         $manager->flush();
     }
-} 
+}

@@ -1,16 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Service\Order;
 
-use PHPUnit\Framework\TestCase;
-use App\Service\Order\OrderService;
 use App\Entity\Order;
-use App\Entity\Admin;
 use App\Repository\OrderRepository;
 use App\Repository\StockListRepository;
 use App\Repository\TransactionRepository;
+use App\Service\Order\OrderService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 
 class OrderServiceTest extends TestCase
 {
@@ -42,7 +43,7 @@ class OrderServiceTest extends TestCase
 
         $mockOrders = [
             $this->createMockOrder(100, 50),
-            $this->createMockOrder(200, 100)
+            $this->createMockOrder(200, 100),
         ];
 
         $this->orderRepository
@@ -89,7 +90,7 @@ class OrderServiceTest extends TestCase
     {
         $mockOrders = [
             $this->createMockOrder(100, 50),
-            $this->createMockOrder(200, 100)
+            $this->createMockOrder(200, 100),
         ];
 
         $this->orderRepository
@@ -111,7 +112,7 @@ class OrderServiceTest extends TestCase
     {
         $mockOrders = [
             $this->createMockOrder(100, 50),
-            $this->createMockOrder(200, 100)
+            $this->createMockOrder(200, 100),
         ];
 
         $this->orderRepository
@@ -133,6 +134,7 @@ class OrderServiceTest extends TestCase
         $order = $this->createMock(Order::class);
         $order->method('getTotal')->willReturn($total);
         $order->method('getPaid')->willReturn($paid);
+
         return $order;
     }
-} 
+}

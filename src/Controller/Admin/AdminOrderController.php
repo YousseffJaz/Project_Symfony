@@ -1,31 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Admin;
 
-use App\Entity\OrderHistory;
-use App\Entity\LineItem;
-use App\Entity\Order;
 use App\Entity\Admin;
 use App\Entity\Customer;
-use App\Form\AdminOrderType;
-use App\Service\Order\OrderService;
-use App\Service\Order\OrderExportService;
-use App\Repository\AdminRepository;
-use App\Repository\VariantRepository;
-use App\Repository\ProductRepository;
-use App\Repository\StockListRepository;
-use App\Repository\OrderRepository;
+use App\Entity\LineItem;
+use App\Entity\Order;
+use App\Entity\OrderHistory;
 use App\Enum\OrderStatus;
 use App\Event\PreOrderValidationEvent;
+use App\Form\AdminOrderType;
+use App\Repository\AdminRepository;
+use App\Repository\OrderRepository;
+use App\Repository\ProductRepository;
+use App\Repository\StockListRepository;
+use App\Repository\VariantRepository;
+use App\Service\Order\OrderExportService;
+use App\Service\Order\OrderService;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class AdminOrderController extends AbstractController
 {
@@ -34,13 +36,13 @@ class AdminOrderController extends AbstractController
         private OrderService $orderService,
         private OrderExportService $orderExportService,
         private OrderRepository $orderRepository,
-        private EventDispatcherInterface $eventDispatcher
+        private EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
     private function getAdmin(): Admin
     {
-        /** @var Admin */
+        /* @var Admin */
         return $this->getUser();
     }
 
@@ -54,9 +56,9 @@ class AdminOrderController extends AbstractController
         if (!$start || !$end) {
             // Par défaut, on prend l'année en cours
             $currentYear = (new \DateTime())->format('Y');
-            $start = new \DateTime($currentYear . '-01-01');
+            $start = new \DateTime($currentYear.'-01-01');
             $start->setTime(0, 0, 0);
-            $end = new \DateTime($currentYear . '-12-31');
+            $end = new \DateTime($currentYear.'-12-31');
             $end->setTime(23, 59, 59);
         } else {
             $start = new \DateTime($start);
@@ -82,8 +84,8 @@ class AdminOrderController extends AbstractController
     public function filter(string $type, ?string $value = null): Response
     {
         $result = $this->orderService->getFilteredOrders($type, $value);
-        
-        return $this->render('admin/order/index.html.twig', 
+
+        return $this->render('admin/order/index.html.twig',
             $this->orderService->prepareIndexViewData($result['orders'])
         );
     }
@@ -109,7 +111,7 @@ class AdminOrderController extends AbstractController
                 'address' => $customer->getAddress(),
                 'phone' => $customer->getPhone(),
                 'label' => $customer->getFirstname().' '.$customer->getLastname().' ('.$customer->getEmail().')',
-                'value' => $customer->getFirstname().' '.$customer->getLastname().' ('.$customer->getEmail().')'
+                'value' => $customer->getFirstname().' '.$customer->getLastname().' ('.$customer->getEmail().')',
             ];
         }
 
@@ -121,25 +123,25 @@ class AdminOrderController extends AbstractController
     public function new(ProductRepository $productRepository, VariantRepository $variantRepo, Request $request, EntityManagerInterface $manager, StockListRepository $stockRepo, AdminRepository $adminRepo): Response
     {
         $order = new Order();
-        $variants = $variantRepo->findBy(['archive' => false], ['title' => "ASC"]);
-        $products = $productRepository->findBy(['archive' => false], ['title' => "ASC"]);
+        $variants = $variantRepo->findBy(['archive' => false], ['title' => 'ASC']);
+        $products = $productRepository->findBy(['archive' => false], ['title' => 'ASC']);
         $form = $this->createForm(AdminOrderType::class, $order);
         $form->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $stockList = $request->request->all('stockListId');
             $variantId = $request->request->all('variantId');
             $title = $request->request->all('title');
             $quantity = $request->request->all('quantity');
             $price = $request->request->all('price');
-            
+
             if ($variantId) {
-                for ($i = 0; $i < count($variantId); $i++) {
+                for ($i = 0; $i < count($variantId); ++$i) {
                     $variant = $variantRepo->findOneById($variantId[$i]);
 
                     if ($variant) {
                         $product = $variant->getProduct();
-                        $stock = $stockRepo->findOneBy(['name' => $stockList[$i], 'product' => $product ]);
+                        $stock = $stockRepo->findOneBy(['name' => $stockList[$i], 'product' => $product]);
 
                         if ($stock) {
                             $item = new LineItem();
@@ -161,7 +163,7 @@ class AdminOrderController extends AbstractController
             if (!$order->getLineItems()->toArray()) {
                 $this->addFlash(
                     'error',
-                    "Il faut ajouter un produit pour créer une commande !"
+                    'Il faut ajouter un produit pour créer une commande !'
                 );
 
                 return $this->redirectToRoute('admin_order_new');
@@ -173,6 +175,7 @@ class AdminOrderController extends AbstractController
                 $this->eventDispatcher->dispatch($event, PreOrderValidationEvent::NAME);
             } catch (BadRequestHttpException $e) {
                 $this->addFlash('error', $e->getMessage());
+
                 return $this->redirectToRoute('admin_order_new');
             }
 
@@ -186,7 +189,7 @@ class AdminOrderController extends AbstractController
                 $order->setStatus(OrderStatus::REFUND->value);
             } elseif ($order->getTotal() == $order->getPaid()) {
                 $order->setStatus(OrderStatus::PAID->value);
-            } elseif ($order->getPaid() != 0) {
+            } elseif (0 != $order->getPaid()) {
                 $order->setStatus(OrderStatus::PARTIAL->value);
             } else {
                 $order->setStatus(OrderStatus::WAITING->value);
@@ -210,7 +213,7 @@ class AdminOrderController extends AbstractController
 
             $this->addFlash(
                 'success',
-                "Une nouvelle commande à été ajoutée !"
+                'Une nouvelle commande à été ajoutée !'
             );
 
             return $this->redirectToRoute('admin_order_index');
@@ -238,14 +241,9 @@ class AdminOrderController extends AbstractController
                     if (!$variant) {
                         throw new BadRequestHttpException('Un produit de la commande n\'a pas de variant associé.');
                     }
-                    
+
                     if (!$item->getStock()) {
-                        throw new BadRequestHttpException(
-                            sprintf(
-                                'Aucun stock n\'est associé au produit "%s". Veuillez sélectionner un stock.',
-                                $variant->getTitle()
-                            )
-                        );
+                        throw new BadRequestHttpException(sprintf('Aucun stock n\'est associé au produit "%s". Veuillez sélectionner un stock.', $variant->getTitle()));
                     }
                 }
 
@@ -260,11 +258,11 @@ class AdminOrderController extends AbstractController
                         $stock = $item->getStock();
                         $variant = $item->getVariant();
                         $quantityDiff = $originalData ? ($item->getQuantity() - $originalData['quantity']) : $item->getQuantity();
-                        
+
                         // Si la quantité a diminué, on remet en stock la différence
                         if ($quantityDiff < 0) {
                             $stock->setQuantity($stock->getQuantity() + abs($quantityDiff));
-                            
+
                             // Ajouter une entrée dans l'historique pour le retour en stock
                             $history = new OrderHistory();
                             $history->setTitle(sprintf(
@@ -288,7 +286,7 @@ class AdminOrderController extends AbstractController
                     $order->setStatus(OrderStatus::REFUND->value);
                 } elseif ($order->getTotal() == $order->getPaid()) {
                     $order->setStatus(OrderStatus::PAID->value);
-                } elseif ($order->getPaid() != 0) {
+                } elseif (0 != $order->getPaid()) {
                     $order->setStatus(OrderStatus::PARTIAL->value);
                 } else {
                     $order->setStatus(OrderStatus::WAITING->value);
@@ -317,7 +315,7 @@ class AdminOrderController extends AbstractController
 
                 $this->addFlash(
                     'success',
-                    "La commande a été modifiée !"
+                    'La commande a été modifiée !'
                 );
 
                 return $this->redirectToRoute('admin_order_index');
@@ -326,12 +324,12 @@ class AdminOrderController extends AbstractController
             }
         }
 
-        $products = $productRepository->findBy(['archive' => false], ['title' => "ASC"]);
+        $products = $productRepository->findBy(['archive' => false], ['title' => 'ASC']);
 
         return $this->render('admin/order/edit.html.twig', [
             'order' => $order,
             'form' => $form->createView(),
-            'products' => $products
+            'products' => $products,
         ]);
     }
 
@@ -345,13 +343,13 @@ class AdminOrderController extends AbstractController
 
         if ($search) {
             $orders = $this->orderRepository->search($search);
-        } else if ($start && $end) {
+        } elseif ($start && $end) {
             // Ajouter les heures pour avoir la journée complète
             $startDate = new \DateTime($start);
             $startDate->setTime(0, 0, 0);
             $endDate = new \DateTime($end);
             $endDate->setTime(23, 59, 59);
-            
+
             $orders = $this->orderRepository->findByStartAndEnd(
                 $startDate->format('Y-m-d'),
                 $endDate->format('Y-m-d')
@@ -359,11 +357,11 @@ class AdminOrderController extends AbstractController
         } else {
             // Default to current year if no dates specified
             $currentYear = (new \DateTime())->format('Y');
-            $yearStart = new \DateTime($currentYear . '-01-01');
+            $yearStart = new \DateTime($currentYear.'-01-01');
             $yearStart->setTime(0, 0, 0);
-            $yearEnd = new \DateTime($currentYear . '-12-31');
+            $yearEnd = new \DateTime($currentYear.'-12-31');
             $yearEnd->setTime(23, 59, 59);
-            
+
             $orders = $this->orderRepository->findByStartAndEnd(
                 $yearStart->format('Y-m-d'),
                 $yearEnd->format('Y-m-d')
@@ -371,7 +369,7 @@ class AdminOrderController extends AbstractController
         }
 
         return $this->render('admin/order/print.html.twig', [
-            'orders' => $orders
+            'orders' => $orders,
         ]);
     }
 
@@ -382,7 +380,7 @@ class AdminOrderController extends AbstractController
         $this->orderService->deleteLineItem($lineItem, $this->getAdmin());
 
         return new JsonResponse([
-            'message' => 'success'
+            'message' => 'success',
         ]);
     }
 
@@ -394,7 +392,7 @@ class AdminOrderController extends AbstractController
 
         $this->addFlash(
             'success',
-            "La commande a été supprimée !"
+            'La commande a été supprimée !'
         );
 
         return $this->redirectToRoute('admin_order_index');
@@ -405,6 +403,7 @@ class AdminOrderController extends AbstractController
     public function exportOrder(Order $order, Request $request): Response
     {
         $format = $request->query->get('format', 'pdf');
+
         return $this->orderExportService->exportOrder($order, $format);
     }
 
@@ -419,9 +418,9 @@ class AdminOrderController extends AbstractController
 
     public static function dateToFrench(string $date): string
     {
-        $french_months = ["Janv.", "Févr.", "Mars", "Avr.", "Mai", "Juin", "Juil.", "Aoùt", "Sept.", "Oct.", "Nov.", "Déc."];
-        $english_months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        
+        $french_months = ['Janv.', 'Févr.', 'Mars', 'Avr.', 'Mai', 'Juin', 'Juil.', 'Aoùt', 'Sept.', 'Oct.', 'Nov.', 'Déc.'];
+        $english_months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
         return str_replace($english_months, $french_months, $date);
     }
 }

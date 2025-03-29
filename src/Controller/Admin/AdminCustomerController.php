@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Admin;
 
 use App\Entity\Customer;
@@ -15,7 +17,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class AdminCustomerController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -32,7 +34,7 @@ class AdminCustomerController extends AbstractController
             ->getResult();
 
         return $this->render('admin/customer/index.html.twig', [
-            'customers' => $customers
+            'customers' => $customers,
         ]);
     }
 
@@ -56,7 +58,7 @@ class AdminCustomerController extends AbstractController
         return $this->render('admin/customer/form.html.twig', [
             'form' => $form->createView(),
             'title' => 'Ajouter un client',
-            'customer' => $customer
+            'customer' => $customer,
         ]);
     }
 
@@ -65,7 +67,7 @@ class AdminCustomerController extends AbstractController
     public function show(Customer $customer): Response
     {
         return $this->render('admin/customer/show.html.twig', [
-            'customer' => $customer
+            'customer' => $customer,
         ]);
     }
 
@@ -87,7 +89,7 @@ class AdminCustomerController extends AbstractController
         return $this->render('admin/customer/form.html.twig', [
             'form' => $form->createView(),
             'title' => 'Modifier le client',
-            'customer' => $customer
+            'customer' => $customer,
         ]);
     }
-} 
+}

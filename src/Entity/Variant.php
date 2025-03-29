@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\VariantRepository;
@@ -7,7 +9,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use InvalidArgumentException;
 
 #[ORM\Entity(repositoryClass: VariantRepository::class)]
 class Variant
@@ -32,7 +33,7 @@ class Variant
     #[Assert\Range(
         min: 0.01,
         max: 999999.99,
-        notInRangeMessage: "Le prix doit être compris entre {{ min }}€ et {{ max }}€"
+        notInRangeMessage: 'Le prix doit être compris entre {{ min }}€ et {{ max }}€'
     )]
     private float $price = 0.0;
 
@@ -94,9 +95,7 @@ class Variant
     public function setPrice(float $price): self
     {
         if ($price < 0.01 || $price > 999999.99) {
-            throw new InvalidArgumentException(
-                sprintf("Le prix doit être compris entre %.2f€ et %.2f€", 0.01, 999999.99)
-            );
+            throw new \InvalidArgumentException(sprintf('Le prix doit être compris entre %.2f€ et %.2f€', 0.01, 999999.99));
         }
 
         // Arrondir à 2 décimales

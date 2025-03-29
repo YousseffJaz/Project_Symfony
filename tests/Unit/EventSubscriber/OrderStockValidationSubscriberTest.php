@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Unit\EventSubscriber;
 
 use App\Entity\LineItem;
@@ -92,4 +94,4 @@ class OrderStockValidationSubscriberTest extends TestCase
         $event = new PreOrderValidationEvent($order);
         $this->subscriber->validateMinimumOrderAmount($event);
     }
-} 
+}

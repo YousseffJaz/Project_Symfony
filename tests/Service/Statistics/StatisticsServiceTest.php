@@ -1,19 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Service\Statistics;
 
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\MockObject\MockObject;
-use App\Service\Statistics\StatisticsService;
-use App\Repository\OrderRepository;
-use App\Repository\StockListRepository;
-use App\Service\Cache\StatisticsCacheService;
 use App\Entity\Order;
 use App\Entity\Product;
 use App\Entity\StockList;
+use App\Enum\OrderStatus;
 use App\Enum\PaymentMethod;
 use App\Enum\PaymentType;
-use App\Enum\OrderStatus;
+use App\Repository\OrderRepository;
+use App\Repository\StockListRepository;
+use App\Service\Cache\StatisticsCacheService;
+use App\Service\Statistics\StatisticsService;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 
 class StatisticsServiceTest extends TestCase
 {
@@ -40,19 +42,19 @@ class StatisticsServiceTest extends TestCase
         // Configuration du cache
         $this->cacheService
             ->method('getPaymentStats')
-            ->willReturnCallback(fn(callable $callback) => $callback());
+            ->willReturnCallback(fn (callable $callback) => $callback());
 
         // Création des commandes simulées
         $order1 = $this->createMock(Order::class);
         $order1->method('getTotal')->willReturn(100.0);
-        $order1->method('getPaymentMethod')->willReturn((string)PaymentMethod::CARD->value);
-        $order1->method('getPaymentType')->willReturn((string)PaymentType::LOCAL->value);
+        $order1->method('getPaymentMethod')->willReturn((string) PaymentMethod::CARD->value);
+        $order1->method('getPaymentType')->willReturn((string) PaymentType::LOCAL->value);
         $order1->method('getStatus')->willReturn(OrderStatus::WAITING->value);
-        
+
         $order2 = $this->createMock(Order::class);
         $order2->method('getTotal')->willReturn(200.0);
-        $order2->method('getPaymentMethod')->willReturn((string)PaymentMethod::BANK->value);
-        $order2->method('getPaymentType')->willReturn((string)PaymentType::ONLINE->value);
+        $order2->method('getPaymentMethod')->willReturn((string) PaymentMethod::BANK->value);
+        $order2->method('getPaymentType')->willReturn((string) PaymentType::ONLINE->value);
         $order2->method('getStatus')->willReturn(OrderStatus::PAID->value);
 
         // Configuration du repository
@@ -91,7 +93,7 @@ class StatisticsServiceTest extends TestCase
         // Configuration du cache
         $this->cacheService
             ->method('getStockValue')
-            ->willReturnCallback(fn(callable $callback) => $callback());
+            ->willReturnCallback(fn (callable $callback) => $callback());
 
         // Création des produits et stocks simulés
         $product1 = $this->createMock(Product::class);
@@ -125,28 +127,28 @@ class StatisticsServiceTest extends TestCase
         // Configuration du cache
         $this->cacheService
             ->method('getBestSellers')
-            ->willReturnCallback(fn(callable $callback) => $callback());
+            ->willReturnCallback(fn (callable $callback) => $callback());
 
         // Configuration des meilleures ventes
         $this->orderRepository
             ->method('findBestProducts')
             ->willReturn([
                 ['product' => 'Product 1', 'total' => 1000],
-                ['product' => 'Product 2', 'total' => 500]
+                ['product' => 'Product 2', 'total' => 500],
             ]);
 
         $this->orderRepository
             ->method('findBestCategories')
             ->willReturn([
                 ['category' => 'Category 1', 'total' => 2000],
-                ['category' => 'Category 2', 'total' => 1500]
+                ['category' => 'Category 2', 'total' => 1500],
             ]);
 
         $this->orderRepository
             ->method('findBestCustomers')
             ->willReturn([
                 ['customer' => 'Customer 1', 'total' => 3000],
-                ['customer' => 'Customer 2', 'total' => 2500]
+                ['customer' => 'Customer 2', 'total' => 2500],
             ]);
 
         $result = $this->statisticsService->getBestSellers();
@@ -163,4 +165,4 @@ class StatisticsServiceTest extends TestCase
         $this->assertEquals(2000, $result['categories'][0]['total']);
         $this->assertEquals(3000, $result['customers'][0]['total']);
     }
-} 
+}

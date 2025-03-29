@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
-use App\Entity\Order;
-use App\Entity\LineItem;
-use App\Entity\Product;
 use App\Entity\Admin;
 use App\Entity\Customer;
+use App\Entity\LineItem;
+use App\Entity\Order;
 use App\Entity\OrderHistory;
+use App\Entity\Product;
 use App\Enum\OrderStatus;
-use App\Enum\PaymentType;
 use App\Enum\PaymentMethod;
+use App\Enum\PaymentType;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -31,7 +33,7 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
             OrderStatus::WAITING->value => 'En attente',
             OrderStatus::PARTIAL->value => 'En cours',
             OrderStatus::PAID->value => 'Livré',
-            OrderStatus::REFUND->value => 'Annulé'
+            OrderStatus::REFUND->value => 'Annulé',
         ];
     }
 
@@ -50,16 +52,16 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
             'product_clavier_mecanique_rgb' => ['title' => 'Clavier Mecanique RGB', 'price' => 149.99],
             'product_casque_audio_sans_fil' => ['title' => 'Casque Audio Sans Fil', 'price' => 199.99],
             'product_webcam_hd' => ['title' => 'Webcam HD', 'price' => 69.99],
-            'product_tablette_graphique' => ['title' => 'Tablette Graphique', 'price' => 299.99]
+            'product_tablette_graphique' => ['title' => 'Tablette Graphique', 'price' => 299.99],
         ];
 
         // Liste des admins disponibles
         $admins = ['admin_admin', 'admin_manager', 'admin_staff'];
 
         // Générer 100 commandes
-        for ($i = 1; $i <= 100; $i++) {
+        for ($i = 1; $i <= 100; ++$i) {
             $order = new Order();
-            
+
             // Associer un client existant
             $customerRefs = [
                 'customer_jean_dupont',
@@ -76,12 +78,12 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
                 'customer_julie_garcia',
                 'customer_nicolas_david',
                 'customer_sarah_bertrand',
-                'customer_maxime_robert'
+                'customer_maxime_robert',
             ];
             $customerRef = $this->faker->randomElement($customerRefs);
             $customer = $this->getReference($customerRef, Customer::class);
             $order->setCustomer($customer);
-            
+
             // Informations de base
             $adminRef = $this->faker->randomElement($admins);
             $order->setAdmin($this->getReference($adminRef, Admin::class));
@@ -98,7 +100,7 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
             // Produits de la commande
             $numberOfProducts = $this->faker->numberBetween(1, 4);
             $total = 0;
-            
+
             // Sélection aléatoire des produits
             $productRefs = array_keys($products);
             shuffle($productRefs);
@@ -113,7 +115,7 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
                 $lineItem->setQuantity($quantity);
                 $lineItem->setPrice($productInfo['price']);
                 $lineItem->setOrder($order);
-                
+
                 $total += $productInfo['price'] * $quantity;
                 $manager->persist($lineItem);
             }
@@ -121,9 +123,9 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
             // Frais de livraison et remises
             $shippingCost = $total > 1000 ? 0 : $this->faker->randomElement([0, 15, 20, 25]);
             $discount = $total > 500 ? $this->faker->randomElement([0, 50, 100, 150]) : 0;
-            
+
             $finalTotal = $total + $shippingCost - $discount;
-            
+
             $order->setTotal($finalTotal);
             $order->setShippingCost($shippingCost);
             $order->setDiscount($discount);
@@ -132,7 +134,7 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
             if ($status !== OrderStatus::REFUND->value) { // Si la commande n'est pas annulée
                 $paymentType = $this->faker->randomElement([
                     PaymentType::ONLINE->value,
-                    PaymentType::LOCAL->value
+                    PaymentType::LOCAL->value,
                 ]);
                 $paymentMethod = $this->faker->randomElement([
                     PaymentMethod::CASH->value,
@@ -142,7 +144,7 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
                     PaymentMethod::PCS->value,
                     PaymentMethod::CHECK->value,
                     PaymentMethod::PAYSAFECARD->value,
-                    PaymentMethod::BANK->value
+                    PaymentMethod::BANK->value,
                 ]);
                 $paid = $status === OrderStatus::PAID->value ? $finalTotal : ($this->faker->boolean(70) ? $finalTotal : 0);
             } else {
@@ -150,7 +152,7 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
                 $paymentMethod = PaymentMethod::CARD->value;
                 $paid = 0;
             }
-            
+
             $order->setPaid($paid);
             $order->setPaymentType($paymentType);
             $order->setPaymentMethod($paymentMethod);
@@ -159,7 +161,7 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
             $this->createOrderHistory($manager, $order, $status, $createdAt);
 
             $manager->persist($order);
-            $this->addReference('order_' . $i, $order);
+            $this->addReference('order_'.$i, $order);
         }
 
         $manager->flush();
@@ -175,10 +177,10 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
         $history->setAdmin($order->getAdmin());
         $manager->persist($history);
 
-        if ($status === 3) { // Commande annulée
+        if (3 === $status) { // Commande annulée
             $cancelDate = clone $createdAt;
-            $cancelDate->modify('+' . rand(1, 24) . ' hours');
-            
+            $cancelDate->modify('+'.rand(1, 24).' hours');
+
             $history = new OrderHistory();
             $history->setTitle('Commande annulée');
             $history->setCreatedAt($cancelDate);
@@ -186,12 +188,12 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
             $history->setAdmin($order->getAdmin());
             $manager->persist($history);
         }
-        
+
         // Paiement
         if ($order->getPaid() > 0) {
             $paymentDate = clone $createdAt;
-            $paymentDate->modify('+' . rand(5, 60) . ' minutes');
-            
+            $paymentDate->modify('+'.rand(5, 60).' minutes');
+
             $history = new OrderHistory();
             $history->setTitle('Paiement validé');
             $history->setCreatedAt($paymentDate);
@@ -203,8 +205,8 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
         // Si la commande est en cours ou livrée
         if ($status >= 1 && $status <= 2) {
             $prepDate = clone $createdAt;
-            $prepDate->modify('+' . rand(1, 24) . ' hours');
-            
+            $prepDate->modify('+'.rand(1, 24).' hours');
+
             $history = new OrderHistory();
             $history->setTitle('En préparation');
             $history->setCreatedAt($prepDate);
@@ -214,10 +216,10 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
         }
 
         // Si la commande est livrée
-        if ($status === 2) {
+        if (2 === $status) {
             $deliveryDate = clone $createdAt;
-            $deliveryDate->modify('+' . rand(2, 5) . ' days');
-            
+            $deliveryDate->modify('+'.rand(2, 5).' days');
+
             $history = new OrderHistory();
             $history->setTitle('Commande livrée');
             $history->setCreatedAt($deliveryDate);
@@ -235,4 +237,4 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
             CustomerFixtures::class,
         ];
     }
-} 
+}

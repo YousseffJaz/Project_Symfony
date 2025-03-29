@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Service\Admin;
 
 use App\Entity\Admin;
@@ -81,7 +83,7 @@ class AdminArchiveServiceTest extends TestCase
     {
         // Arrange
         $currentAdmin = new Admin();
-        
+
         // Utilisation de la réflexion pour définir l'ID
         $reflectionClass = new \ReflectionClass(Admin::class);
         $property = $reflectionClass->getProperty('id');
@@ -115,4 +117,4 @@ class AdminArchiveServiceTest extends TestCase
         // Assert
         $this->assertTrue($result);
     }
-} 
+}
