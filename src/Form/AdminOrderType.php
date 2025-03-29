@@ -110,15 +110,6 @@ class AdminOrderType extends AbstractType
                 'choices' => $paymentMethodOptions,
                 'required' => false,
             ])
-            ->add('createdAt', DateTimeType::class, [
-                'attr' => [
-                    'class' => 'form-control',
-                    'autocomplete' => 'off',
-                ],
-                'widget' => 'single_text',
-                'html5' => true,
-                'required' => false,
-            ])
             ->add('trackingId', TextType::class, [
                 'attr' => [
                     'class' => 'form-control',

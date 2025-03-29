@@ -67,12 +67,6 @@
                     </select>
                   </div>
                 </div>
-                <div class="col-md-6">
-                  {% if app.user.role != "ROLE_SUPER_ADMIN" %}
-                    <br>
-                  {% endif %}
-                  {{ form_row(form.createdAt, { 'label': 'Date de création' }) }}
-                </div>
               </div>
 
               <br><label>Produits</label>
@@ -124,7 +118,6 @@
 
 {% if app.user.role != "ROLE_SUPER_ADMIN" %}
   <script>
-    $('#admin_order_createdAt').parent().hide();
     $('#admin_order_note').parent().hide();
   </script>
 {% endif %}

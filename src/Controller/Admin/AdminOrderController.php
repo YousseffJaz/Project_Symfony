@@ -123,6 +123,7 @@ class AdminOrderController extends AbstractController
     public function new(ProductRepository $productRepository, VariantRepository $variantRepo, Request $request, EntityManagerInterface $manager, StockListRepository $stockRepo, AdminRepository $adminRepo): Response
     {
         $order = new Order();
+        $order->setCreatedAt(new \DateTime());
         $variants = $variantRepo->findBy(['archive' => false], ['title' => 'ASC']);
         $products = $productRepository->findBy(['archive' => false], ['title' => 'ASC']);
         $form = $this->createForm(AdminOrderType::class, $order);
@@ -137,7 +138,7 @@ class AdminOrderController extends AbstractController
 
             if ($variantId) {
                 for ($i = 0; $i < count($variantId); ++$i) {
-                    $variant = $variantRepo->findOneById($variantId[$i]);
+                    $variant = $variantRepo->findOneById((int)$variantId[$i]);
 
                     if ($variant) {
                         $product = $variant->getProduct();
@@ -146,8 +147,8 @@ class AdminOrderController extends AbstractController
                         if ($stock) {
                             $item = new LineItem();
                             $item->setTitle($title[$i]);
-                            $item->setQuantity($quantity[$i]);
-                            $item->setPrice($price[$i]);
+                            $item->setQuantity((int)$quantity[$i]);
+                            $item->setPrice((float)$price[$i]);
                             $item->setVariant($variant);
                             $item->setProduct($product);
                             $item->setOrder($order);

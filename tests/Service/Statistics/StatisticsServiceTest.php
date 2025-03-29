@@ -47,14 +47,14 @@ class StatisticsServiceTest extends TestCase
         // Création des commandes simulées
         $order1 = $this->createMock(Order::class);
         $order1->method('getTotal')->willReturn(100.0);
-        $order1->method('getPaymentMethod')->willReturn((string) PaymentMethod::CARD->value);
-        $order1->method('getPaymentType')->willReturn((string) PaymentType::LOCAL->value);
+        $order1->method('getPaymentMethod')->willReturn(PaymentMethod::CARD->value);
+        $order1->method('getPaymentType')->willReturn(PaymentType::LOCAL->value);
         $order1->method('getStatus')->willReturn(OrderStatus::WAITING->value);
 
         $order2 = $this->createMock(Order::class);
         $order2->method('getTotal')->willReturn(200.0);
-        $order2->method('getPaymentMethod')->willReturn((string) PaymentMethod::BANK->value);
-        $order2->method('getPaymentType')->willReturn((string) PaymentType::ONLINE->value);
+        $order2->method('getPaymentMethod')->willReturn(PaymentMethod::BANK->value);
+        $order2->method('getPaymentType')->willReturn(PaymentType::ONLINE->value);
         $order2->method('getStatus')->willReturn(OrderStatus::PAID->value);
 
         // Configuration du repository

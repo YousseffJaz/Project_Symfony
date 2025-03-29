@@ -31,11 +31,11 @@ class Order
     #[ORM\Column(type: 'float')]
     private float $paid = 0;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private ?string $paymentMethod = null;
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $paymentMethod = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private ?string $paymentType = null;
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $paymentType = null;
 
     #[ORM\Column(type: 'string', length: 255)]
     private ?string $orderStatus = null;
@@ -128,24 +128,24 @@ class Order
         return $this;
     }
 
-    public function getPaymentMethod(): ?string
+    public function getPaymentMethod(): ?int
     {
         return $this->paymentMethod;
     }
 
-    public function setPaymentMethod(?string $paymentMethod): self
+    public function setPaymentMethod(?int $paymentMethod): self
     {
         $this->paymentMethod = $paymentMethod;
 
         return $this;
     }
 
-    public function getPaymentType(): ?string
+    public function getPaymentType(): ?int
     {
         return $this->paymentType;
     }
 
-    public function setPaymentType(?string $paymentType): self
+    public function setPaymentType(?int $paymentType): self
     {
         $this->paymentType = $paymentType;
 
