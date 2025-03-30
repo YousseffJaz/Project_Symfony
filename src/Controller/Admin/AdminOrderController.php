@@ -129,7 +129,9 @@ class AdminOrderController extends AbstractController
         $order->setCreatedAt(new \DateTime());
         $variants = $variantRepo->findBy(['archive' => false], ['title' => 'ASC']);
         $products = $productRepository->findBy(['archive' => false], ['title' => 'ASC']);
-        $form = $this->createForm(AdminOrderType::class, $order);
+        $form = $this->createForm(AdminOrderType::class, $order, [
+            'is_edit' => false
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -223,10 +225,11 @@ class AdminOrderController extends AbstractController
             return $this->redirectToRoute('admin_order_index');
         }
 
-        return $this->render('admin/order/new.html.twig', [
+        return $this->render('admin/order/form.html.twig', [
             'form' => $form->createView(),
             'products' => $products,
             'variants' => $variants,
+            'order' => $order,
         ]);
     }
 
@@ -234,7 +237,9 @@ class AdminOrderController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function edit(Order $order, Request $request, ProductRepository $productRepository): Response
     {
-        $form = $this->createForm(AdminOrderType::class, $order);
+        $form = $this->createForm(AdminOrderType::class, $order, [
+            'is_edit' => true
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -330,7 +335,7 @@ class AdminOrderController extends AbstractController
 
         $products = $productRepository->findBy(['archive' => false], ['title' => 'ASC']);
 
-        return $this->render('admin/order/edit.html.twig', [
+        return $this->render('admin/order/form.html.twig', [
             'order' => $order,
             'form' => $form->createView(),
             'products' => $products,

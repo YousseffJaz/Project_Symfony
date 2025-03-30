@@ -1,6 +1,6 @@
 {% extends 'admin/base.html.twig' %}
 
-{% block title %}Ajouter une commande{% endblock %}
+{% block title %}{{ order.id ? 'Edition' : 'Ajout' }} d'une commande{% endblock %}
 
 {% form_theme form 'bootstrap_4_layout.html.twig' %}
 
@@ -10,7 +10,7 @@
   <div class="pcoded-inner-content">
     <div class="main-body">
       <div class="page-wrapper">
-        <div class="page-body">
+        <div class="page-body" {% if order.id %}data-order="{{ order.id }}"{% endif %}>
           {% for label, messages in app.flashes %}
             <div class="alert alert-{{ label }} background-{{ label }}">
               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -21,9 +21,21 @@
               {% endfor %}
             </div>
           {% endfor %}
-          <div class="card">
+          {% if order.id %}
+            <div class="page-header-breadcrumb">
+              <ul class=" breadcrumb breadcrumb-title" style="background: #f2f7fb; padding: 0px 5px;">
+                <li class="breadcrumb-item">
+                  <a href="#" onclick="window.history.go(-1);" style="text-decoration: underline;">Commandes</a>
+                </li>
+                <li class="breadcrumb-item">
+                  N°{{order.id}}
+                </li>
+              </ul>
+            </div>
+          {% endif %}
+          <div class="card" {% if order.id %}data-order="{{ order.id }}"{% endif %}>
             <div class="card-header">
-              <h5>Ajouter une commande</h5>
+              <h5>{{ order.id ? 'Edition' : 'Ajout' }} d'une commande</h5>
             </div>
             <div class="card-block">
               {{ form_start(form) }}
@@ -48,7 +60,6 @@
                   <div class="form-group">
                     <label for="admin_order_stockList">Stock</label>
                     <select id="admin_order_stockList" name="stockList" class="form-control" required>
-                      {# <option value="">Choisir un stock</option> #}
                       {% set length = [] %}
                       {% if products %}
                         {% for product in products %}
@@ -62,7 +73,7 @@
                         {% endfor %}
                       {% endif %}
                       {% for stockName in length %}
-                        <option value="{{stockName}}" {% if loop.first %} selected {% endif %}>{{stockName}}</option>
+                        <option value="{{stockName}}" {% if order.id and order.lineItems.toArray %} {% for lineItem in order.lineItems.toArray %} {% if loop.last and lineItem.stock %} {% if stockName == lineItem.stock.name %} selected {% endif %} {% endif %} {% endfor %} {% endif %} {% if not order.id and loop.first %} selected {% endif %}>{{stockName}}</option>
                       {% endfor %}
                     </select>
                   </div>
@@ -82,6 +93,11 @@
                 <ul class="search_results"></ul>
               </div>
               <div class="show_lines" style="margin-top: 10px;">
+                {% if order.id and order.lineItems.toArray %}
+                  {% for lineItem in order.lineItems.toArray %}
+                    <div class="flex justify-center items-center m-2 font-medium py-1 px-2 bg-white rounded bg-gray-100 border" style="max-width: fit-content;display: flex;"><div class="text-xs font-normal leading-none max-w-full flex-initial" style="padding: 7px 5px 7px 15px;">{{ lineItem.quantity }} x ({{ lineItem.title }}) - {{ lineItem.price|number_format(2, ',', ' ') }}€</div><div><i class="fas fa-times js-delete-lineitem" data-id="{{ lineItem.id }}" data-price="{{ lineItem.price }}" style=" color: #aaa; margin-top: 5px; margin-left: 7px; margin-right: 3px; cursor: pointer;"></i></div></div>
+                  {% endfor %}
+                {% endif %}
               </div><br>
 
               <div class="row">
@@ -95,10 +111,13 @@
                   {{ form_row(form.discount, { 'label': "Réduction" }) }}
                   {{ form_row(form.paid, { 'label': 'Montant payé' }) }}
                   {{ form_row(form.paymentMethod, { 'label': 'Moyen de paiement' }) }}
+                  {% if order.id %}
+                    {{ form_row(form.trackingId, { 'label': 'Numéro de suivi (Colissimo)' }) }}
+                  {% endif %}
                 </div>
               </div>
-
-              {{ form_row(form.note, { 'label': 'Commentaire', 'attr': { 'rows' : '5'}, 'value': '' }) }}
+              
+              {{ form_row(form.note, { 'label': 'Commentaire', 'attr': { 'rows' : '5'} }) }}
 
               <div class="form-group row mt-2" style="float: right; margin-right: 20px;">
                 <button type="submit" class="btn btn-primary m-b-0">Enregistrer</button>
@@ -114,20 +133,8 @@
   </div>
 </div>
 </div>
-</div>
-
-{% if app.user.role != "ROLE_SUPER_ADMIN" %}
-  <script>
-    $('#admin_order_note').parent().hide();
-  </script>
-{% endif %}
-
-  <script>
-    $('#admin_order_trackingId').parent().hide();
-  </script>
 
 <style type="text/css">
-
 .search_logo {
   text-align: center;
   margin-bottom: 24px;
@@ -140,7 +147,7 @@
 .search_bar {
   height: 40px;
   border: 1px solid #ccc;
-  border-radius: 16px;
+  border-radius: 30px;
   display: flex;
   padding-left: 24px;
   padding-right: 4px;
@@ -148,16 +155,15 @@
   align-items: center;
 }
 
+#admin_order_createdAt .form-control {
+  border:none;
+  width: initial;
+}
 
 .search_icon {
   width: 20px;
   display: flex;
   align-items: center;
-}
-
-#admin_order_createdAt .form-control {
-  border:none;
-  width: initial;
 }
 
 #search {
@@ -172,7 +178,6 @@
   background-color: #fff;
   font-family: inherit;
 }
-
 
 .search_results {
   display: none;
@@ -194,11 +199,11 @@
   transition: 0.2s background-color;
 }
 
-li:hover {
+.search_results li:hover {
   background-color: #e8f0fe !important;
 }
 
-li.result::before {
+.search_results li.result::before {
   content: "";
   position: absolute;
   height: 1px;
@@ -220,7 +225,6 @@ li.result::before {
   font-size: 14px;
   line-height: 18px;
 }
-
 
 .search_results.open {
   display: block;
@@ -248,11 +252,127 @@ li.result::before {
   display: flex;
 }
 
+.w-full {
+  width: 100%;
+}
+.py-16 {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+.px-6 {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+.h-full {
+  height: 100%;
+}
+.justify-center {
+  justify-content: center;
+}
+.items-center {
+  align-items: center;
+}
+.flex-col {
+  flex-direction: column;
+}
+.flex {
+  display: flex;
+}
+.border-2 {
+  border-width: 2px;
+}
+.border-dashed {
+  border-style: dashed;
+}
+.rounded {
+  border-radius: .25rem;
+}
+.border-grey-transparent {
+  border-color: hsla(250, 13%, 9%, .2);
+}
+.w-0 {
+  width: 0;
+}
+
+.absolute {
+  position: absolute;
+}
+.overflow-hidden {
+  overflow: hidden;
+}
+.opacity-0 {
+  opacity: 0;
+}
+.h-0 {
+  height: 0;
+}
+.appearance-none {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.items-center {
+  align-items: center;
+}
+.flex {
+  display: flex;
+}
+.rounded-lg {
+  border-radius: .5rem;
+}
+
+.text-base {
+  font-size: 0.9rem;
+}
+
+.word-break-all {
+  word-break: break-all;
+  line-break: anywhere;
+}
+.font-medium {
+  font-weight: 500;
+}
+.w-full {
+  width: 100%;
+}
+
+.p3 {
+  padding: 0.75rem;
+}
+.items-center {
+  align-items: center;
+}
+.flex-row {
+  flex-direction: row;
+}
+.flex {
+  display: flex;
+}
+
+.shadow-light {
+  box-shadow: 0 0 8px 0 rgb(12 12 13 / 10%);
+}
+.px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+.mb-4 {
+  margin-bottom: 1rem;
+}
+.mt-2 {
+  margin-top: 0.5rem;
+}
+.rounded {
+  border-radius: .25rem;
+}
 </style>
 
 <script>
 $(function () {
-
   $("body").on("focusout", "#admin_order_shippingCost", function (e) {
     var total = $('#admin_order_total').val();
     var price = $(this).val();
@@ -262,11 +382,12 @@ $(function () {
       total = total.toFixed(2);
     } else if (total) {
       var total = total;
-      $(this).val();
+      $(this).val(0);
     } else if (price) {
       var total = price;
     } else {
       var total = "";
+      $(this).val(0);
     }
     
     $('#admin_order_total').val(total);
@@ -281,7 +402,7 @@ $(function () {
       total = total.toFixed(2);
     } else if (total) {
       var total = total;
-      $(this).val();
+      $(this).val(0);
     } else if (price) {
       var total = price;
     } else {
@@ -292,7 +413,6 @@ $(function () {
     $(this).val();
   });
 
-
   $("body").on("focusout", "#admin_order_discount", function (e) {
     var total = $('#admin_order_total').val();
     var price = $(this).val();
@@ -302,11 +422,12 @@ $(function () {
       total = total.toFixed(2);
     } else if (total) {
       var total = total;
-      $(this).val();
+      $(this).val(0);
     } else if (price) {
       var total = price;
     } else {
       var total = "";
+      $(this).val(0);
     }
     
     $('#admin_order_total').val(total);
@@ -321,7 +442,7 @@ $(function () {
       total = total.toFixed(2);
     } else if (total) {
       var total = total;
-      $(this).val();
+      $(this).val(0);
     } else if (price) {
       var total = price;
     } else {
@@ -331,8 +452,6 @@ $(function () {
     $('#admin_order_total').val(total);
     $(this).val();
   });
-
-
 
   $("body").on("click", ".js-delete-product", function (e) {
     var total = $('#admin_order_total').val();
@@ -353,10 +472,39 @@ $(function () {
     $(this).parent().parent().remove();
   });
 
+  $("body").on("click", ".js-delete-lineitem", function (e) {
+    var total = $('#admin_order_total').val();
+    var price = $(this).data('price');
+    var id = $(this).data('id');
+    var $this = $(this);
+    
+    if (total && price) {
+      var total = parseFloat(total) - parseFloat(price);
+      total = total.toFixed(2);
+    } else if (total) {
+      var total = total;
+    } else if (price) {
+      var total = price;
+    } else {
+      var total = "";
+    }
 
+    var url = '{{ path("admin_lineitem_delete", {'id': 'id'}) }}';
+    url = url.replace("id", id);
+    
+    $.ajax({
+      url : url,
+      success: function(result) {
+        $('#admin_order_total').val(total);
+        $this.parent().parent().remove();
+      },
+      error: function(error) {
+        console.log(error);
+      }
+    });
+  });
 
   $("body").on("click", "#lineItemButton", function (e) {
-    var stock = $("#lineItemButton").data('quantity');
     $('.show_lines').append(`<div class="lineitem flex justify-center items-center m-2 font-medium py-1 px-2 bg-white rounded bg-gray-100 border" style="max-width: fit-content;display: flex;">
       <input type="hidden" name="variantId[]" value="`+ $("#lineItemButton").data('id') +`">
       <input type="hidden" name="stockListId[]" value="`+ $('#admin_order_stockList').val() +`">
@@ -364,7 +512,7 @@ $(function () {
       <input type="hidden" name="price[]" value="`+ $("#lineItemPrice").val() +`">
       <input type="hidden" name="quantity[]" value="`+ $("#lineItemQuantity").val() +`">
       <div class="text-xs font-normal leading-none max-w-full flex-initial" style="padding: 7px 5px 7px 15px;">
-        `+ $("#lineItemQuantity").val() +` x (` + $("#lineItemTitle").val() +`) - `+ $("#lineItemPrice").val() +`€ 
+        `+ $("#lineItemQuantity").val() +` x (` + $("#lineItemTitle").val() +`) - `+ Number($("#lineItemPrice").val()).toFixed(2) +`€ 
         <i class="fas fa-times js-delete-product" data-price="`+ $("#lineItemPrice").val() +`" style="color: #aaa; margin-left: 7px; margin-right: 3px; cursor: pointer;"></i>
       </div>
     </div>`);
@@ -387,16 +535,14 @@ $(function () {
     $(this).parent().remove();
   });
 
-
   $("body").on("click", ".add-product", function (e) {
     window.open("{{ path('admin_product_new') }}");
   });
 
-
   $("body").on("keyup", "#lineItemQuantity", function (e) {
     var quantity = $(this).val();
     var price = $("#lineItemButton").data('price');
-    var total = (parseFloat(quantity) * parseFloat(price)).toFixed(2);
+    var total = parseFloat(quantity) * parseFloat(price);
     $('#lineItemPrice').val(total);
   });
 
@@ -404,7 +550,7 @@ $(function () {
     if ($(".addLineItem").length) {
       $(".addLineItem").remove();
     }
-    $('.search_content').after('<div class="addLineItem" style="display: flex; max-width: 900px;"><input type="text" id="lineItemTitle" name="lineItem[title]" required="required" class="form-control" autocomplete="off" value="'+ $(this).data('title') +'" style="margin: 0px 5px;"><input type="number" id="lineItemQuantity" name="lineItem[quantity]" required="required" class="form-control" autocomplete="off"  value="1" style="margin: 0px 5px; max-width: 150px;"><input type="text" id="lineItemPrice" name="lineItem[price]" required="required" class="form-control" autocomplete="off" value="'+ $(this).data('price') +'" style="margin: 0px 5px; max-width: 150px;"><div class="euro" style="font-size: 17px; margin-top: 8px; margin-right: 5px; color: #7f8c8d; font-weight: 400;">€</div><button id="lineItemButton" data-price="'+ $(this).data('price') +'" data-quantity="'+ $(this).data('quantity') +'" data-id="'+ $(this).data('id') +'" type="button" class="btn btn-success m-b-0" style="margin: 0px 5px;">Ajouter</button></div>');
+    $('.search_content').after('<div class="addLineItem" style="display: flex; max-width: 900px;"><input type="text" id="lineItemTitle" name="lineItem[title]" required="required" class="form-control" autocomplete="off" value="'+ $(this).data('title') +'" style="margin: 0px 5px;"><input type="number" id="lineItemQuantity" name="lineItem[quantity]" required="required" class="form-control" autocomplete="off"  value="1" style="margin: 0px 5px; max-width: 150px;"><input type="text" id="lineItemPrice" name="lineItem[price]" required="required" class="form-control" autocomplete="off" value="'+ $(this).data('price') +'" style="margin: 0px 5px; max-width: 150px;"><div class="euro" style="font-size: 17px; margin-top: 8px; margin-right: 5px; color: #7f8c8d; font-weight: 400;">€</div><button id="lineItemButton" data-price="'+ $(this).data('price') +'" data-id="'+ $(this).data('id') +'" type="button" class="btn btn-success m-b-0" style="margin: 0px 5px;">Ajouter</button></div>');
     $("#search").val('');
     $(".search_bar").removeClass("available");
   });
@@ -417,15 +563,13 @@ $(function () {
         'stockList' : $('#admin_order_stockList').val()
       },
       success: function(result) {
-        console.log(result);
         $(".search_results").empty();
         if (result.length > 0) {
           $(".search_results").addClass("open");
           $(".search_bar").addClass("available");
           result.forEach(element => {
-            console.log(element);
             if (element.quantity > 0) {
-              $(".search_results").append(`<li class="result" data-title="` + element.title + `" data-price="` + element.price + `" data-id="` + element.id + `" data-quantity=` + element.quantity + `><div class="result_text"><p class="name">` + element.title + ` - `+ element.price+`€ - (`+ element.quantity+` disponibles)</p></div></li>`);
+              $(".search_results").append(`<li class="result" data-title="` + element.title + `" data-price="` + element.price + `" data-id="` + element.id + `"><div class="result_text"><p class="name">` + element.title + ` - `+ Number(element.price).toFixed(2) +`€ - (`+ element.quantity+` disponibles)</p></div></li>`);
             }
           });
           $(".search_results").append(`<li class="result add-product"><div class="result_text"><p class="name" style="color: #1a73e8;"><i class="fas fa-plus" style="padding-right: 5px;"></i> Ajouter un nouveau produit</p></div></li>`);
@@ -434,12 +578,6 @@ $(function () {
           $(".search_results").removeClass("open");
           $(".search_bar").removeClass("available");
         }
-      },
-      error: function(error) {
-        console.log(error);
-        $(".search_results").empty();
-        $(".search_results").removeClass("open");
-        $(".search_bar").removeClass("available");
       }
     });
   });
@@ -449,14 +587,6 @@ $(function () {
       $(".search_bar").removeClass("available");
   });
 });
-
-
-
-
-
 </script>
 
-{% endblock %}
-
-
-
+{% endblock %} 

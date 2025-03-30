@@ -18,111 +18,98 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Doctrine\ORM\EntityRepository;
 
 class AdminOrderType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $statusOptions = [];
-        foreach (OrderStatus::cases() as $status) {
-            $statusOptions[$status->getLabel()] = $status->value;
-        }
-
-        $paymentTypeOptions = [];
-        foreach (PaymentType::cases() as $type) {
-            $paymentTypeOptions[$type->getLabel()] = $type->value;
-        }
-
-        $paymentMethodOptions = [];
-        foreach (PaymentMethod::cases() as $method) {
-            $paymentMethodOptions[$method->getLabel()] = $method->value;
-        }
-
         $builder
             ->add('customer', EntityType::class, [
                 'class' => Customer::class,
-                'choice_label' => function (Customer $customer) {
+                'choice_label' => function ($customer) {
                     return $customer->getFirstname().' '.$customer->getLastname().' ('.$customer->getEmail().')';
                 },
-                'attr' => [
-                    'class' => 'form-control',
-                    'autocomplete' => 'off',
-                ],
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('c')
+                        ->orderBy('c.lastname', 'ASC');
+                },
                 'required' => true,
-                'placeholder' => 'Choisir un client',
-            ])
-            ->add('total', NumberType::class, [
-                'attr' => [
-                    'class' => 'form-control',
-                    'autocomplete' => 'off',
-                ],
             ])
             ->add('shippingCost', NumberType::class, [
-                'attr' => [
-                    'class' => 'form-control',
-                    'autocomplete' => 'off',
-                ],
                 'required' => false,
+                'html5' => true,
+                'attr' => [
+                    'min' => 0,
+                    'step' => 0.01,
+                ],
+            ])
+            ->add('total', NumberType::class, [
+                'required' => false,
+                'html5' => true,
+                'attr' => [
+                    'min' => 0,
+                    'step' => 0.01,
+                ],
             ])
             ->add('discount', NumberType::class, [
-                'attr' => [
-                    'class' => 'form-control',
-                    'autocomplete' => 'off',
-                ],
                 'required' => false,
+                'html5' => true,
+                'attr' => [
+                    'min' => 0,
+                    'step' => 0.01,
+                ],
             ])
             ->add('paid', NumberType::class, [
-                'attr' => [
-                    'class' => 'form-control',
-                    'autocomplete' => 'off',
-                ],
-            ])
-            ->add('note', TextareaType::class, [
-                'attr' => [
-                    'class' => 'form-control',
-                    'autocomplete' => 'off',
-                ],
                 'required' => false,
-            ])
-            ->add('orderStatus', ChoiceType::class, [
-                'placeholder' => 'Choisir un statut',
+                'html5' => true,
                 'attr' => [
-                    'class' => 'form-control',
-                    'autocomplete' => 'off',
+                    'min' => 0,
+                    'step' => 0.01,
                 ],
-                'choices' => $statusOptions,
             ])
             ->add('paymentType', ChoiceType::class, [
-                'placeholder' => 'Choisir un type de paiement',
-                'attr' => [
-                    'class' => 'form-control',
-                    'autocomplete' => 'off',
+                'choices' => [
+                    'En ligne' => PaymentType::ONLINE->value,
+                    'Sur place' => PaymentType::LOCAL->value,
                 ],
-                'choices' => $paymentTypeOptions,
-                'required' => false,
+                'required' => true,
             ])
             ->add('paymentMethod', ChoiceType::class, [
-                'placeholder' => 'Choisir une méthode de paiement',
-                'attr' => [
-                    'class' => 'form-control',
-                    'autocomplete' => 'off',
+                'choices' => [
+                    'Espèces' => PaymentMethod::CASH->value,
+                    'Carte bancaire' => PaymentMethod::CARD->value,
+                    'Chèque' => PaymentMethod::CHECK->value,
+                    'Virement bancaire' => PaymentMethod::BANK->value,
                 ],
-                'choices' => $paymentMethodOptions,
+                'required' => true,
+            ])
+            ->add('orderStatus', ChoiceType::class, [
+                'choices' => [
+                    'En attente' => OrderStatus::WAITING->value,
+                    'Payé' => OrderStatus::PAID->value,
+                    'Partiellement payé' => OrderStatus::PARTIAL->value,
+                    'Remboursé' => OrderStatus::REFUND->value,
+                ],
+                'required' => true,
+            ])
+            ->add('note', TextareaType::class, [
                 'required' => false,
             ])
-            ->add('trackingId', TextType::class, [
-                'attr' => [
-                    'class' => 'form-control',
-                    'autocomplete' => 'off',
-                ],
+        ;
+
+        if ($options['is_edit']) {
+            $builder->add('trackingId', TextType::class, [
                 'required' => false,
             ]);
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Order::class,
+            'is_edit' => true,
         ]);
     }
 }
