@@ -1,6 +1,33 @@
 # Projet Symfony Gestion
 
-Ce projet est une application de gestion développée avec Symfony 7.
+Ce projet est une application de gestion initialement développée sous Symfony 4 et migrée vers Symfony 7. Il s'agit d'une solution complète pour la gestion d'entreprise incluant la gestion des stocks, des commandes et des statistiques.
+
+![Dashboard de l'application](docs/images/dashboard.png)
+
+## Migration de Symfony 4 vers 7
+
+Ce projet a été mis à jour de Symfony 4 vers Symfony 7 avec les améliorations suivantes :
+- Mise à jour des dépendances vers les versions compatibles
+- Refactoring du code pour utiliser les nouvelles fonctionnalités de Symfony 7
+- Optimisation des performances
+- Modernisation de l'interface utilisateur
+- Migration vers PHP 8.2
+
+## Intégration Continue avec GitHub Actions
+
+Le projet utilise GitHub Actions pour l'intégration continue avec les workflows suivants :
+- Tests automatisés (PHPUnit)
+- Analyse de qualité du code (PHPStan)
+- Vérification du style de code (PHP-CS-Fixer)
+- Déploiement automatique
+- Génération des builds de production
+
+Les workflows sont configurés dans le dossier `.github/workflows/` et incluent :
+```yaml
+- ci.yml : Tests et analyse de code
+- deploy.yml : Déploiement automatique
+- release.yml : Création des releases
+```
 
 ## Prérequis
 
