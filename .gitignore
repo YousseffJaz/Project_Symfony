@@ -32,6 +32,11 @@ yarn-error.log
 .DS_Store   # Fichier système macOS
 .cursorrules
 
+# macOS system files
+.AppleDouble
+.LSOverride
+._*
+
 ###> phpstan/phpstan ###
 phpstan.neon
 ###< phpstan/phpstan ###
