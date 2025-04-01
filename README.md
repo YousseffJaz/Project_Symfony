@@ -15,18 +15,31 @@ Ce projet a été mis à jour de Symfony 4 vers Symfony 7 avec les amélioration
 
 ## Intégration Continue avec GitHub Actions
 
-Le projet utilise GitHub Actions pour l'intégration continue avec les workflows suivants :
-- Tests automatisés (PHPUnit)
-- Analyse de qualité du code (PHPStan)
-- Vérification du style de code (PHP-CS-Fixer)
-- Déploiement automatique
-- Génération des builds de production
+Le projet utilise GitHub Actions pour l'intégration continue avec un pipeline CI/CD qui s'exécute sur les push vers la branche main et les pull requests.
 
-Les workflows sont configurés dans le dossier `.github/workflows/` et incluent :
+Le workflow est configuré dans `.github/workflows/ci-cd.yml` et comprend deux jobs principaux :
+
+### Job: test
+- Configuration de PHP 8.2 avec les extensions nécessaires
+- Validation du composer.json
+- Mise en cache des dépendances Composer
+- Installation des dépendances
+- Exécution des tests PHPUnit
+- Analyse statique avec PHPStan
+
+### Job: build
+- S'exécute uniquement après le succès des tests et sur les push vers main
+- Configuration de Docker Buildx
+- Construction de l'image Docker du projet
+
 ```yaml
-- ci.yml : Tests et analyse de code
-- deploy.yml : Déploiement automatique
-- release.yml : Création des releases
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 ```
 
 ## Prérequis
