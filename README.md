@@ -214,3 +214,7 @@ symfony console doctrine:schema:update --force
 ## Support
 
 Pour toute question ou problème, veuillez créer une issue dans le dépôt GitHub.
+
+## Licence
+
+Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE) pour plus de détails.
