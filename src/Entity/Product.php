@@ -4,61 +4,36 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Delete;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
 use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ApiResource(
-    operations: [
-        new GetCollection(),
-        new Get(),
-        new Post(),
-        new Put(),
-        new Delete(),
-    ],
-    normalizationContext: ['groups' => ['product:read']],
-    denormalizationContext: ['groups' => ['product:write']]
-)]
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(['product:read', 'category:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups(['product:read', 'product:write', 'category:read'])]
     private ?string $title = null;
 
     #[ORM\Column(type: 'float', nullable: true)]
-    #[Groups(['product:read', 'product:write'])]
     private ?float $price = null;
 
     #[ORM\Column(type: 'boolean', nullable: true)]
-    #[Groups(['product:read', 'product:write'])]
     private bool $archive = false;
 
     #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'product')]
     #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['product:read', 'product:write'])]
     private ?Category $category = null;
 
     #[ORM\Column(type: 'integer', nullable: true)]
-    #[Groups(['product:read', 'product:write'])]
     private int $alert = 10;
 
     #[ORM\Column(type: 'float', nullable: true)]
-    #[Groups(['product:read', 'product:write'])]
     private float $purchasePrice = 0.0;
 
     #[ORM\OneToMany(targetEntity: Variant::class, mappedBy: 'product')]
@@ -68,7 +43,6 @@ class Product
     private Collection $stockLists;
 
     #[ORM\Column(type: 'boolean', nullable: true)]
-    #[Groups(['product:read', 'product:write'])]
     private bool $digital = false;
 
     #[ORM\OneToMany(targetEntity: LineItem::class, mappedBy: 'product')]
