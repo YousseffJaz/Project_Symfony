@@ -75,40 +75,6 @@ symfony console doctrine:database:create
 symfony console doctrine:migrations:migrate
 ```
 
-## API Platform
-
-Le projet utilise API Platform pour exposer une API REST.
-
-### API REST
-
-Les endpoints disponibles :
-
-- Catégories :
-  - GET `/api/categories` : Liste toutes les catégories
-  - GET `/api/categories/{id}` : Récupère une catégorie spécifique
-  - POST `/api/categories` : Crée une nouvelle catégorie
-  - PUT `/api/categories/{id}` : Met à jour une catégorie
-  - DELETE `/api/categories/{id}` : Supprime une catégorie
-
-- Produits :
-  - GET `/api/products` : Liste tous les produits
-  - GET `/api/products/{id}` : Récupère un produit spécifique
-  - POST `/api/products` : Crée un nouveau produit
-  - PUT `/api/products/{id}` : Met à jour un produit
-  - DELETE `/api/products/{id}` : Supprime un produit
-
-Exemple de requête REST :
-```bash
-# Lister les catégories
-curl http://localhost:8080/api/categories \
-  -H "Accept: application/json"
-
-# Créer une catégorie
-curl -X POST http://localhost:8080/api/categories \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Nouvelle Catégorie"}'
-```
-
 ## Configuration
 
 Les paramètres principaux sont configurés dans `config/services.yaml` :
@@ -145,7 +111,6 @@ Fonctionnalités Sentry activées :
 - Support multilingue (i18n)
 - Intégration Sentry pour le monitoring des erreurs et des performances
 - Support CORS (Cross-Origin Resource Sharing)
-- API REST sécurisée
 
 ## Développement
 
@@ -164,7 +129,6 @@ symfony console cache:clear
 - Authentification requise pour l'accès à l'administration
 - Gestion des rôles (ROLE_ADMIN, ROLE_SUPER_ADMIN)
 - Protection CSRF activée
-- Support JWT pour l'authentification API
 - Configuration CORS sécurisée
 
 ## Structure du projet
@@ -173,14 +137,13 @@ symfony console cache:clear
 src/
 ├── Controller/         # Contrôleurs de l'application
 │   └── Admin/         # Contrôleurs de l'administration
-├── Entity/            # Entités Doctrine avec attributs PHP 8 et API Platform
+├── Entity/            # Entités Doctrine
 ├── Repository/        # Repositories Doctrine
 ├── Service/          # Services métier
 ├── Listener/         # Event Listeners
 └── Twig/             # Extensions Twig personnalisées
 config/
 ├── packages/         # Configuration des packages
-│   └── api_platform/ # Configuration API Platform
 docker/               # Configuration Docker
 ├── nginx/            # Configuration Nginx
 ├── php/             # Configuration PHP-FPM
