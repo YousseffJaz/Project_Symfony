@@ -59,14 +59,7 @@
                                 </a>
                             </li>
                             <hr style="border-top: 1px solid rgba(0,0,0,0.1);margin: 0px;">
-                            <li class="{{ app.request.get('_route') == 'admin_statistique_index' ? 'active' }}">
-                                <a href="{{ path('admin_statistique_index') }}">
-                                    <span class="pcoded-micon">
-                                        <i class="fas fa-chart-pie"></i>
-                                    </span>
-                                    <span class="pcoded-mtext">Statistiques</span>
-                                </a>
-                            </li>
+                            
                         {% endif %}
                         <hr style="border-top: 1px solid rgba(0,0,0,0.1);margin: 0px;">
                         <li class="{{ app.request.get('_route') == 'admin_order_index' ? 'active' }}">
@@ -116,10 +109,6 @@
                         {% if app.user.role == "ROLE_SUPER_ADMIN" %}
                             <hr style="border-top: 1px solid rgba(0,0,0,0.1);margin: 0px;">
                             <li class="pcoded-hasmenu {{ app.request.get('_route') == 'admin_cashflow_index' ? 'pcoded-trigger' }} {{ app.request.get('_route') == 'admin_expense_index' ? 'pcoded-trigger' }}">
-                                <a href="javascript:void(0)">
-                                    <span class="pcoded-micon"><i class="fas fa-money-bill-wave"></i></span>
-                                    <span class="pcoded-mtext">Comptabilité</span>
-                                </a>
                                 <ul class="pcoded-submenu" style="{{ app.request.get('_route') == 'admin_cashflow_index' ? 'display: block;' }} {{ app.request.get('_route') == 'admin_expense_index' ? 'display: block;' }}">
                                     <li class="{{ app.request.get('_route') == 'admin_cashflow_index' ? 'active' }}">
                                         <a href="{{ path('admin_cashflow_index') }}">
